@@ -1,6 +1,8 @@
 package dagger.handlers;
 
 import dagger.*;
+import dagger.http.Request;
+import dagger.http.Response;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -24,7 +26,7 @@ public class GetTest {
 
     @Test
     public void testHandleRequest() {
-        Result expectedResult = new Result() {};
+        Result expectedResult = new MockResult();
         Action action = new MockAction(expectedResult);
         RequestHandler get = new Get(pattern("/foo"), action);
 
@@ -86,6 +88,13 @@ public class GetTest {
         public Result execute() {
             return result;
         }
+    }
+
+    private class MockResult implements Result {
+
+        public void applyOn(Response response) {
+        }
+
     }
 
 }

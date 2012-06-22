@@ -1,6 +1,7 @@
 package dagger;
 
 import dagger.handlers.ResourceNotFound;
+import dagger.http.Request;
 import org.junit.Before;
 import org.junit.Test;
 

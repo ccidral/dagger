@@ -1,6 +1,6 @@
 package dagger.handlers;
 
-import dagger.Request;
+import dagger.http.Request;
 import dagger.Result;
 import dagger.results.NotFound;
 import org.junit.Test;

@@ -1,6 +1,7 @@
 package dagger.handlers;
 
 import dagger.*;
+import dagger.http.Request;
 
 public class Get implements RequestHandler {
 

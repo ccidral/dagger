@@ -1,4 +1,4 @@
-package dagger;
+package dagger.http;
 
 public interface Request {
 
