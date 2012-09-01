@@ -4,6 +4,6 @@ import dagger.http.Response;
 
 public interface Result {
 
-    void applyOn(Response response);
+    void applyTo(Response response);
 
 }

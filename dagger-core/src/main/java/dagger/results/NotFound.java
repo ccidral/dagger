@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 
 public class NotFound implements Result {
 
-    public void applyOn(Response response) {
+    public void applyTo(Response response) {
         response.setStatusCode(StatusCode.NOT_FOUND);
         writeTo(response, "404 - Not found");
     }
