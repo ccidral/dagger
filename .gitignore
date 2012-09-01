@@ -1,0 +1,8 @@
+dagger-core/dagger-core.iml
+dagger-core/target/
+dagger-servlet3/dagger-servlet3.iml
+dagger-servlet3/target/
+dagger.iml
+dagger.ipr
+dagger.iws
+
