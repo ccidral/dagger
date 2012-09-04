@@ -5,4 +5,6 @@ dagger-servlet3/target/
 dagger.iml
 dagger.ipr
 dagger.iws
+dagger-servlet3-sample/dagger-servlet3-sample.iml
+dagger-servlet3-sample/target/
 
