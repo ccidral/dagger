@@ -35,7 +35,7 @@ public class GetTest {
         assertSame(expectedResult, actualResult);
     }
 
-    private ResourcePattern pattern(String string) {
+    private ResourceMatcher pattern(String string) {
         return new ResourceEqualsTo(string);
     }
 
@@ -59,7 +59,7 @@ public class GetTest {
 
     }
 
-    private class ResourceEqualsTo implements ResourcePattern {
+    private class ResourceEqualsTo implements ResourceMatcher {
 
         private final String string;
 

@@ -4,7 +4,7 @@ import dagger.Action;
 import dagger.RequestHandlers;
 import dagger.Result;
 import dagger.handlers.Get;
-import dagger.resource.ExactResourceName;
+import dagger.resourcematchers.ExactResourceName;
 import dagger.results.Ok;
 import dagger.servlet3.Bootstrapper;
 
