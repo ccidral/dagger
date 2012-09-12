@@ -1,7 +1,6 @@
 package dagger.results;
 
 import dagger.Result;
-import dagger.http.Response;
 import dagger.http.StatusCode;
 import org.junit.Test;
 
@@ -16,7 +15,7 @@ public class OkTest {
         result.applyTo(response);
 
         assertEquals(StatusCode.OK, response.getStatusCode());
-        assertEquals("Some text", response.getWrittenOutput());
+        assertEquals("Some text", response.getWrittenText());
     }
 
 }

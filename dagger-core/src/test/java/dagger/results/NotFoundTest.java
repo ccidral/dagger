@@ -1,7 +1,6 @@
 package dagger.results;
 
 import dagger.Result;
-import dagger.http.Response;
 import dagger.http.StatusCode;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +9,13 @@ import static org.junit.Assert.assertEquals;
 
 public class NotFoundTest {
 
-    private Response response;
     private Result notFound;
+    private MockResponse response;
 
     @Before
     public void setUp() throws Exception {
-        response = new MockResponse();
         notFound = new NotFound();
+        response = new MockResponse();
     }
 
     @Test
@@ -28,7 +27,7 @@ public class NotFoundTest {
     @Test
     public void testWriteNotFoundOnResponseOutputStream() {
         notFound.applyTo(response);
-        assertEquals("404 - Not found", ((MockResponse)response).getWrittenOutput());
+        assertEquals("404 - Not found", response.getWrittenText());
     }
 
 }
