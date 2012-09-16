@@ -5,11 +5,11 @@ import dagger.http.Request;
 
 public class Get implements RequestHandler {
 
-    private final ResourceMatcher resourceMatcher;
+    private final ResourceName resourceName;
     private final Action action;
 
-    public Get(ResourceMatcher resourceMatcher, Action action) {
-        this.resourceMatcher = resourceMatcher;
+    public Get(ResourceName resourceName, Action action) {
+        this.resourceName = resourceName;
         this.action = action;
     }
 
@@ -17,10 +17,10 @@ public class Get implements RequestHandler {
         if(!request.getMethod().equals("GET"))
             return false;
 
-        return resourceMatcher.matches(request.getResource());
+        return resourceName.matches(request.getResource());
     }
 
-    public Result handle(Request request) {
+    public Reaction handle(Request request) {
         return action.execute();
     }
 

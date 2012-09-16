@@ -6,7 +6,7 @@ import dagger.http.Request;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultRequestHandlers implements RequestHandlers {
+public class DefaultDaggerModule implements DaggerModule {
 
     private final List<RequestHandler> requestHandlers = new ArrayList<RequestHandler>();
 

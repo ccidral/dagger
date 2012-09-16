@@ -1,8 +1,8 @@
 package dagger.handlers;
 
+import dagger.Reaction;
 import dagger.http.Request;
-import dagger.Result;
-import dagger.results.NotFound;
+import dagger.reactions.NotFound;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -19,10 +19,10 @@ public class ResourceNotFoundTest {
     @Test
     public void testReturnsNotFoundResultWhenHandlingRequest() {
         Request request = new MockRequest();
-        Result result = new ResourceNotFound().handle(request);
+        Reaction reaction = new ResourceNotFound().handle(request);
 
-        assertNotNull(result);
-        assertEquals(NotFound.class, result.getClass());
+        assertNotNull(reaction);
+        assertEquals(NotFound.class, reaction.getClass());
     }
 
     private static class MockRequest implements Request {

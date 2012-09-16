@@ -1,10 +1,10 @@
-package dagger.results;
+package dagger.reactions;
 
-import dagger.Result;
+import dagger.Reaction;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 
-public class NotFound implements Result {
+public class NotFound implements Reaction {
 
     public void applyTo(Response response) {
         response.setStatusCode(StatusCode.NOT_FOUND);

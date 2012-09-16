@@ -2,7 +2,7 @@ package dagger;
 
 import dagger.http.Response;
 
-public interface Result {
+public interface Reaction {
 
     void applyTo(Response response);
 

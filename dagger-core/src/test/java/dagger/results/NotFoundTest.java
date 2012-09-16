@@ -1,7 +1,8 @@
 package dagger.results;
 
-import dagger.Result;
+import dagger.Reaction;
 import dagger.http.StatusCode;
+import dagger.reactions.NotFound;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 public class NotFoundTest {
 
-    private Result notFound;
+    private Reaction notFound;
     private MockResponse response;
 
     @Before

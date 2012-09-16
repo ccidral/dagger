@@ -2,7 +2,7 @@ package dagger;
 
 import dagger.http.Request;
 
-public interface RequestHandlers {
+public interface DaggerModule {
 
     void add(RequestHandler requestHandler);
 

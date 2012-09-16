@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class RequestHandlersTest {
+public class DaggerModuleTest {
 
-    private RequestHandlers requestHandlers;
+    private DaggerModule daggerModule;
     private ResourceEqualsTo handler1;
     private ResourceStartsWith handler2;
 
@@ -18,15 +18,15 @@ public class RequestHandlersTest {
         handler1 = new ResourceEqualsTo("/foo/bar");
         handler2 = new ResourceStartsWith("/foo");
 
-        requestHandlers = new DefaultRequestHandlers();
-        requestHandlers.add(handler1);
-        requestHandlers.add(handler2);
+        daggerModule = new DefaultDaggerModule();
+        daggerModule.add(handler1);
+        daggerModule.add(handler2);
     }
 
     @Test
     public void testRequestHandlerForRequest() {
         Request request = new MockRequest("/foo/bar");
-        RequestHandler requestHandler = requestHandlers.getHandlerFor(request);
+        RequestHandler requestHandler = daggerModule.getHandlerFor(request);
 
         assertSame(handler1, requestHandler);
     }
@@ -34,7 +34,7 @@ public class RequestHandlersTest {
     @Test
     public void testRequestHandlerNotFoundForRequest() {
         Request request = new MockRequest("/bar");
-        RequestHandler requestHandler = requestHandlers.getHandlerFor(request);
+        RequestHandler requestHandler = daggerModule.getHandlerFor(request);
 
         assertNotNull(requestHandler);
         assertEquals(ResourceNotFound.class, requestHandler.getClass());
@@ -42,8 +42,8 @@ public class RequestHandlersTest {
 
     @Test
     public void testRequestHandlersAreProcessedInTheSameOrderAsTheyWereAdded() {
-        assertSame(handler1, requestHandlers.getHandlerFor(new MockRequest("/foo/bar")));
-        assertSame(handler2, requestHandlers.getHandlerFor(new MockRequest("/foo/bar/baz")));
+        assertSame(handler1, daggerModule.getHandlerFor(new MockRequest("/foo/bar")));
+        assertSame(handler2, daggerModule.getHandlerFor(new MockRequest("/foo/bar/baz")));
     }
 
     private static class ResourceEqualsTo implements RequestHandler {
@@ -58,7 +58,7 @@ public class RequestHandlersTest {
             return resource.equals(request.getResource());
         }
 
-        public Result handle(Request request) {
+        public Reaction handle(Request request) {
             return null;
         }
 
@@ -80,7 +80,7 @@ public class RequestHandlersTest {
             return request.getResource().startsWith(resource);
         }
 
-        public Result handle(Request request) {
+        public Reaction handle(Request request) {
             return null;
         }
 

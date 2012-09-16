@@ -10,8 +10,8 @@
         <servlet-class>dagger.servlet3.DaggerServlet</servlet-class>
 
         <init-param>
-            <param-name>dagger.requestHandlers.class</param-name>
-            <param-value>dagger.DefaultRequestHandlers</param-value>
+            <param-name>dagger.daggerModule.class</param-name>
+            <param-value>dagger.DefaultDaggerModule</param-value>
         </init-param>
 
         <init-param>

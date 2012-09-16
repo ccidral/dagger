@@ -1,6 +1,7 @@
 package dagger.resourcematchers;
 
-import dagger.ResourceMatcher;
+import dagger.ResourceName;
+import dagger.resource.ExactResourceName;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertFalse;
@@ -10,9 +11,9 @@ public class ExactResourceNameTest {
 
     @Test
     public void test() {
-        ResourceMatcher resourceMatcher = new ExactResourceName("/foo");
-        assertTrue(resourceMatcher.matches("/foo"));
-        assertFalse(resourceMatcher.matches("/bar"));
+        ResourceName resourceName = new ExactResourceName("/foo");
+        assertTrue(resourceName.matches("/foo"));
+        assertFalse(resourceName.matches("/bar"));
     }
 
 }

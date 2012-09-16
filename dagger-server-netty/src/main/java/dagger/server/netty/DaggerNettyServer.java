@@ -1,6 +1,6 @@
 package dagger.server.netty;
 
-import dagger.RequestHandlers;
+import dagger.DaggerModule;
 import dagger.server.DaggerServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.socket.nio.NioEventLoopGroup;
@@ -11,13 +11,13 @@ import java.net.InetSocketAddress;
 public class DaggerNettyServer implements DaggerServer {
 
     private final int port;
-    private final RequestHandlers requestHandlers;
+    private final DaggerModule daggerModule;
 
     private ServerBootstrap serverBootstrap;
 
-    public DaggerNettyServer(int port, RequestHandlers requestHandlers) {
+    public DaggerNettyServer(int port, DaggerModule daggerModule) {
         this.port = port;
-        this.requestHandlers = requestHandlers;
+        this.daggerModule = daggerModule;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class DaggerNettyServer implements DaggerServer {
         try {
             serverBootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
                     .channel(new NioServerSocketChannel())
-                    .childHandler(new HttpServerInitializer(requestHandlers))
+                    .childHandler(new HttpServerInitializer(daggerModule))
                     .localAddress(new InetSocketAddress(port));
 
             serverBootstrap.bind().sync().channel();

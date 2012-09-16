@@ -1,10 +1,10 @@
-package dagger.results;
+package dagger.reactions;
 
-import dagger.Result;
+import dagger.Reaction;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 
-public class Ok implements Result {
+public class Ok implements Reaction {
 
     private final String text;
 

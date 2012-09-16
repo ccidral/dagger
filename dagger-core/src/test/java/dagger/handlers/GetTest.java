@@ -26,16 +26,16 @@ public class GetTest {
 
     @Test
     public void testHandleRequest() {
-        Result expectedResult = new MockResult();
-        Action action = new MockAction(expectedResult);
+        Reaction expectedReaction = new MockReaction();
+        Action action = new MockAction(expectedReaction);
         RequestHandler get = new Get(pattern("/foo"), action);
 
         Request request = new MockRequest("GET", "/foo");
-        Result actualResult = get.handle(request);
-        assertSame(expectedResult, actualResult);
+        Reaction actualReaction = get.handle(request);
+        assertSame(expectedReaction, actualReaction);
     }
 
-    private ResourceMatcher pattern(String string) {
+    private ResourceName pattern(String string) {
         return new ResourceEqualsTo(string);
     }
 
@@ -59,7 +59,7 @@ public class GetTest {
 
     }
 
-    private class ResourceEqualsTo implements ResourceMatcher {
+    private class ResourceEqualsTo implements ResourceName {
 
         private final String string;
 
@@ -67,30 +67,30 @@ public class GetTest {
             this.string = string;
         }
 
-        public boolean matches(String resource) {
-            return resource.equals(string);
+        public boolean matches(String uri) {
+            return uri.equals(string);
         }
 
     }
 
     private class MockAction implements Action {
 
-        private final Result result;
+        private final Reaction reaction;
 
         public MockAction() {
             this(null);
         }
 
-        public MockAction(Result result) {
-            this.result = result;
+        public MockAction(Reaction reaction) {
+            this.reaction = reaction;
         }
 
-        public Result execute() {
-            return result;
+        public Reaction execute() {
+            return reaction;
         }
     }
 
-    private class MockResult implements Result {
+    private class MockReaction implements Reaction {
 
         public void applyTo(Response response) {
         }

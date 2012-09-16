@@ -1,9 +1,9 @@
 package dagger.handlers;
 
+import dagger.Reaction;
 import dagger.http.Request;
 import dagger.RequestHandler;
-import dagger.Result;
-import dagger.results.NotFound;
+import dagger.reactions.NotFound;
 
 public class ResourceNotFound implements RequestHandler {
 
@@ -11,7 +11,7 @@ public class ResourceNotFound implements RequestHandler {
         return true;
     }
 
-    public Result handle(Request request) {
+    public Reaction handle(Request request) {
         return new NotFound();
     }
 

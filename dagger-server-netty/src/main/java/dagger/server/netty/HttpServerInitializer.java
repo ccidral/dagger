@@ -15,7 +15,7 @@
  */
 package dagger.server.netty;
 
-import dagger.RequestHandlers;
+import dagger.DaggerModule;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -25,10 +25,10 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final RequestHandlers requestHandlers;
+    private final DaggerModule daggerModule;
 
-    public HttpServerInitializer(RequestHandlers requestHandlers) {
-        this.requestHandlers = requestHandlers;
+    public HttpServerInitializer(DaggerModule daggerModule) {
+        this.daggerModule = daggerModule;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         p.addLast("encoder", new HttpResponseEncoder());
         // Remove the following line if you don't want automatic content compression.
         p.addLast("deflater", new HttpContentCompressor());
-        p.addLast("handler", new HttpServerHandler(requestHandlers));
+        p.addLast("handler", new HttpServerHandler(daggerModule));
     }
 
 }

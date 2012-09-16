@@ -4,7 +4,7 @@ import dagger.*;
 import dagger.handlers.Get;
 import dagger.http.Response;
 import dagger.http.StatusCode;
-import dagger.resourcematchers.ExactResourceName;
+import dagger.resource.ExactResourceName;
 import dagger.server.DaggerServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -15,17 +15,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static junit.framework.Assert.assertEquals;
 
 public class DaggerNettyServerTest {
 
     private DaggerServer server;
-    private RequestHandlers requestHandlers;
+    private DaggerModule daggerModule;
 
     @Before
     public void setUp() throws Exception {
-        requestHandlers = new DefaultRequestHandlers();
-        server = new DaggerNettyServer(8123, requestHandlers);
+        daggerModule = new DefaultDaggerModule();
+        server = new DaggerNettyServer(8123, daggerModule);
         server.start();
     }
 
@@ -38,8 +40,8 @@ public class DaggerNettyServerTest {
     public void test() throws Exception {
         on(get("/hello", new Action() {
             @Override
-            public Result execute() {
-                return new Result() {
+            public Reaction execute() {
+                return new Reaction() {
                     @Override
                     public void applyTo(Response response) {
                         response.write("Hello world");
@@ -50,16 +52,20 @@ public class DaggerNettyServerTest {
             }
         }));
 
-        HttpClient client = new DefaultHttpClient();
-        HttpResponse response = client.execute(new HttpGet("http://localhost:8123/hello"));
+        HttpResponse response = request("/hello");
 
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertEquals("Hello world", IOUtils.toString(response.getEntity().getContent()));
         assertEquals("text/plain", response.getEntity().getContentType().getValue());
     }
 
+    private HttpResponse request(String uri) throws IOException {
+        HttpClient client = new DefaultHttpClient();
+        return client.execute(new HttpGet("http://localhost:8123" + uri));
+    }
+
     private void on(RequestHandler requestHandler) {
-        requestHandlers.add(requestHandler);
+        daggerModule.add(requestHandler);
     }
 
     private RequestHandler get(String resourceName, Action action) {

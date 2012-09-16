@@ -1,6 +1,6 @@
 package dagger.results;
 
-import dagger.NotImplementedYet;
+import dagger.lang.NotImplementedYet;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 
