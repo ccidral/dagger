@@ -22,12 +22,12 @@ import static junit.framework.Assert.assertEquals;
 public class DaggerNettyServerTest {
 
     private DaggerServer server;
-    private DaggerModule daggerModule;
+    private DaggerModule module;
 
     @Before
     public void setUp() throws Exception {
-        daggerModule = new DefaultDaggerModule();
-        server = new DaggerNettyServer(8123, daggerModule);
+        module = new DefaultDaggerModule();
+        server = new DaggerNettyServer(8123, module);
         server.start();
     }
 
@@ -65,7 +65,7 @@ public class DaggerNettyServerTest {
     }
 
     private void on(RequestHandler requestHandler) {
-        daggerModule.add(requestHandler);
+        module.add(requestHandler);
     }
 
     private RequestHandler get(String resourceName, Action action) {
