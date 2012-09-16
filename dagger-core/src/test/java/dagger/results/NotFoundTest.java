@@ -28,7 +28,7 @@ public class NotFoundTest {
     @Test
     public void testWriteNotFoundOnResponseOutputStream() {
         notFound.applyTo(response);
-        assertEquals("404 - Not found", response.getWrittenText());
+        assertEquals("404 - Not found", response.getOutputAsString());
     }
 
 }

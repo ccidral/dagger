@@ -44,7 +44,11 @@ public class DaggerNettyServerTest {
                 return new Reaction() {
                     @Override
                     public void applyTo(Response response) {
-                        response.write("Hello world");
+                        try {
+                            response.getOutputStream().write("Hello world".getBytes());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         response.setStatusCode(StatusCode.OK);
                         response.setContentType("text/plain");
                     }

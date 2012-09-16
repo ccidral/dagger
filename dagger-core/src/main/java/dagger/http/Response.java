@@ -1,10 +1,12 @@
 package dagger.http;
 
+import java.io.OutputStream;
+
 public interface Response {
 
-    void setStatusCode(StatusCode statusCode);
+    OutputStream getOutputStream();
 
-    void write(String text);
+    void setStatusCode(StatusCode statusCode);
 
     void setContentType(String contentType);
 

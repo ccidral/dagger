@@ -25,12 +25,12 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
     @Override
     public void messageReceived(ChannelHandlerContext context, Object msg) throws Exception {
-        Request request = new NettyHttpRequestAdapter((HttpRequest) msg);
+        Request request = new NettyRequest((HttpRequest) msg);
         RequestHandler requestHandler = daggerModule.getHandlerFor(request);
         Reaction reaction = requestHandler.handle(request);
 
         HttpResponse nettyHttpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
-        Response response = new NettyHttpResponseAdapter(nettyHttpResponse);
+        Response response = new NettyResponse(nettyHttpResponse);
         reaction.applyTo(response);
 
         nettyHttpResponse.setHeader(CONTENT_LENGTH, nettyHttpResponse.getContent().readableBytes());

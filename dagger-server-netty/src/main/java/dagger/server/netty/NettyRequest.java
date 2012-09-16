@@ -3,11 +3,11 @@ package dagger.server.netty;
 import dagger.http.Request;
 import io.netty.handler.codec.http.HttpRequest;
 
-public class NettyHttpRequestAdapter implements Request {
+public class NettyRequest implements Request {
 
     private final HttpRequest request;
 
-    public NettyHttpRequestAdapter(HttpRequest request) {
+    public NettyRequest(HttpRequest request) {
         this.request = request;
     }
 

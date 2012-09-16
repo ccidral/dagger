@@ -9,12 +9,15 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-public class NettyHttpResponseAdapter implements Response {
+import java.io.IOException;
+import java.io.OutputStream;
+
+public class NettyResponse implements Response {
 
     private final HttpResponse response;
     private final ByteBuf buffer;
 
-    public NettyHttpResponseAdapter(HttpResponse response) {
+    public NettyResponse(HttpResponse response) {
         this.response = response;
         this.buffer = Unpooled.buffer();
 
@@ -27,13 +30,18 @@ public class NettyHttpResponseAdapter implements Response {
     }
 
     @Override
-    public void write(String text) {
-        buffer.writeBytes(text.getBytes());
+    public void setContentType(String contentType) {
+        response.setHeader(CONTENT_TYPE, contentType);
     }
 
     @Override
-    public void setContentType(String contentType) {
-        response.setHeader(CONTENT_TYPE, contentType);
+    public OutputStream getOutputStream() {
+        return new OutputStream() {
+            @Override
+            public void write(int oneByte) throws IOException {
+                buffer.writeByte(oneByte);
+            }
+        };
     }
 
 }

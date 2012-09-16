@@ -1,34 +1,29 @@
-package dagger.results;
+package dagger.reactions.view.freemarker;
 
-import dagger.lang.NotImplementedYet;
 import dagger.http.Response;
 import dagger.http.StatusCode;
+import dagger.lang.NotImplementedYet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 public class MockResponse implements Response {
 
-    private StatusCode statusCode;
     private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-    @Override
-    public void setStatusCode(StatusCode statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    @Override
-    public void setContentType(String contentType) {
-        throw new NotImplementedYet();
-    }
 
     @Override
     public OutputStream getOutputStream() {
         return outputStream;
     }
 
-    public StatusCode getStatusCode() {
-        return statusCode;
+    @Override
+    public void setStatusCode(StatusCode statusCode) {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public void setContentType(String contentType) {
+        throw new NotImplementedYet();
     }
 
     public String getOutputAsString() {

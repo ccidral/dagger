@@ -16,7 +16,7 @@ public class OkTest {
         reaction.applyTo(response);
 
         assertEquals(StatusCode.OK, response.getStatusCode());
-        assertEquals("Some text", response.getWrittenText());
+        assertEquals("Some text", response.getOutputAsString());
     }
 
 }
