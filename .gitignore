@@ -1,10 +1,9 @@
 dagger-core/dagger-core.iml
 dagger-core/target/
-dagger-servlet3/dagger-servlet3.iml
-dagger-servlet3/target/
+dagger-server-netty/dagger-server-netty.iml
+dagger-server-netty/target/
+dagger-server/dagger-server.iml
+dagger-server/target/
 dagger.iml
 dagger.ipr
 dagger.iws
-dagger-servlet3-sample/dagger-servlet3-sample.iml
-dagger-servlet3-sample/target/
-
