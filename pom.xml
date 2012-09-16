@@ -33,8 +33,10 @@
     <modules>
         <module>dagger-core</module>
 	<module>dagger-server-netty</module>
+<!--
         <module>dagger-servlet3</module>
         <module>dagger-servlet3-sample</module>
+-->
     </modules>
 
 </project>
