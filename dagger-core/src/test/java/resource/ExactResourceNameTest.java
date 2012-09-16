@@ -1,4 +1,4 @@
-package dagger.resourcematchers;
+package resource;
 
 import dagger.ResourceName;
 import dagger.resource.ExactResourceName;

@@ -1,4 +1,4 @@
-package dagger.results;
+package dagger.reactions;
 
 import dagger.lang.NotImplementedYet;
 import dagger.http.Response;

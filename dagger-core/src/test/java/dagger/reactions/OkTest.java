@@ -1,8 +1,7 @@
-package dagger.results;
+package dagger.reactions;
 
 import dagger.Reaction;
 import dagger.http.StatusCode;
-import dagger.reactions.Ok;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

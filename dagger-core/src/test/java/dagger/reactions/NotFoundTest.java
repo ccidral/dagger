@@ -1,8 +1,7 @@
-package dagger.results;
+package dagger.reactions;
 
 import dagger.Reaction;
 import dagger.http.StatusCode;
-import dagger.reactions.NotFound;
 import org.junit.Before;
 import org.junit.Test;
 
