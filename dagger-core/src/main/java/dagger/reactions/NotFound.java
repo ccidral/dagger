@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class NotFound implements Reaction {
 
-    public void applyTo(Response response) {
+    public void execute(Response response) {
         response.setStatusCode(StatusCode.NOT_FOUND);
         try {
             response.getOutputStream().write("404 - Not found".getBytes());

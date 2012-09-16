@@ -92,7 +92,7 @@ public class GetTest {
 
     private class MockReaction implements Reaction {
 
-        public void applyTo(Response response) {
+        public void execute(Response response) {
         }
 
     }

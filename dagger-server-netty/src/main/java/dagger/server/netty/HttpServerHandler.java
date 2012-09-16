@@ -31,7 +31,7 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
         HttpResponse nettyHttpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
         Response response = new NettyResponse(nettyHttpResponse);
-        reaction.applyTo(response);
+        reaction.execute(response);
 
         nettyHttpResponse.setHeader(CONTENT_LENGTH, nettyHttpResponse.getContent().readableBytes());
         context.write(nettyHttpResponse);

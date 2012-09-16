@@ -33,7 +33,7 @@ public class RenderView implements Reaction {
     }
 
     @Override
-    public void applyTo(Response response) {
+    public void execute(Response response) {
         Template template = getTemplate();
         Map<String, Object> modelMap = getModelMap();
         Writer writer = new OutputStreamWriter(response.getOutputStream());

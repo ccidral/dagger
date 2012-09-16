@@ -15,7 +15,7 @@ public class Ok implements Reaction {
     }
 
     @Override
-    public void applyTo(Response response) {
+    public void execute(Response response) {
         response.setStatusCode(StatusCode.OK);
         try {
             response.getOutputStream().write(text.getBytes());

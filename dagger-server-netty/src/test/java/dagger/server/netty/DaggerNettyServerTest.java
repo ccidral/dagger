@@ -43,7 +43,7 @@ public class DaggerNettyServerTest {
             public Reaction execute() {
                 return new Reaction() {
                     @Override
-                    public void applyTo(Response response) {
+                    public void execute(Response response) {
                         try {
                             response.getOutputStream().write("Hello world".getBytes());
                         } catch (IOException e) {

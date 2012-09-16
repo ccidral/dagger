@@ -12,7 +12,7 @@ public class OkTest {
     public void test() {
         Reaction reaction = new Ok("Some text");
         MockResponse response = new MockResponse();
-        reaction.applyTo(response);
+        reaction.execute(response);
 
         assertEquals(StatusCode.OK, response.getStatusCode());
         assertEquals("Some text", response.getOutputAsString());
