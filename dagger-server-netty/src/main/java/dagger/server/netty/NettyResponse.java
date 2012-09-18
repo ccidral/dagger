@@ -25,8 +25,18 @@ public class NettyResponse implements Response {
     }
 
     @Override
+    public StatusCode getStatusCode() {
+        return StatusCode.get(response.getStatus().getCode());
+    }
+
+    @Override
     public void setStatusCode(StatusCode statusCode) {
         response.setStatus(HttpResponseStatus.valueOf(statusCode.getNumber()));
+    }
+
+    @Override
+    public String getContentType() {
+        return response.getHeader(CONTENT_TYPE);
     }
 
     @Override

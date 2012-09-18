@@ -6,7 +6,11 @@ public interface Response {
 
     OutputStream getOutputStream();
 
+    StatusCode getStatusCode();
+
     void setStatusCode(StatusCode statusCode);
+
+    String getContentType();
 
     void setContentType(String contentType);
 

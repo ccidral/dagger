@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpTransferEncoding;
 import io.netty.handler.codec.http.HttpVersion;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,7 @@ class MockNettyHttpResponse implements HttpResponse {
 
     private ByteBuf byteBuf;
     private HttpResponseStatus httpResponseStatus;
+    private Map headers = new HashMap();
 
     public String getWrittenText() {
         return new String(byteBuf.array(), 0, byteBuf.readableBytes());
@@ -40,13 +42,21 @@ class MockNettyHttpResponse implements HttpResponse {
         this.httpResponseStatus = httpResponseStatus;
     }
 
-
-    // ~~~ NOT IMPLEMENTED YET ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-
     @Override
     public String getHeader(String s) {
-        throw new NotImplementedYet();
+        if(headers.containsKey(s))
+            return headers.get(s).toString();
+
+        return null;
     }
+
+    @Override
+    public void setHeader(String s, Object o) {
+        headers.put(s, o);
+    }
+
+
+    // ~~~ NOT IMPLEMENTED YET ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
     @Override
     public List<String> getHeaders(String s) {
@@ -80,11 +90,6 @@ class MockNettyHttpResponse implements HttpResponse {
 
     @Override
     public void addHeader(String s, Object o) {
-        throw new NotImplementedYet();
-    }
-
-    @Override
-    public void setHeader(String s, Object o) {
         throw new NotImplementedYet();
     }
 

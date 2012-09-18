@@ -17,7 +17,17 @@ public class MockResponse implements Response {
     }
 
     @Override
+    public StatusCode getStatusCode() {
+        throw new NotImplementedYet();
+    }
+
+    @Override
     public void setStatusCode(StatusCode statusCode) {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public String getContentType() {
         throw new NotImplementedYet();
     }
 

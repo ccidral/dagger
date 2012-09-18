@@ -1,4 +1,4 @@
-package dagger.reactions;
+package dagger.mock;
 
 import dagger.lang.NotImplementedYet;
 import dagger.http.Response;
@@ -11,6 +11,7 @@ public class MockResponse implements Response {
 
     private StatusCode statusCode;
     private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private String contentType;
 
     @Override
     public void setStatusCode(StatusCode statusCode) {
@@ -18,8 +19,13 @@ public class MockResponse implements Response {
     }
 
     @Override
+    public String getContentType() {
+        return contentType;
+    }
+
+    @Override
     public void setContentType(String contentType) {
-        throw new NotImplementedYet();
+        this.contentType = contentType;
     }
 
     @Override

@@ -8,10 +8,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class NettyResponseTest {
 
@@ -26,30 +24,41 @@ public class NettyResponseTest {
 
     @Test
     public void testOutputStreamIsNotNull() throws IOException {
-        assertThat(response.getOutputStream(), is(notNullValue()));
+        assertNotNull(response.getOutputStream());
     }
 
     @Test
     public void testWriteToOutputStream() throws IOException {
         response.getOutputStream().write("hello world".getBytes());
 
-        assertThat(mockNettyHttpResponse.getContent(), is(notNullValue()));
-        assertThat(mockNettyHttpResponse.getWrittenText(), equalTo("hello world"));
+        assertNotNull(mockNettyHttpResponse.getContent());
+        assertEquals("hello world", mockNettyHttpResponse.getWrittenText());
     }
 
     @Test
     public void testSetStatusCode() {
         response.setStatusCode(StatusCode.OK);
 
-        assertThat(mockNettyHttpResponse.getStatus(), is(notNullValue()));
-        assertThat(mockNettyHttpResponse.getStatus().getCode(), equalTo(StatusCode.OK.getNumber()));
+        assertNotNull(mockNettyHttpResponse.getStatus());
+        assertEquals(StatusCode.OK.getNumber(), mockNettyHttpResponse.getStatus().getCode());
+    }
+
+    @Test
+    public void testGetStatusCode() {
+        response.setStatusCode(StatusCode.NOT_FOUND);
+        assertEquals(StatusCode.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     public void testSetContentType() {
         response.setContentType("text/html");
+        assertEquals("text/html", mockNettyHttpResponse.getHeader(HttpHeaders.Names.CONTENT_TYPE));
+    }
 
-        assertThat(mockNettyHttpResponse.getHeader(HttpHeaders.Names.CONTENT_TYPE), equalTo("text/html"));
+    @Test
+    public void testGetContentType() {
+        response.setContentType("foo/bar");
+        assertEquals("foo/bar", response.getContentType());
     }
 
 }
