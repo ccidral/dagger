@@ -5,7 +5,7 @@ import dagger.DaggerModule;
 import dagger.DefaultDaggerModule;
 import dagger.Reaction;
 import dagger.handlers.Get;
-import dagger.reactions.Ok;
+import dagger.reactions.StaticFile;
 import dagger.resource.ExactResourceName;
 import dagger.server.DaggerServer;
 import dagger.server.netty.DaggerNettyServer;
@@ -16,7 +16,7 @@ public class Main {
         DaggerModule module = new DefaultDaggerModule();
         module.add(new Get(new ExactResourceName("/"), new Action() {
             public Reaction execute() {
-                return new Ok("index");
+                return new StaticFile("index.html", "text/html");
             }
         }));
 
