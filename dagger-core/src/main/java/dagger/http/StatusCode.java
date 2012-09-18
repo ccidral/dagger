@@ -15,4 +15,11 @@ public enum StatusCode {
         return number;
     }
 
+    public static StatusCode get(int number) {
+        for(StatusCode statusCode : StatusCode.values())
+            if(statusCode.getNumber() == number)
+                return statusCode;
+
+        throw new IllegalArgumentException("Unknown status code: " + number);
+    }
 }
