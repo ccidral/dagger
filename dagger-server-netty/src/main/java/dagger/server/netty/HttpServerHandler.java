@@ -35,39 +35,6 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
         nettyHttpResponse.setHeader(CONTENT_LENGTH, nettyHttpResponse.getContent().readableBytes());
         context.write(nettyHttpResponse);
-
-
-
-        //HttpRequest request = (HttpRequest) msg;
-        //StringBuilder buf = new StringBuilder();
-        //buf.append("Hello world");
-        //writeResponse(request, context, buf);
-    }
-    /*
-    private void writeResponse(HttpRequest request, ChannelHandlerContext ctx, StringBuilder buf) {
-        //boolean keepAlive = isKeepAlive(request);
-
-        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
-        response.setContent(Unpooled.copiedBuffer(buf.toString(), CharsetUtil.UTF_8));
-        response.setHeader(CONTENT_LENGTH, response.getContent().readableBytes());
-        //response.setHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
-
-        //if (keepAlive) {
-
-        //    response.setHeader(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-        //}
-
-        ctx.write(response);
-
-        //if (!keepAlive) {
-        //    future.addListener(ChannelFutureListener.CLOSE);
-        //}
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
-        ctx.close();
-    }
-     */
 }
