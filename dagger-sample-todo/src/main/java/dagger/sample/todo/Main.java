@@ -7,6 +7,7 @@ import dagger.Reaction;
 import dagger.handlers.Get;
 import dagger.http.Request;
 import dagger.lang.mime.DefaultMimeTypeGuesser;
+import dagger.lang.mime.MimeTypeGuesser;
 import dagger.reactions.StaticFile;
 import dagger.resource.AnyResourceName;
 import dagger.server.DaggerServer;
@@ -19,11 +20,13 @@ public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        DaggerModule module = new DefaultDaggerModule();
+        final DaggerModule module = new DefaultDaggerModule();
+        final MimeTypeGuesser mimeTypeGuesser = new DefaultMimeTypeGuesser();
+
         module.add(new Get(new AnyResourceName(), new Action() {
             public Reaction execute(Request request) {
                 logger.info("get "+request.getResource());
-                return new StaticFile(request.getResource(), new DefaultMimeTypeGuesser());
+                return new StaticFile(request.getResource(), mimeTypeGuesser);
             }
         }));
 
