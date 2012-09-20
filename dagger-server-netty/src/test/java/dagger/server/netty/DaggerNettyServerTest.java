@@ -23,11 +23,11 @@ import static junit.framework.Assert.assertEquals;
 public class DaggerNettyServerTest {
 
     private DaggerServer server;
-    private DaggerModule module;
+    private Module module;
 
     @Before
     public void setUp() throws Exception {
-        module = new DefaultDaggerModule();
+        module = new DefaultModule();
         server = new DaggerNettyServer(8123, module);
         server.start();
     }

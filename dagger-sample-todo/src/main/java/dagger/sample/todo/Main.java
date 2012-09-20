@@ -1,8 +1,8 @@
 package dagger.sample.todo;
 
 import dagger.Action;
-import dagger.DaggerModule;
-import dagger.DefaultDaggerModule;
+import dagger.Module;
+import dagger.DefaultModule;
 import dagger.Reaction;
 import dagger.handlers.Get;
 import dagger.http.Request;
@@ -20,7 +20,7 @@ public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        final DaggerModule module = new DefaultDaggerModule();
+        final Module module = new DefaultModule();
         final MimeTypeGuesser mimeTypeGuesser = new DefaultMimeTypeGuesser();
 
         module.add(new Get(new AnyResourceName(), new Action() {

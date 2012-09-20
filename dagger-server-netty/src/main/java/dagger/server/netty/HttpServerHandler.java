@@ -1,8 +1,8 @@
 package dagger.server.netty;
 
+import dagger.Module;
 import dagger.Reaction;
 import dagger.RequestHandler;
-import dagger.DaggerModule;
 import dagger.http.Request;
 import dagger.http.Response;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,16 +17,16 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Object> {
 
-    private final DaggerModule daggerModule;
+    private final Module module;
 
-    public HttpServerHandler(DaggerModule daggerModule) {
-        this.daggerModule = daggerModule;
+    public HttpServerHandler(Module module) {
+        this.module = module;
     }
 
     @Override
     public void messageReceived(ChannelHandlerContext context, Object msg) throws Exception {
         Request request = new NettyRequest((HttpRequest) msg);
-        RequestHandler requestHandler = daggerModule.getHandlerFor(request);
+        RequestHandler requestHandler = module.getHandlerFor(request);
         Reaction reaction = requestHandler.handle(request);
 
         HttpResponse nettyHttpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
