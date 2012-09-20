@@ -11,7 +11,7 @@ public class GetTest {
 
     @Test
     public void testHandlesGetMethodOnly() {
-        RequestHandler get = new Get(pattern("/foo"), new MockAction());
+        RequestHandler get = new Get(resource("/foo"), new MockAction());
         assertTrue("Should handle GET", get.canHandle(new MockRequest("GET", "/foo")));
         assertFalse("Should not handle POST", get.canHandle(new MockRequest("POST", "/foo")));
         assertFalse("Should not handle PUT", get.canHandle(new MockRequest("PUT", "/foo")));
@@ -20,7 +20,7 @@ public class GetTest {
 
     @Test
     public void testDoesNotHandleDifferentResource() {
-        RequestHandler get = new Get(pattern("/foo"), new MockAction());
+        RequestHandler get = new Get(resource("/foo"), new MockAction());
         assertFalse("Should not handle resource /bar", get.canHandle(new MockRequest("GET", "/bar")));
     }
 
@@ -28,7 +28,7 @@ public class GetTest {
     public void testHandleRequest() {
         Reaction expectedReaction = new MockReaction();
         MockAction action = new MockAction(expectedReaction);
-        RequestHandler get = new Get(pattern("/foo"), action);
+        RequestHandler get = new Get(resource("/foo"), action);
 
         Request request = new MockRequest("GET", "/foo");
         Reaction actualReaction = get.handle(request);
@@ -36,7 +36,7 @@ public class GetTest {
         assertSame(expectedReaction, actualReaction);
     }
 
-    private ResourceName pattern(String string) {
+    private ResourceName resource(String string) {
         return new ResourceEqualsTo(string);
     }
 
