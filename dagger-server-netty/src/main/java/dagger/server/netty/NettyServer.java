@@ -1,7 +1,7 @@
 package dagger.server.netty;
 
 import dagger.Module;
-import dagger.server.DaggerServer;
+import dagger.server.Server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.socket.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 
-public class DaggerNettyServer implements DaggerServer {
+public class NettyServer implements Server {
 
     private final int port;
     private final Module module;
@@ -18,7 +18,7 @@ public class DaggerNettyServer implements DaggerServer {
 
     private ServerBootstrap serverBootstrap;
 
-    public DaggerNettyServer(int port, Module module) {
+    public NettyServer(int port, Module module) {
         this.port = port;
         this.module = module;
         this.logger = LoggerFactory.getLogger(getClass());

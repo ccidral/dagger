@@ -1,6 +1,6 @@
 package dagger.server;
 
-public interface DaggerServer {
+public interface Server {
 
     void start();
 

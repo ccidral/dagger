@@ -10,8 +10,8 @@ import dagger.lang.mime.DefaultMimeTypeGuesser;
 import dagger.lang.mime.MimeTypeGuesser;
 import dagger.reactions.StaticFile;
 import dagger.resource.AnyResourceName;
-import dagger.server.DaggerServer;
-import dagger.server.netty.DaggerNettyServer;
+import dagger.server.Server;
+import dagger.server.netty.NettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public class Main {
             }
         }));
 
-        DaggerServer server = new DaggerNettyServer(8080, module);
+        Server server = new NettyServer(8080, module);
         server.start();
     }
 

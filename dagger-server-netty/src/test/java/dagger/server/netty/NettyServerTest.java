@@ -7,7 +7,7 @@ import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.module.DefaultModule;
 import dagger.resource.ExactResourceName;
-import dagger.server.DaggerServer;
+import dagger.server.Server;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,15 +21,15 @@ import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
 
-public class DaggerNettyServerTest {
+public class NettyServerTest {
 
-    private DaggerServer server;
+    private Server server;
     private Module module;
 
     @Before
     public void setUp() throws Exception {
         module = new DefaultModule();
-        server = new DaggerNettyServer(8123, module);
+        server = new NettyServer(8123, module);
         server.start();
     }
 
