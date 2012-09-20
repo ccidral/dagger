@@ -25,8 +25,8 @@ public class Main {
 
         module.add(new Get(new AnyResourceName(), new Action() {
             public Reaction execute(Request request) {
-                logger.info("get "+request.getResource());
-                return new StaticFile(request.getResource(), mimeTypeGuesser);
+                logger.info("get "+request.getURI());
+                return new StaticFile(request.getURI(), mimeTypeGuesser);
             }
         }));
 

@@ -17,7 +17,7 @@ public class Get implements RequestHandler {
         if(!request.getMethod().equals("GET"))
             return false;
 
-        return resourceName.matches(request.getResource());
+        return resourceName.matches(request.getURI());
     }
 
     public Reaction handle(Request request) {

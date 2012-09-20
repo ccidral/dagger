@@ -12,7 +12,7 @@ public class NettyRequest implements Request {
     }
 
     @Override
-    public String getResource() {
+    public String getURI() {
         return request.getUri();
     }
 

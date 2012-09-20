@@ -55,7 +55,7 @@ public class DaggerModuleTest {
         }
 
         public boolean canHandle(Request request) {
-            return resource.equals(request.getResource());
+            return resource.equals(request.getURI());
         }
 
         public Reaction handle(Request request) {
@@ -77,7 +77,7 @@ public class DaggerModuleTest {
         }
 
         public boolean canHandle(Request request) {
-            return request.getResource().startsWith(resource);
+            return request.getURI().startsWith(resource);
         }
 
         public Reaction handle(Request request) {
@@ -93,14 +93,14 @@ public class DaggerModuleTest {
 
     private static class MockRequest implements Request {
 
-        private final String resource;
+        private final String uri;
 
-        public MockRequest(String resource) {
-            this.resource = resource;
+        public MockRequest(String uri) {
+            this.uri = uri;
         }
 
-        public String getResource() {
-            return resource;
+        public String getURI() {
+            return uri;
         }
 
         public String getMethod() {

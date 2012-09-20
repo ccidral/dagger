@@ -43,16 +43,16 @@ public class GetTest {
     private static class MockRequest implements Request {
 
         private final String method;
-        private final String resource;
+        private final String uri;
 
-        public MockRequest(String method, String resource) {
+        public MockRequest(String method, String uri) {
             this.method = method;
-            this.resource = resource;
+            this.uri = uri;
         }
 
         @Override
-        public String getResource() {
-            return resource;
+        public String getURI() {
+            return uri;
         }
 
         @Override

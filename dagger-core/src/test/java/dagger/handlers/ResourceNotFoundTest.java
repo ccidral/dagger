@@ -27,7 +27,7 @@ public class ResourceNotFoundTest {
 
     private static class MockRequest implements Request {
 
-        public String getResource() {
+        public String getURI() {
             return null;
         }
 
