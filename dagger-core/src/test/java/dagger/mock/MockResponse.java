@@ -5,12 +5,13 @@ import dagger.http.Response;
 import dagger.http.StatusCode;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class MockResponse implements Response {
 
     private StatusCode statusCode;
-    private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private InMemoryOutputStream outputStream = new InMemoryOutputStream();
     private String contentType;
 
     @Override
@@ -39,6 +40,22 @@ public class MockResponse implements Response {
 
     public String getOutputAsString() {
         return new String(outputStream.toByteArray());
+    }
+
+    public boolean isOutputStreamClosed() {
+        return outputStream.isClosed;
+    }
+
+    private static class InMemoryOutputStream extends ByteArrayOutputStream {
+
+        public boolean isClosed;
+
+        @Override
+        public void close() throws IOException {
+            super.close();
+            this.isClosed = true;
+        }
+
     }
 
 }
