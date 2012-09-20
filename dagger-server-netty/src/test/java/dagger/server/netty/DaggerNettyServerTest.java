@@ -5,6 +5,7 @@ import dagger.handlers.Get;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
+import dagger.module.DefaultModule;
 import dagger.resource.ExactResourceName;
 import dagger.server.DaggerServer;
 import org.apache.commons.io.IOUtils;

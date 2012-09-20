@@ -11,7 +11,7 @@
 
         <init-param>
             <param-name>dagger.module.class</param-name>
-            <param-value>dagger.DefaultModule</param-value>
+            <param-value>dagger.module.DefaultModule</param-value>
         </init-param>
 
         <init-param>

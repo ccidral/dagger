@@ -1,5 +1,7 @@
-package dagger;
+package dagger.module;
 
+import dagger.Module;
+import dagger.RequestHandler;
 import dagger.handlers.ResourceNotFound;
 import dagger.http.Request;
 

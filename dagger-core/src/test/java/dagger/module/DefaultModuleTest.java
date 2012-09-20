@@ -1,7 +1,11 @@
-package dagger;
+package dagger.module;
 
+import dagger.Module;
+import dagger.Reaction;
+import dagger.RequestHandler;
 import dagger.handlers.ResourceNotFound;
 import dagger.http.Request;
+import dagger.module.DefaultModule;
 import org.junit.Before;
 import org.junit.Test;
 

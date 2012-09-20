@@ -2,7 +2,7 @@ package dagger.sample.todo;
 
 import dagger.Action;
 import dagger.Module;
-import dagger.DefaultModule;
+import dagger.module.DefaultModule;
 import dagger.Reaction;
 import dagger.handlers.Get;
 import dagger.http.Request;
