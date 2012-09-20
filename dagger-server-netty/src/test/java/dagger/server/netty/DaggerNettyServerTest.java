@@ -2,6 +2,7 @@ package dagger.server.netty;
 
 import dagger.*;
 import dagger.handlers.Get;
+import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.resource.ExactResourceName;
@@ -40,7 +41,7 @@ public class DaggerNettyServerTest {
     public void test() throws Exception {
         on(get("/hello", new Action() {
             @Override
-            public Reaction execute() {
+            public Reaction execute(Request request) {
                 return new Reaction() {
                     @Override
                     public void execute(Response response) {

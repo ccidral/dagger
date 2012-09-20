@@ -21,7 +21,7 @@ public class Get implements RequestHandler {
     }
 
     public Reaction handle(Request request) {
-        return action.execute();
+        return action.execute(request);
     }
 
 }

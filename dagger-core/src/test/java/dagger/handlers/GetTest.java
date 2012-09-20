@@ -27,11 +27,12 @@ public class GetTest {
     @Test
     public void testHandleRequest() {
         Reaction expectedReaction = new MockReaction();
-        Action action = new MockAction(expectedReaction);
+        MockAction action = new MockAction(expectedReaction);
         RequestHandler get = new Get(pattern("/foo"), action);
 
         Request request = new MockRequest("GET", "/foo");
         Reaction actualReaction = get.handle(request);
+        assertSame(request, action.receivedRequest);
         assertSame(expectedReaction, actualReaction);
     }
 
@@ -49,10 +50,12 @@ public class GetTest {
             this.resource = resource;
         }
 
+        @Override
         public String getResource() {
             return resource;
         }
 
+        @Override
         public String getMethod() {
             return method;
         }
@@ -67,6 +70,7 @@ public class GetTest {
             this.string = string;
         }
 
+        @Override
         public boolean matches(String uri) {
             return uri.equals(string);
         }
@@ -76,6 +80,7 @@ public class GetTest {
     private class MockAction implements Action {
 
         private final Reaction reaction;
+        public Request receivedRequest;
 
         public MockAction() {
             this(null);
@@ -85,13 +90,17 @@ public class GetTest {
             this.reaction = reaction;
         }
 
-        public Reaction execute() {
+        @Override
+        public Reaction execute(Request request) {
+            this.receivedRequest = request;
             return reaction;
         }
+
     }
 
     private class MockReaction implements Reaction {
 
+        @Override
         public void execute(Response response) {
         }
 

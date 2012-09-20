@@ -1,7 +1,9 @@
 package dagger;
 
+import dagger.http.Request;
+
 public interface Action {
 
-    Reaction execute();
+    Reaction execute(Request request);
 
 }
