@@ -5,18 +5,25 @@ import dagger.DaggerModule;
 import dagger.DefaultDaggerModule;
 import dagger.Reaction;
 import dagger.handlers.Get;
+import dagger.http.Request;
+import dagger.lang.mime.DefaultMimeTypeGuesser;
 import dagger.reactions.StaticFile;
-import dagger.resource.ExactResourceName;
+import dagger.resource.AnyResourceName;
 import dagger.server.DaggerServer;
 import dagger.server.netty.DaggerNettyServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
 
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
         DaggerModule module = new DefaultDaggerModule();
-        module.add(new Get(new ExactResourceName("/"), new Action() {
-            public Reaction execute() {
-                return new StaticFile("index.html", "text/html");
+        module.add(new Get(new AnyResourceName(), new Action() {
+            public Reaction execute(Request request) {
+                logger.info("get "+request.getResource());
+                return new StaticFile(request.getResource(), new DefaultMimeTypeGuesser());
             }
         }));
 
