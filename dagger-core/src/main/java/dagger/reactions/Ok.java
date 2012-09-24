@@ -8,17 +8,25 @@ import java.io.IOException;
 
 public class Ok implements Reaction {
 
-    private final String text;
+    private final String content;
+    private final String contentType;
 
-    public Ok(String text) {
-        this.text = text;
+    public Ok(String content) {
+        this(content, "text/plain");
+    }
+
+    public Ok(String content, String contentType) {
+        this.content = content;
+        this.contentType = contentType;
     }
 
     @Override
     public void execute(Response response) {
         response.setStatusCode(StatusCode.OK);
+        response.setContentType(contentType);
+
         try {
-            response.getOutputStream().write(text.getBytes());
+            response.getOutputStream().write(content.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
