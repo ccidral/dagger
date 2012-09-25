@@ -18,6 +18,10 @@ public class NettyServer implements Server {
 
     private ServerBootstrap serverBootstrap;
 
+    public NettyServer(Module module) {
+        this(8080, module);
+    }
+
     public NettyServer(int port, Module module) {
         this.port = port;
         this.module = module;
