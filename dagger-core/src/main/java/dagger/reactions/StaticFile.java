@@ -17,13 +17,16 @@ public class StaticFile implements Reaction {
     private final MimeTypeGuesser mimeTypeGuesser;
 
     public StaticFile(String path, MimeTypeGuesser mimeTypeGuesser) {
+        if(!path.startsWith("/"))
+            throw new IllegalArgumentException("Path must be absolute (must start with slash): " + path);
+
         this.path = path;
         this.mimeTypeGuesser = mimeTypeGuesser;
     }
 
     @Override
     public void execute(Response response) {
-        URL url = getClass().getResource("/view/static/" + path);
+        URL url = getClass().getResource("/view/static" + path);
 
         if(url != null && Files.isFile(url)) {
             String contentType = mimeTypeGuesser.guessMimeType(url);
