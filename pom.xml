@@ -44,6 +44,7 @@
         <module>dagger-core</module>
         <module>dagger-server</module>
         <module>dagger-server-netty</module>
+        <module>dagger-server-netty-dev</module>
         <module>dagger-view-freemarker</module>
         <module>dagger-sample-todo</module>
     </modules>
