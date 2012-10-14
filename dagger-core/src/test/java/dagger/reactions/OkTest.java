@@ -10,7 +10,7 @@ import static junit.framework.Assert.assertEquals;
 public class OkTest {
 
     @Test
-    public void testDefaultContentType() {
+    public void testDefaultContentType() throws Exception {
         Reaction reaction = new Ok("Some text");
         MockResponse response = new MockResponse();
         reaction.execute(response);
@@ -21,7 +21,7 @@ public class OkTest {
     }
 
     @Test
-    public void testWithProvidedContentType() {
+    public void testWithProvidedContentType() throws Exception {
         Reaction reaction = new Ok("{}", "application/json");
         MockResponse response = new MockResponse();
         reaction.execute(response);

@@ -25,7 +25,7 @@ public class GetTest {
     }
 
     @Test
-    public void testHandleRequest() {
+    public void testHandleRequest() throws Exception {
         Reaction expectedReaction = new MockReaction();
         MockAction action = new MockAction(expectedReaction);
         RequestHandler get = new Get(resource("/foo"), action);

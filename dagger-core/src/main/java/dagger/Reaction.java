@@ -4,6 +4,6 @@ import dagger.http.Response;
 
 public interface Reaction {
 
-    void execute(Response response);
+    void execute(Response response) throws Exception;
 
 }

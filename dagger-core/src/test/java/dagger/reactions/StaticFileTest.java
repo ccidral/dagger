@@ -45,7 +45,7 @@ public class StaticFileTest {
     }
 
     @Test
-    public void testExistingFile() {
+    public void testExistingFile() throws Exception {
         URL fileUrl = getClass().getResource(RESOURCE_NAME);
         when(mimeTypeGuesser.guessMimeType(fileUrl)).thenReturn(CONTENT_TYPE);
 
@@ -68,14 +68,14 @@ public class StaticFileTest {
     }
 
     @Test
-    public void testFileNotFound() {
+    public void testFileNotFound() throws Exception {
         Reaction reaction = new StaticFile("/bogus.png", mimeTypeGuesser);
         reaction.execute(response);
         assertNotFound();
     }
 
     @Test
-    public void testDoNotMistakeDirectoryForFile() {
+    public void testDoNotMistakeDirectoryForFile() throws Exception {
         Reaction reaction = new StaticFile("/", mimeTypeGuesser);
         reaction.execute(response);
         assertNotFound();

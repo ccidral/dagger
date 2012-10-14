@@ -20,6 +20,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class NettyServerTest {
 
@@ -39,7 +40,7 @@ public class NettyServerTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void testSuccessfulRequest() throws Exception {
         on(get("/hello", new Action() {
             @Override
             public Reaction execute(Request request) {
@@ -63,6 +64,41 @@ public class NettyServerTest {
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertEquals("Hello world", IOUtils.toString(response.getEntity().getContent()));
         assertEquals("text/plain", response.getEntity().getContentType().getValue());
+    }
+
+    @Test(timeout = 2000)
+    public void testExceptionWhileHandlingRequest() throws Exception {
+        on(get("/hi", new Action() {
+            @Override
+            public Reaction execute(Request request) throws Exception {
+                throw new Exception();
+            }
+        }));
+
+        HttpResponse response = request("/hi");
+
+        assertNotNull(response);
+        assertEquals(500, response.getStatusLine().getStatusCode());
+    }
+
+    @Test(timeout = 2000)
+    public void testExceptionWhileExecutingReaction() throws Exception {
+        on(get("/hi", new Action() {
+            @Override
+            public Reaction execute(Request request) throws Exception {
+                return new Reaction() {
+                    @Override
+                    public void execute(Response response) throws Exception {
+                        throw new Exception();
+                    }
+                };
+            }
+        }));
+
+        HttpResponse response = request("/hi");
+
+        assertNotNull(response);
+        assertEquals(500, response.getStatusLine().getStatusCode());
     }
 
     private HttpResponse request(String uri) throws IOException {

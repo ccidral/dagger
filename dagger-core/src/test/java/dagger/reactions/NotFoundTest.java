@@ -20,13 +20,13 @@ public class NotFoundTest {
     }
 
     @Test
-    public void testStatusCodeIs404() {
+    public void testStatusCodeIs404() throws Exception {
         notFound.execute(response);
         assertEquals(StatusCode.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void testWriteNotFoundOnResponseOutputStream() {
+    public void testWriteNotFoundOnResponseOutputStream() throws Exception {
         notFound.execute(response);
         assertEquals("404 - Not found", response.getOutputAsString());
     }

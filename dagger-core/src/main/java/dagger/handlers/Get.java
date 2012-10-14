@@ -13,6 +13,7 @@ public class Get implements RequestHandler {
         this.action = action;
     }
 
+    @Override
     public boolean canHandle(Request request) {
         if(!request.getMethod().equals("GET"))
             return false;
@@ -20,7 +21,8 @@ public class Get implements RequestHandler {
         return resourceName.matches(request.getURI());
     }
 
-    public Reaction handle(Request request) {
+    @Override
+    public Reaction handle(Request request) throws Exception {
         return action.execute(request);
     }
 
