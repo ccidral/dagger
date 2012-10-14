@@ -13,12 +13,11 @@ public class DirectoryWithJarsClassLoader extends URLClassLoader {
 
     private static Logger logger = LoggerFactory.getLogger(DirectoryWithJarsClassLoader.class);
 
-    public DirectoryWithJarsClassLoader(String directory) throws MalformedURLException {
+    public DirectoryWithJarsClassLoader(File directory) throws MalformedURLException {
         super(urls(directory), new DelegateDaggerClassesToChildClassLoader());
     }
 
-    private static URL[] urls(String directoryPath) throws MalformedURLException {
-        File directory = new File(directoryPath);
+    private static URL[] urls(File directory) throws MalformedURLException {
         File[] jars = directory.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
