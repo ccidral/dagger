@@ -9,7 +9,7 @@ import static org.junit.Assert.assertThat;
 public class RenderViewTest {
 
     @Test
-    public void testWithSimpleModel() {
+    public void testWithSimpleModel() throws Exception {
         String model = "World";
         Reaction reaction = new RenderView("test-with-simple-model", model);
         MockResponse response = new MockResponse();
