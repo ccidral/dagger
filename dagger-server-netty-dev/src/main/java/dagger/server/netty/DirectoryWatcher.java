@@ -1,8 +1,5 @@
 package dagger.server.netty;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.file.*;
 import java.util.List;
 
@@ -12,7 +9,6 @@ public class DirectoryWatcher {
 
     private final WatchKey key;
     private final WatchService watchService;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public DirectoryWatcher(String directory) throws Throwable {
         Path dir = FileSystems.getDefault().getPath(directory);
