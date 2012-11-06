@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class DefaultModuleTest {
+public class ModuleTest {
 
     private Module module;
     private UriEqualsTo handler1;
