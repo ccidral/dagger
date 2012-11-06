@@ -3,66 +3,66 @@ package dagger.server.netty;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 
 public class DevelopmentServer {
 
     private static final Logger logger = LoggerFactory.getLogger(DevelopmentServer.class);
 
     public static void main(String[] args) throws Throwable {
-        String directory = args[0];
-        String moduleClassName = args[1];
+        String originalDirectory = args[0];
+        String moduleFactoryClassName = args[1];
 
-        DirectoryWatcher directoryWatcher = new DirectoryWatcher(directory);
-
+        DirectoryWatcher directoryWatcher = new DirectoryWatcher(originalDirectory);
         try {
             while(true) {
-                File tempDirectoryCopy = createTempDirectory();
-                FileUtils.copyDirectory(new File(directory), tempDirectoryCopy);
-                logger.info("Copied to temporary directory: {}", tempDirectoryCopy);
-
-                ClassLoader classLoader = new DirectoryWithJarsClassLoader(tempDirectoryCopy);
-                Class<?> moduleClass = classLoader.loadClass(moduleClassName);
-                Class<?> moduleInterface = classLoader.loadClass("dagger.Module");
-                Class<?> nettyServerClass = classLoader.loadClass("dagger.server.netty.NettyServer");
-
-                Object module = moduleClass.newInstance();
-                Object server = nettyServerClass.getConstructor(moduleInterface).newInstance(module);
-
-                nettyServerClass.getDeclaredMethod("start").invoke(server);
-
-                try {
-                    directoryWatcher.waitForChange();
-                    logger.info("Reloading server");
-                } finally {
-                    nettyServerClass.getDeclaredMethod("stop").invoke(server);
-                }
-
-                FileUtils.deleteDirectory(tempDirectoryCopy);
+                File temporaryDirectory = copyToTemporaryDirectory(originalDirectory);
+                ClassLoader classLoader = new DirectoryWithJarsClassLoader(temporaryDirectory);
+                runServerUntilSomeJarIsChanged(moduleFactoryClassName, classLoader, directoryWatcher);
+                FileUtils.deleteDirectory(temporaryDirectory);
             }
         } finally {
             directoryWatcher.stopWatching();
         }
+    }
 
+    private static File copyToTemporaryDirectory(String directory) throws IOException {
+        File tempDirectoryCopy = createTempDirectory();
+        FileUtils.copyDirectory(new File(directory), tempDirectoryCopy);
+        logger.info("Copied {} files from {} to {}", tempDirectoryCopy.list().length, directory, tempDirectoryCopy);
+        return tempDirectoryCopy;
+    }
+
+    private static void runServerUntilSomeJarIsChanged(String moduleFactoryClassName, ClassLoader classLoader, DirectoryWatcher jarDirectoryWatcher) throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InterruptedException {
+        Class<?> moduleFactoryClass = classLoader.loadClass(moduleFactoryClassName);
+        Class<?> moduleFactoryInterface = classLoader.loadClass("dagger.ModuleFactory");
+        Class<?> nettyServerClass = classLoader.loadClass("dagger.server.netty.NettyServer");
+
+        Object moduleFactory = moduleFactoryClass.newInstance();
+        Object module = moduleFactoryClass.getMethod("create").invoke(moduleFactory);
+        Object server = nettyServerClass.getConstructor(moduleFactoryInterface).newInstance(module);
+
+        nettyServerClass.getDeclaredMethod("start").invoke(server);
+
+        try {
+            jarDirectoryWatcher.waitForChange();
+            logger.info("Reloading server");
+        } finally {
+            nettyServerClass.getDeclaredMethod("stop").invoke(server);
+        }
     }
 
     public static File createTempDirectory() throws IOException {
-        final File temp;
+        final File tempDir = File.createTempFile("temp", Long.toString(System.nanoTime()));
 
-        temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
+        if(!tempDir.delete()) throw new IOException("Could not delete temp file: " + tempDir.getAbsolutePath());
+        if(!tempDir.mkdir()) throw new IOException("Could not create temp directory: " + tempDir.getAbsolutePath());
 
-        if (!(temp.delete())) {
-            throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
-        }
-
-        if (!(temp.mkdir())) {
-            throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
-        }
-
-        return (temp);
+        return tempDir;
     }
 
 }
