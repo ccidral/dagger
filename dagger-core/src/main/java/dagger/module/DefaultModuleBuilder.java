@@ -13,8 +13,8 @@ public class DefaultModuleBuilder implements ModuleBuilder {
     }
 
     @Override
-    public void get(String uri, Action action) {
-        RequestHandler get = requestHandlerFactory.createGet(uri, action);
+    public void get(String route, Action action) {
+        RequestHandler get = requestHandlerFactory.createGet(route, action);
         module.add(get);
     }
 
