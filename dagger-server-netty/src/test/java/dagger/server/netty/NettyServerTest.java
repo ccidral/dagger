@@ -6,7 +6,7 @@ import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.module.DefaultModule;
-import dagger.resource.ExactResourceName;
+import dagger.routes.ExactRoute;
 import dagger.server.Server;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -111,7 +111,7 @@ public class NettyServerTest {
     }
 
     private RequestHandler get(String resourceName, Action action) {
-        return new Get(new ExactResourceName(resourceName), action);
+        return new Get(new ExactRoute(resourceName), action);
     }
 
 }

@@ -15,13 +15,13 @@ import static org.junit.Assert.*;
 public class DefaultModuleTest {
 
     private Module module;
-    private ResourceEqualsTo handler1;
-    private ResourceStartsWith handler2;
+    private UriEqualsTo handler1;
+    private UriStartsWith handler2;
 
     @Before
     public void setUp() throws Exception {
-        handler1 = new ResourceEqualsTo("/foo/bar");
-        handler2 = new ResourceStartsWith("/foo");
+        handler1 = new UriEqualsTo("/foo/bar");
+        handler2 = new UriStartsWith("/foo");
 
         module = new DefaultModule();
         module.add(handler1);
@@ -51,16 +51,16 @@ public class DefaultModuleTest {
         assertSame(handler2, module.getHandlerFor(new MockRequest("/foo/bar/baz")));
     }
 
-    private static class ResourceEqualsTo implements RequestHandler {
+    private static class UriEqualsTo implements RequestHandler {
 
-        private final String resource;
+        private final String uri;
 
-        public ResourceEqualsTo(String resource) {
-            this.resource = resource;
+        public UriEqualsTo(String uri) {
+            this.uri = uri;
         }
 
         public boolean canHandle(Request request) {
-            return resource.equals(request.getURI());
+            return uri.equals(request.getURI());
         }
 
         public Reaction handle(Request request) {
@@ -69,20 +69,20 @@ public class DefaultModuleTest {
 
         @Override
         public String toString() {
-            return "resource path equals to "+ resource;
+            return "uri equals to "+ uri;
         }
     }
 
-    private static class ResourceStartsWith implements RequestHandler {
+    private static class UriStartsWith implements RequestHandler {
 
-        private final String resource;
+        private final String prefix;
 
-        public ResourceStartsWith(String resource) {
-            this.resource = resource;
+        public UriStartsWith(String prefix) {
+            this.prefix = prefix;
         }
 
         public boolean canHandle(Request request) {
-            return request.getURI().startsWith(resource);
+            return request.getURI().startsWith(prefix);
         }
 
         public Reaction handle(Request request) {
@@ -91,7 +91,7 @@ public class DefaultModuleTest {
 
         @Override
         public String toString() {
-            return "resource path starting with "+ resource;
+            return "uri starting with "+ prefix;
         }
 
     }

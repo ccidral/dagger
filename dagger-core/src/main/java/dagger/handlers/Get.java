@@ -5,11 +5,11 @@ import dagger.http.Request;
 
 public class Get implements RequestHandler {
 
-    private final ResourceName resourceName;
+    private final Route route;
     private final Action action;
 
-    public Get(ResourceName resourceName, Action action) {
-        this.resourceName = resourceName;
+    public Get(Route route, Action action) {
+        this.route = route;
         this.action = action;
     }
 
@@ -18,7 +18,7 @@ public class Get implements RequestHandler {
         if(!request.getMethod().equals("GET"))
             return false;
 
-        return resourceName.matches(request.getURI());
+        return route.matches(request.getURI());
     }
 
     @Override

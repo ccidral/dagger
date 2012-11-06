@@ -1,12 +1,12 @@
-package dagger.resource;
+package dagger.routes;
 
-import dagger.ResourceName;
+import dagger.Route;
 
-public class ExactResourceName implements ResourceName {
+public class ExactRoute implements Route {
 
     private final String resourceName;
 
-    public ExactResourceName(String resourceName) {
+    public ExactRoute(String resourceName) {
         this.resourceName = resourceName;
     }
 

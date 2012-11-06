@@ -9,7 +9,7 @@ import dagger.http.Request;
 import dagger.lang.mime.DefaultMimeTypeGuesser;
 import dagger.lang.mime.MimeTypeGuesser;
 import dagger.reactions.StaticFile;
-import dagger.resource.AnyResourceName;
+import dagger.routes.AnyRoute;
 import dagger.server.Server;
 import dagger.server.netty.NettyServer;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class Main {
         final Module module = new DefaultModule();
         final MimeTypeGuesser mimeTypeGuesser = new DefaultMimeTypeGuesser();
 
-        module.add(new Get(new AnyResourceName(), new Action() {
+        module.add(new Get(new AnyRoute(), new Action() {
             public Reaction execute(Request request) {
                 logger.info("get "+request.getURI());
                 return new StaticFile(request.getURI(), mimeTypeGuesser);

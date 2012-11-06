@@ -1,6 +1,6 @@
 package dagger;
 
-public interface ResourceName {
+public interface Route {
 
     boolean matches(String uri);
 
