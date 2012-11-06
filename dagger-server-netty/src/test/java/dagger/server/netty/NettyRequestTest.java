@@ -36,9 +36,9 @@ public class NettyRequestTest {
     }
 
     @Test
-    public void testQueryParameters() {
+    public void testParametersFromQueryString() {
         Request request = new NettyRequest(mockHttpRequest("/hello/world?fruit=apple&car=mustang"));
-        Map<String, String> queryParameters = request.getQueryParameters();
+        Map<String, String> queryParameters = request.getParameters();
 
         assertNotNull(queryParameters);
         assertEquals("apple", queryParameters.get("fruit"));

@@ -38,7 +38,7 @@ public class ResourceNotFoundTest {
         }
 
         @Override
-        public Map<String, String> getQueryParameters() {
+        public Map<String, String> getParameters() {
             return null;
         }
 

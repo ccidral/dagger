@@ -8,6 +8,6 @@ public interface Request {
 
     String getMethod();
 
-    Map<String, String> getQueryParameters();
+    Map<String, String> getParameters();
 
 }

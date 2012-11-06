@@ -29,7 +29,7 @@ public class NettyRequest implements Request {
     }
 
     @Override
-    public Map<String, String> getQueryParameters() {
+    public Map<String, String> getParameters() {
         return QueryString.fromUri(request.getUri()).map();
     }
 

@@ -63,7 +63,7 @@ public class GetTest {
         }
 
         @Override
-        public Map<String, String> getQueryParameters() {
+        public Map<String, String> getParameters() {
             return null;
         }
 
