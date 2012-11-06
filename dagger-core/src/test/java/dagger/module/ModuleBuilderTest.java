@@ -1,5 +1,7 @@
-package dagger;
+package dagger.module;
 
+import dagger.*;
+import dagger.module.DefaultModuleBuilder;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;

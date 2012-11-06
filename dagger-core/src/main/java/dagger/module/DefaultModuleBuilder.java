@@ -1,4 +1,6 @@
-package dagger;
+package dagger.module;
+
+import dagger.*;
 
 public class DefaultModuleBuilder implements ModuleBuilder {
 
