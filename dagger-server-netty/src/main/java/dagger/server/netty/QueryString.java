@@ -1,5 +1,6 @@
 package dagger.server.netty;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class QueryString {
     }
 
     public Map<String, String> map() {
-        return new HashMap<>(map);
+        return Collections.unmodifiableMap(map);
     }
 
 }

@@ -100,4 +100,10 @@ public class QueryStringTest {
         assertNotSame(params.map(), params.map());
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void testReturnedMapIsUnmodifiable() {
+        QueryString params = QueryString.fromUri("/hello/world?fruit=apple&car=mustang");
+        params.map().put("fruit", "orange");
+    }
+
 }
