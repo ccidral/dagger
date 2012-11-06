@@ -45,6 +45,12 @@ public class NettyRequestTest {
         assertEquals("mustang", queryParameters.get("car"));
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void testParametersFromQueryStringAreUnmodifiable() {
+        Request request = new NettyRequest(mockHttpRequest("/hello/world?fruit=apple&car=mustang"));
+        request.getParameters().put("fruit", "orange");
+    }
+
     private HttpRequest mockHttpRequest(String uri) {
         HttpRequest mockHttpRequest = mock(HttpRequest.class);
         when(mockHttpRequest.getUri()).thenReturn(uri);
