@@ -5,6 +5,8 @@ import dagger.http.Request;
 import dagger.http.Response;
 import org.junit.Test;
 
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 public class GetTest {
@@ -58,6 +60,11 @@ public class GetTest {
         @Override
         public String getMethod() {
             return method;
+        }
+
+        @Override
+        public Map<String, String> getQueryParameters() {
+            return null;
         }
 
     }

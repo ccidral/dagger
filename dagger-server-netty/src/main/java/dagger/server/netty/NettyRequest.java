@@ -3,6 +3,8 @@ package dagger.server.netty;
 import dagger.http.Request;
 import io.netty.handler.codec.http.HttpRequest;
 
+import java.util.Map;
+
 public class NettyRequest implements Request {
 
     private final HttpRequest request;
@@ -13,11 +15,22 @@ public class NettyRequest implements Request {
 
     @Override
     public String getURI() {
-        return request.getUri();
+        String uri = request.getUri();
+
+        if(uri.indexOf('?') > -1)
+            return uri.substring(0, uri.indexOf('?'));
+
+        return uri;
     }
 
     @Override
     public String getMethod() {
         return request.getMethod().getName();
     }
+
+    @Override
+    public Map<String, String> getQueryParameters() {
+        return QueryString.fromUri(request.getUri()).map();
+    }
+
 }

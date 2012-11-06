@@ -5,9 +5,10 @@ import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.handlers.ResourceNotFound;
 import dagger.http.Request;
-import dagger.module.DefaultModule;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -108,6 +109,11 @@ public class DefaultModuleTest {
         }
 
         public String getMethod() {
+            return null;
+        }
+
+        @Override
+        public Map<String, String> getQueryParameters() {
             return null;
         }
 

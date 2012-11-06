@@ -5,6 +5,8 @@ import dagger.http.Request;
 import dagger.reactions.NotFound;
 import org.junit.Test;
 
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +34,11 @@ public class ResourceNotFoundTest {
         }
 
         public String getMethod() {
+            return null;
+        }
+
+        @Override
+        public Map<String, String> getQueryParameters() {
             return null;
         }
 
