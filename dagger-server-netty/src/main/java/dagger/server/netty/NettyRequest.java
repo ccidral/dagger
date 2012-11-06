@@ -3,6 +3,7 @@ package dagger.server.netty;
 import dagger.http.Request;
 import io.netty.handler.codec.http.HttpRequest;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class NettyRequest implements Request {
@@ -30,7 +31,8 @@ public class NettyRequest implements Request {
 
     @Override
     public Map<String, String> getParameters() {
-        return QueryString.fromUri(request.getUri()).map();
+        QueryString queryString = QueryString.fromUri(request.getUri());
+        return Collections.unmodifiableMap(queryString.map());
     }
 
 }
