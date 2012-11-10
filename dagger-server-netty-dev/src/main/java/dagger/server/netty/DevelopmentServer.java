@@ -39,12 +39,12 @@ public class DevelopmentServer {
 
     private static void runServerUntilSomeJarIsChanged(String moduleFactoryClassName, ClassLoader classLoader, DirectoryWatcher jarDirectoryWatcher) throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InterruptedException {
         Class<?> moduleFactoryClass = classLoader.loadClass(moduleFactoryClassName);
-        Class<?> moduleFactoryInterface = classLoader.loadClass("dagger.ModuleFactory");
+        Class<?> moduleInterface = classLoader.loadClass("dagger.Module");
         Class<?> nettyServerClass = classLoader.loadClass("dagger.server.netty.NettyServer");
 
         Object moduleFactory = moduleFactoryClass.newInstance();
         Object module = moduleFactoryClass.getMethod("create").invoke(moduleFactory);
-        Object server = nettyServerClass.getConstructor(moduleFactoryInterface).newInstance(module);
+        Object server = nettyServerClass.getConstructor(moduleInterface).newInstance(module);
 
         nettyServerClass.getDeclaredMethod("start").invoke(server);
 
