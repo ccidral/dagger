@@ -9,7 +9,7 @@ import static junit.framework.Assert.assertTrue;
 public class ExactRouteTest {
 
     @Test
-    public void test() {
+    public void testMatches() {
         Route route = new ExactRoute("/foo");
         assertTrue(route.matches("/foo"));
         assertFalse(route.matches("/bar"));
