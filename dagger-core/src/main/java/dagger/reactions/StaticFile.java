@@ -77,4 +77,12 @@ public class StaticFile implements Reaction {
         }
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public MimeTypeGuesser getMimeTypeGuesser() {
+        return mimeTypeGuesser;
+    }
+
 }
