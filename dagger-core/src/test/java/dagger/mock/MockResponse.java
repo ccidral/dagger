@@ -46,6 +46,10 @@ public class MockResponse implements Response {
         return outputStream.isClosed;
     }
 
+    public byte[] getOutputAsBytes() {
+        return outputStream.toByteArray();
+    }
+
     private static class InMemoryOutputStream extends ByteArrayOutputStream {
 
         public boolean isClosed;

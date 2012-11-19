@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class Ok implements Reaction {
 
-    private final String content;
+    private final byte[] content;
     private final String contentType;
 
     public Ok(String content) {
@@ -16,7 +16,11 @@ public class Ok implements Reaction {
     }
 
     public Ok(String content, String contentType) {
-        this.content = content;
+        this(content.getBytes(), contentType);
+    }
+
+    public Ok(byte[] bytes, String contentType) {
+        this.content = bytes;
         this.contentType = contentType;
     }
 
@@ -26,7 +30,7 @@ public class Ok implements Reaction {
         response.setContentType(contentType);
 
         try {
-            response.getOutputStream().write(content.getBytes());
+            response.getOutputStream().write(content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
