@@ -59,7 +59,7 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
     }
 
     private Reaction handleRequest(HttpRequest msg) throws Exception {
-        logger.debug("Handling request {} {}", msg.getMethod().getName(), msg.getUri());
+        logger.debug("{} {}", msg.getMethod().getName(), msg.getUri());
         Request request = new NettyRequest(msg);
         RequestHandler requestHandler = module.getHandlerFor(request);
         return requestHandler.handle(request);
