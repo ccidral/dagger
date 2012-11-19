@@ -7,7 +7,7 @@ public class WildcardRoute implements Route {
     private final String pattern;
 
     public WildcardRoute(String pattern) {
-        this.pattern = pattern.replace("*", "[^/]+");
+        this.pattern = pattern.replace("*", ".*");
     }
 
     @Override
