@@ -36,6 +36,11 @@ public class MockResponse implements Response {
         throw new NotImplementedYet();
     }
 
+    @Override
+    public void setHeader(String name, String value) {
+        throw new NotImplementedYet();
+    }
+
     public String getOutputAsString() {
         return new String(outputStream.toByteArray());
     }
