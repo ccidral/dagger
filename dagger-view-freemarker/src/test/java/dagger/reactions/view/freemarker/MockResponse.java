@@ -27,16 +27,6 @@ public class MockResponse implements Response {
     }
 
     @Override
-    public String getContentType() {
-        throw new NotImplementedYet();
-    }
-
-    @Override
-    public void setContentType(String contentType) {
-        throw new NotImplementedYet();
-    }
-
-    @Override
     public void setHeader(String name, String value) {
         throw new NotImplementedYet();
     }

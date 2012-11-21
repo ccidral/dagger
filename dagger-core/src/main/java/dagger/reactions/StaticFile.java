@@ -1,6 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
+import dagger.http.HttpHeaderNames;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.lang.io.Files;
@@ -31,12 +32,12 @@ public class StaticFile implements Reaction {
         if(url != null && Files.isFile(url)) {
             String contentType = mimeTypeGuesser.guessMimeType(url);
             response.setStatusCode(StatusCode.OK);
-            response.setContentType(contentType);
+            response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
             write(url, response);
         }
         else {
             response.setStatusCode(StatusCode.NOT_FOUND);
-            response.setContentType("text/plain");
+            response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
             write("Not found.", response);
         }
     }

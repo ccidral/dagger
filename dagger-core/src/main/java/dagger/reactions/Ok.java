@@ -1,6 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
+import dagger.http.HttpHeaderNames;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 
@@ -27,7 +28,7 @@ public class Ok implements Reaction {
     @Override
     public void execute(Response response) {
         response.setStatusCode(StatusCode.OK);
-        response.setContentType(contentType);
+        response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
 
         try {
             response.getOutputStream().write(content);

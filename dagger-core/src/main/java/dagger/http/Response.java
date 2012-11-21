@@ -10,10 +10,6 @@ public interface Response {
 
     void setStatusCode(StatusCode statusCode);
 
-    String getContentType();
-
-    void setContentType(String contentType);
-
     void setHeader(String name, String value);
 
 }

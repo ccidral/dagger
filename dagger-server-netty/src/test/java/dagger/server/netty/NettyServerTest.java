@@ -2,6 +2,7 @@ package dagger.server.netty;
 
 import dagger.*;
 import dagger.handlers.Get;
+import dagger.http.HttpHeaderNames;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
@@ -53,7 +54,7 @@ public class NettyServerTest {
                             throw new RuntimeException(e);
                         }
                         response.setStatusCode(StatusCode.OK);
-                        response.setContentType("text/plain");
+                        response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
                     }
                 };
             }

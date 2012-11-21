@@ -1,6 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
+import dagger.http.HttpHeaderNames;
 import dagger.http.StatusCode;
 import dagger.lang.DelegateClassLoader;
 import dagger.lang.mime.MimeTypeGuesser;
@@ -83,14 +84,14 @@ public class StaticFileTest {
 
     private void assertOk() {
         assertEquals(StatusCode.OK, response.getStatusCode());
-        assertEquals(CONTENT_TYPE, response.getContentType());
+        assertEquals(CONTENT_TYPE, response.getHeader(HttpHeaderNames.CONTENT_TYPE));
         assertEquals(FILE_CONTENTS, response.getOutputAsString());
         assertTrue("Output stream should be closed", response.isOutputStreamClosed());
     }
 
     private void assertNotFound() {
         assertEquals(StatusCode.NOT_FOUND, response.getStatusCode());
-        assertEquals("text/plain", response.getContentType());
+        assertEquals("text/plain", response.getHeader(HttpHeaderNames.CONTENT_TYPE));
         assertEquals("Not found.", response.getOutputAsString());
         assertTrue("Output stream should be closed", response.isOutputStreamClosed());
     }

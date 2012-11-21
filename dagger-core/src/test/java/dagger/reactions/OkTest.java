@@ -1,6 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
+import dagger.http.HttpHeaderNames;
 import dagger.http.StatusCode;
 import dagger.mock.MockResponse;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class OkTest {
 
         assertEquals(StatusCode.OK, response.getStatusCode());
         assertEquals("Some text", response.getOutputAsString());
-        assertEquals("text/plain", response.getContentType());
+        assertEquals("text/plain", response.getHeader(HttpHeaderNames.CONTENT_TYPE));
     }
 
     @Test
@@ -30,7 +31,7 @@ public class OkTest {
 
         assertEquals(StatusCode.OK, response.getStatusCode());
         assertEquals("{}", response.getOutputAsString());
-        assertEquals("application/json", response.getContentType());
+        assertEquals("application/json", response.getHeader(HttpHeaderNames.CONTENT_TYPE));
     }
 
     @Test
@@ -41,7 +42,7 @@ public class OkTest {
 
         assertEquals(StatusCode.OK, response.getStatusCode());
         assertThat(response.getOutputAsBytes(), is(new byte[] {9, 8, 7}));
-        assertEquals("image/png", response.getContentType());
+        assertEquals("image/png", response.getHeader(HttpHeaderNames.CONTENT_TYPE));
     }
 
 }

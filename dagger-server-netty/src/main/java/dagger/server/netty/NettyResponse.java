@@ -35,16 +35,6 @@ public class NettyResponse implements Response {
     }
 
     @Override
-    public String getContentType() {
-        return response.getHeader(CONTENT_TYPE);
-    }
-
-    @Override
-    public void setContentType(String contentType) {
-        response.setHeader(CONTENT_TYPE, contentType);
-    }
-
-    @Override
     public void setHeader(String name, String value) {
         response.setHeader(name, value);
     }

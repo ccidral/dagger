@@ -2,7 +2,6 @@ package dagger.server.netty;
 
 import dagger.http.Response;
 import dagger.http.StatusCode;
-import io.netty.handler.codec.http.HttpHeaders;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,18 +46,6 @@ public class NettyResponseTest {
     public void testGetStatusCode() {
         response.setStatusCode(StatusCode.NOT_FOUND);
         assertEquals(StatusCode.NOT_FOUND, response.getStatusCode());
-    }
-
-    @Test
-    public void testSetContentType() {
-        response.setContentType("text/html");
-        assertEquals("text/html", mockNettyHttpResponse.getHeader(HttpHeaders.Names.CONTENT_TYPE));
-    }
-
-    @Test
-    public void testGetContentType() {
-        response.setContentType("foo/bar");
-        assertEquals("foo/bar", response.getContentType());
     }
 
     @Test
