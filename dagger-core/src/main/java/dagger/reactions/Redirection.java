@@ -19,4 +19,8 @@ public class Redirection implements Reaction {
         response.setHeader(HttpHeaderNames.LOCATION, location);
     }
 
+    public String getLocation() {
+        return location;
+    }
+
 }

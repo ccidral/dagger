@@ -23,4 +23,10 @@ public class RedirectionTest {
         assertEquals("HTTP header 'Location'", ANOTHER_LOCATION, response.getHeader(HttpHeaderNames.LOCATION));
     }
 
+    @Test
+    public void testGetLocation() {
+        Redirection redirection = new Redirection(ANOTHER_LOCATION);
+        assertEquals(ANOTHER_LOCATION, redirection.getLocation());
+    }
+
 }
