@@ -14,4 +14,6 @@ public interface Response {
 
     void setContentType(String contentType);
 
+    void setHeader(String name, String value);
+
 }

@@ -1,18 +1,20 @@
 package dagger.mock;
 
-import dagger.lang.NotImplementedYet;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MockResponse implements Response {
 
     private StatusCode statusCode;
     private InMemoryOutputStream outputStream = new InMemoryOutputStream();
     private String contentType;
+    private Map<String, String> headers = new HashMap<>();
 
     @Override
     public void setStatusCode(StatusCode statusCode) {
@@ -27,6 +29,11 @@ public class MockResponse implements Response {
     @Override
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    @Override
+    public void setHeader(String name, String value) {
+        headers.put(name, value);
     }
 
     @Override
@@ -48,6 +55,10 @@ public class MockResponse implements Response {
 
     public byte[] getOutputAsBytes() {
         return outputStream.toByteArray();
+    }
+
+    public String getHeader(String name) {
+        return headers.get(name);
     }
 
     private static class InMemoryOutputStream extends ByteArrayOutputStream {
