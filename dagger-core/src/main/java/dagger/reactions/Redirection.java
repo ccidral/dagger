@@ -5,11 +5,11 @@ import dagger.http.HttpHeaderNames;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 
-public class Redirect implements Reaction {
+public class Redirection implements Reaction {
 
     private final String location;
 
-    public Redirect(String location) {
+    public Redirection(String location) {
         this.location = location;
     }
 
