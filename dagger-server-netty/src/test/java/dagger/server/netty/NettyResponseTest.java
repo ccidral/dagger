@@ -61,4 +61,10 @@ public class NettyResponseTest {
         assertEquals("foo/bar", response.getContentType());
     }
 
+    @Test
+    public void testSetHeader() {
+        response.setHeader("Fruit", "apple");
+        assertEquals("apple", mockNettyHttpResponse.getHeader("Fruit"));
+    }
+
 }

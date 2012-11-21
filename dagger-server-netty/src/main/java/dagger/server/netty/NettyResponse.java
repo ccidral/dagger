@@ -45,6 +45,11 @@ public class NettyResponse implements Response {
     }
 
     @Override
+    public void setHeader(String name, String value) {
+        response.setHeader(name, value);
+    }
+
+    @Override
     public OutputStream getOutputStream() {
         return new OutputStream() {
             @Override
