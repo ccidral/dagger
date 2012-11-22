@@ -8,15 +8,22 @@ import dagger.reactions.StaticFile;
 
 public class MapToStaticFile implements Action {
 
+    private final String staticFilePath;
     private final MimeTypeGuesser mimeTypeGuesser;
 
-    public MapToStaticFile(MimeTypeGuesser mimeTypeGuesser) {
+    public MapToStaticFile(String staticFilePath, MimeTypeGuesser mimeTypeGuesser) {
+        this.staticFilePath = staticFilePath;
         this.mimeTypeGuesser = mimeTypeGuesser;
+    }
+
+    public MapToStaticFile(MimeTypeGuesser mimeTypeGuesser) {
+        this(null, mimeTypeGuesser);
     }
 
     @Override
     public Reaction execute(Request request) throws Exception {
-        return new StaticFile(request.getURI(), mimeTypeGuesser);
+        String uri = this.staticFilePath == null ? request.getURI() : this.staticFilePath;
+        return new StaticFile(uri, mimeTypeGuesser);
     }
 
 }
