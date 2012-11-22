@@ -13,12 +13,12 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ReturnStaticFileTest {
+public class MapToStaticFileTest {
 
     @Test
     public void testExecute() throws Exception {
         MimeTypeGuesser mimeTypeGuesser = mock(MimeTypeGuesser.class);
-        Action action = new ReturnStaticFile(mimeTypeGuesser);
+        Action action = new MapToStaticFile(mimeTypeGuesser);
 
         Request request = mock(Request.class);
         when(request.getURI()).thenReturn("/foo/bar.html");

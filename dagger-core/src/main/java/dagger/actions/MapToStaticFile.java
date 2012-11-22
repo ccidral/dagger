@@ -6,11 +6,11 @@ import dagger.http.Request;
 import dagger.lang.mime.MimeTypeGuesser;
 import dagger.reactions.StaticFile;
 
-public class ReturnStaticFile implements Action {
+public class MapToStaticFile implements Action {
 
     private final MimeTypeGuesser mimeTypeGuesser;
 
-    public ReturnStaticFile(MimeTypeGuesser mimeTypeGuesser) {
+    public MapToStaticFile(MimeTypeGuesser mimeTypeGuesser) {
         this.mimeTypeGuesser = mimeTypeGuesser;
     }
 
