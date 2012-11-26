@@ -1,5 +1,6 @@
 package dagger.server.netty;
 
+import dagger.http.Formats;
 import dagger.http.HttpHeaderNames;
 import dagger.http.Response;
 import dagger.http.StatusCode;
@@ -11,12 +12,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 public class NettyResponse implements Response {
-
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
 
     private final HttpResponse response;
     private final ByteBuf buffer;
@@ -26,7 +23,7 @@ public class NettyResponse implements Response {
         this.buffer = Unpooled.buffer();
 
         response.setContent(buffer);
-        setHeader(HttpHeaderNames.DATE, DATE_FORMAT.format(clock.now()));
+        setHeader(HttpHeaderNames.DATE, Formats.TIMESTAMP.format(clock.now()));
     }
 
     @Override

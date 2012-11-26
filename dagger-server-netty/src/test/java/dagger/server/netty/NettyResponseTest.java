@@ -1,5 +1,6 @@
 package dagger.server.netty;
 
+import dagger.http.Formats;
 import dagger.http.HttpHeaderNames;
 import dagger.http.Response;
 import dagger.http.StatusCode;
@@ -8,11 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -22,7 +20,6 @@ import static org.mockito.Mockito.when;
 public class NettyResponseTest {
 
     private static final Date CURRENT_TIME = timestamp(2012, Calendar.NOVEMBER, 15, 20, 45, 7);
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
 
     private MockNettyHttpResponse mockNettyHttpResponse;
     private Response response;
@@ -40,7 +37,7 @@ public class NettyResponseTest {
 
     @Test
     public void testDateHeaderIsCreatedInTheConstructor() {
-        String expectedDate = DATE_FORMAT.format(CURRENT_TIME);
+        String expectedDate = Formats.TIMESTAMP.format(CURRENT_TIME);
         assertEquals(expectedDate, mockNettyHttpResponse.getHeader(HttpHeaderNames.DATE));
     }
 
