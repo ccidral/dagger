@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.when;
 public class NettyResponseTest {
 
     public static final Date CURRENT_TIME = timestamp(2012, Calendar.NOVEMBER, 15, 20, 45, 7);
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
 
     private MockNettyHttpResponse mockNettyHttpResponse;
     private Response response;

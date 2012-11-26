@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class NettyResponse implements Response {
 
@@ -23,7 +24,7 @@ public class NettyResponse implements Response {
         this.buffer = Unpooled.buffer();
 
         response.setContent(buffer);
-        setHeader(HttpHeaderNames.DATE, new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").format(clock.now()));
+        setHeader(HttpHeaderNames.DATE, new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US).format(clock.now()));
     }
 
     @Override
