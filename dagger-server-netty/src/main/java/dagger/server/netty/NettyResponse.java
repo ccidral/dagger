@@ -16,7 +16,7 @@ import java.util.Locale;
 
 public class NettyResponse implements Response {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
 
     private final HttpResponse response;
     private final ByteBuf buffer;
