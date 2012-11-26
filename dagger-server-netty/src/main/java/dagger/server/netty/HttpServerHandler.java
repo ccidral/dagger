@@ -5,6 +5,7 @@ import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.http.Request;
 import dagger.http.Response;
+import dagger.lang.time.SystemClock;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.handler.codec.http.DefaultHttpResponse;
@@ -53,7 +54,7 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
     private HttpResponse executeReaction(Reaction reaction) throws Exception {
         HttpResponse nettyHttpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
-        Response response = new NettyResponse(nettyHttpResponse);
+        Response response = new NettyResponse(nettyHttpResponse, new SystemClock());
         reaction.execute(response);
         return nettyHttpResponse;
     }

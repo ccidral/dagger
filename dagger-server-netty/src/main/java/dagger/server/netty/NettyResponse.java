@@ -1,9 +1,9 @@
 package dagger.server.netty;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
-
+import dagger.http.HttpHeaderNames;
 import dagger.http.Response;
 import dagger.http.StatusCode;
+import dagger.lang.time.Clock;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpResponse;
@@ -11,17 +11,19 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 
 public class NettyResponse implements Response {
 
     private final HttpResponse response;
     private final ByteBuf buffer;
 
-    public NettyResponse(HttpResponse response) {
+    public NettyResponse(HttpResponse response, Clock clock) {
         this.response = response;
         this.buffer = Unpooled.buffer();
 
         response.setContent(buffer);
+        setHeader(HttpHeaderNames.DATE, new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").format(clock.now()));
     }
 
     @Override
