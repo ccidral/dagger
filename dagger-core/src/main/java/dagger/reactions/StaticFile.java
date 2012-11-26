@@ -28,18 +28,23 @@ public class StaticFile implements Reaction {
     @Override
     public void execute(Response response) {
         URL url = getClass().getResource("/view/static" + path);
+        if(url == null || !Files.isFile(url))
+            writeNotFound(response);
+        else
+            writeFileTo(response, url);
+    }
 
-        if(url != null && Files.isFile(url)) {
-            String contentType = mimeTypeGuesser.guessMimeType(url);
-            response.setStatusCode(StatusCode.OK);
-            response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
-            write(url, response);
-        }
-        else {
-            response.setStatusCode(StatusCode.NOT_FOUND);
-            response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
-            write("Not found.", response);
-        }
+    private void writeNotFound(Response response) {
+        response.setStatusCode(StatusCode.NOT_FOUND);
+        response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+        write("Not found.", response);
+    }
+
+    private void writeFileTo(Response response, URL fileUrl) {
+        String contentType = mimeTypeGuesser.guessMimeType(fileUrl);
+        response.setStatusCode(StatusCode.OK);
+        response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
+        write(fileUrl, response);
     }
 
     private void write(String text, Response response) {
