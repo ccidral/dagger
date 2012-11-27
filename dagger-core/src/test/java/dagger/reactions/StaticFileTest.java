@@ -157,6 +157,16 @@ public class StaticFileTest {
         assertEquals(StatusCode.OK, response.getStatusCode());
     }
 
+    @Test
+    public void testIgnoreIncorrectFormatOfIfModifiedSinceHeader() throws Exception {
+        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn("bogus date");
+
+        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        reaction.execute(request, response);
+
+        assertEquals(StatusCode.OK, response.getStatusCode());
+    }
+
     private Date getFileModificationDate() throws URISyntaxException {
         File file = new File(getClass().getResource(RESOURCE_NAME).toURI());
         return new Date(file.lastModified());

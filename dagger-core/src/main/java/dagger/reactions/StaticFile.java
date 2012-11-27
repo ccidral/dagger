@@ -4,6 +4,8 @@ import dagger.Reaction;
 import dagger.http.*;
 import dagger.lang.io.Files;
 import dagger.lang.mime.MimeTypeGuesser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +26,7 @@ public class StaticFile implements Reaction {
 
     private final String path;
     private final MimeTypeGuesser mimeTypeGuesser;
+    private final Logger logger;
 
     public StaticFile(String path, MimeTypeGuesser mimeTypeGuesser) {
         if(!path.startsWith("/"))
@@ -31,6 +34,7 @@ public class StaticFile implements Reaction {
 
         this.path = path;
         this.mimeTypeGuesser = mimeTypeGuesser;
+        this.logger = LoggerFactory.getLogger(getClass().getName()+"["+path+"]");
     }
 
     @Override
@@ -58,8 +62,14 @@ public class StaticFile implements Reaction {
     }
 
     private Date parseDate(String text) throws ParseException {
-        if(text != null)
-            return Formats.timestamp().parse(text);
+        if(text != null) {
+            try {
+                return Formats.timestamp().parse(text);
+            }
+            catch(Exception e) {
+                logger.error("Failed to parse date " + text, e);
+            }
+        }
         return null;
     }
 
