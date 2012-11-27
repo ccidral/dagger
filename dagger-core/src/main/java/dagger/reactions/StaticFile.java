@@ -42,7 +42,7 @@ public class StaticFile implements Reaction {
             writeFileTo(response, url);
     }
 
-    private void writeNotFound(Response response) {
+    private void writeNotFound(Response response) throws IOException {
         response.setStatusCode(StatusCode.NOT_FOUND);
         response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
         write("Not found.", response);
@@ -57,7 +57,7 @@ public class StaticFile implements Reaction {
         write(fileUrl, response);
     }
 
-    private Date getFileModificationDate(URL fileUrl) throws URISyntaxException {
+    private Date getFileModificationDate(URL fileUrl) throws URISyntaxException, IOException {
         ZipEntry fileInsideJar = tryReadingFileFromInsideJar(fileUrl);
         if(fileInsideJar != null)
             return new Date(fileInsideJar.getTime());
@@ -66,7 +66,7 @@ public class StaticFile implements Reaction {
         return new Date(file.lastModified());
     }
 
-    private ZipEntry tryReadingFileFromInsideJar(URL fileUrl) {
+    private ZipEntry tryReadingFileFromInsideJar(URL fileUrl) throws IOException {
         Pattern pattern = Pattern.compile("^jar:file:([^!]*)!(.*)$");
         Matcher matcher = pattern.matcher(fileUrl.toString());
 
@@ -75,24 +75,16 @@ public class StaticFile implements Reaction {
 
         String jarPath = matcher.group(1);
         String filePath = matcher.group(2);
-        try {
-            ZipFile jar = new ZipFile(jarPath);
-            return jar.getEntry(removeTrailingSlashFrom(filePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ZipFile jar = new ZipFile(jarPath);
+        return jar.getEntry(removeTrailingSlashFrom(filePath));
     }
 
-    private void write(String text, Response response) {
+    private void write(String text, Response response) throws IOException {
+        OutputStream outputStream = response.getOutputStream();
         try {
-            OutputStream outputStream = response.getOutputStream();
-            try {
-                outputStream.write(text.getBytes());
-            } finally {
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            outputStream.write(text.getBytes());
+        } finally {
+            outputStream.close();
         }
     }
 
