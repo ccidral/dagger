@@ -34,7 +34,7 @@ public class StaticFile implements Reaction {
     }
 
     @Override
-    public void execute(Response response) {
+    public void execute(Response response) throws Exception {
         URL url = getClass().getResource("/view/static" + path);
         if(url == null || !Files.isFile(url))
             writeNotFound(response);
@@ -48,7 +48,7 @@ public class StaticFile implements Reaction {
         write("Not found.", response);
     }
 
-    private void writeFileTo(Response response, URL fileUrl) {
+    private void writeFileTo(Response response, URL fileUrl) throws URISyntaxException, IOException {
         String contentType = mimeTypeGuesser.guessMimeType(fileUrl);
         Date modificationDate = getFileModificationDate(fileUrl);
         response.setStatusCode(StatusCode.OK);
@@ -57,41 +57,30 @@ public class StaticFile implements Reaction {
         write(fileUrl, response);
     }
 
-    private Date getFileModificationDate(URL fileUrl) {
+    private Date getFileModificationDate(URL fileUrl) throws URISyntaxException {
         ZipEntry fileInsideJar = tryReadingFileFromInsideJar(fileUrl);
-        if(fileInsideJar != null) {
+        if(fileInsideJar != null)
             return new Date(fileInsideJar.getTime());
-        }
-        else {
-            try {
-                File file = new File(fileUrl.toURI());
-                return new Date(file.lastModified());
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-        }
+
+        File file = new File(fileUrl.toURI());
+        return new Date(file.lastModified());
     }
 
     private ZipEntry tryReadingFileFromInsideJar(URL fileUrl) {
         Pattern pattern = Pattern.compile("^jar:file:([^!]*)!(.*)$");
         Matcher matcher = pattern.matcher(fileUrl.toString());
 
-        if(matcher.matches()) {
-            String jarPath = matcher.group(1);
-            String filePath = matcher.group(2);
-            try {
-                ZipFile jar = new ZipFile(jarPath);
-                return jar.getEntry(removeTrailingSlashFrom(filePath));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        if(!matcher.matches())
+            return null;
+
+        String jarPath = matcher.group(1);
+        String filePath = matcher.group(2);
+        try {
+            ZipFile jar = new ZipFile(jarPath);
+            return jar.getEntry(removeTrailingSlashFrom(filePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return null;
-    }
-
-    private String removeTrailingSlashFrom(String filePath) {
-        return filePath.substring(1);
     }
 
     private void write(String text, Response response) {
@@ -107,26 +96,26 @@ public class StaticFile implements Reaction {
         }
     }
 
-    private void write(URL url, Response response) {
+    private void write(URL url, Response response) throws IOException {
+        InputStream inputStream = url.openStream();
         try {
-            InputStream inputStream = url.openStream();
+            OutputStream outputStream = response.getOutputStream();
             try {
-                OutputStream outputStream = response.getOutputStream();
-                try {
-                    while(true) {
-                        int theByte = inputStream.read();
-                        if(theByte < 0)
-                            break;
-                        outputStream.write(theByte);
-                    }
-                } finally {
-                    outputStream.close();
-                }
+                copy(inputStream, outputStream);
             } finally {
-                inputStream.close();
+                outputStream.close();
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } finally {
+            inputStream.close();
+        }
+    }
+
+    private void copy(InputStream source, OutputStream target) throws IOException {
+        while(true) {
+            int theByte = source.read();
+            if(theByte < 0)
+                break;
+            target.write(theByte);
         }
     }
 
@@ -136,6 +125,10 @@ public class StaticFile implements Reaction {
 
     public MimeTypeGuesser getMimeTypeGuesser() {
         return mimeTypeGuesser;
+    }
+
+    private String removeTrailingSlashFrom(String filePath) {
+        return filePath.substring(1);
     }
 
 }
