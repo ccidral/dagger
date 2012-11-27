@@ -14,7 +14,7 @@ public class RenderViewTest {
         Reaction reaction = new RenderView("test-with-simple-model", model);
         MockResponse response = new MockResponse();
 
-        reaction.execute(response);
+        reaction.execute(null, response);
 
         assertThat(response.getOutputAsString(), equalTo("Hello World!"));
     }

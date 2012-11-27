@@ -2,6 +2,7 @@ package dagger.reactions;
 
 import dagger.Reaction;
 import dagger.http.HttpHeaderNames;
+import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 
@@ -14,7 +15,7 @@ public class Redirection implements Reaction {
     }
 
     @Override
-    public void execute(Response response) throws Exception {
+    public void execute(Request request, Response response) throws Exception {
         response.setStatusCode(StatusCode.SEE_OTHER);
         response.setHeader(HttpHeaderNames.LOCATION, location);
     }

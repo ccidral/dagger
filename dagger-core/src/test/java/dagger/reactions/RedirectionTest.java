@@ -17,7 +17,7 @@ public class RedirectionTest {
         Reaction reaction = new Redirection(ANOTHER_LOCATION);
         MockResponse response = new MockResponse();
 
-        reaction.execute(response);
+        reaction.execute(null, response);
 
         assertEquals("HTTP status code", StatusCode.SEE_OTHER, response.getStatusCode());
         assertEquals("HTTP header 'Location'", ANOTHER_LOCATION, response.getHeader(HttpHeaderNames.LOCATION));

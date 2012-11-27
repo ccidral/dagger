@@ -16,7 +16,7 @@ public class OkTest {
     public void testTextWithDefaultContentType() throws Exception {
         Reaction reaction = new Ok("Some text");
         MockResponse response = new MockResponse();
-        reaction.execute(response);
+        reaction.execute(null, response);
 
         assertEquals(StatusCode.OK, response.getStatusCode());
         assertEquals("Some text", response.getOutputAsString());
@@ -27,7 +27,7 @@ public class OkTest {
     public void testTextWithProvidedContentType() throws Exception {
         Reaction reaction = new Ok("{}", "application/json");
         MockResponse response = new MockResponse();
-        reaction.execute(response);
+        reaction.execute(null, response);
 
         assertEquals(StatusCode.OK, response.getStatusCode());
         assertEquals("{}", response.getOutputAsString());
@@ -38,7 +38,7 @@ public class OkTest {
     public void testBytes() throws Exception {
         Reaction reaction = new Ok(new byte[] {9, 8, 7}, "image/png");
         MockResponse response = new MockResponse();
-        reaction.execute(response);
+        reaction.execute(null, response);
 
         assertEquals(StatusCode.OK, response.getStatusCode());
         assertThat(response.getOutputAsBytes(), is(new byte[] {9, 8, 7}));

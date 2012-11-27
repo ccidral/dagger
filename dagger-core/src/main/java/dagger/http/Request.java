@@ -10,4 +10,6 @@ public interface Request {
 
     Map<String, String> getParameters();
 
+    String getHeader(String name);
+
 }

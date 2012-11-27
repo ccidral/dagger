@@ -42,5 +42,10 @@ public class ResourceNotFoundTest {
             return null;
         }
 
+        @Override
+        public String getHeader(String name) {
+            return null;
+        }
+
     }
 }

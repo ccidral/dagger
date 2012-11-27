@@ -21,13 +21,13 @@ public class NotFoundTest {
 
     @Test
     public void testStatusCodeIs404() throws Exception {
-        notFound.execute(response);
+        notFound.execute(null, response);
         assertEquals(StatusCode.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     public void testWriteNotFoundOnResponseOutputStream() throws Exception {
-        notFound.execute(response);
+        notFound.execute(null, response);
         assertEquals("404 - Not found", response.getOutputAsString());
     }
 

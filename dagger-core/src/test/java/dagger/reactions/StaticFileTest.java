@@ -3,6 +3,7 @@ package dagger.reactions;
 import dagger.Reaction;
 import dagger.http.Formats;
 import dagger.http.HttpHeaderNames;
+import dagger.http.Request;
 import dagger.http.StatusCode;
 import dagger.lang.DelegateClassLoader;
 import dagger.lang.mime.MimeTypeGuesser;
@@ -17,12 +18,14 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static dagger.http.HttpHeaderNames.IF_MODIFIED_SINCE;
 import static dagger.http.HttpHeaderNames.LAST_MODIFIED;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -36,11 +39,13 @@ public class StaticFileTest {
     public static final String FILE_CONTENTS = "<html>lorem ipsum</html>";
     public static final String CONTENT_TYPE = "text/html";
 
+    private Request request;
     private MockResponse response;
     private MimeTypeGuesser mimeTypeGuesser;
 
     @Before
     public void setUp() throws Exception {
+        request = mock(Request.class);
         response = new MockResponse();
         mimeTypeGuesser = mock(MimeTypeGuesser.class);
     }
@@ -57,7 +62,7 @@ public class StaticFileTest {
 
         Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
 
-        reaction.execute(response);
+        reaction.execute(request, response);
         assertOk();
     }
 
@@ -69,18 +74,17 @@ public class StaticFileTest {
         when(mimeTypeGuesser.guessMimeType(fileUrl)).thenReturn(CONTENT_TYPE);
 
         Reaction reaction = createReactionInstanceFrom(classLoader);
-        reaction.execute(response);
+        reaction.execute(request, response);
         assertOk();
     }
 
     @Test
     public void testLastModifiedHeader() throws Exception {
-        File file = new File(getClass().getResource(RESOURCE_NAME).toURI());
-        Date modificationDate = new Date(file.lastModified());
+        Date modificationDate = getFileModificationDate();
         String expectedLastModifiedValue = Formats.TIMESTAMP.format(modificationDate);
 
         Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
-        reaction.execute(response);
+        reaction.execute(request, response);
 
         assertEquals(expectedLastModifiedValue, response.getHeader("Last-Modified"));
     }
@@ -95,7 +99,7 @@ public class StaticFileTest {
 
         ClassLoader classLoader = createClassLoaderFor(createJar());
         Reaction reaction = createReactionInstanceFrom(classLoader);
-        reaction.execute(response);
+        reaction.execute(request, response);
 
         assertEquals(expectedLastModifiedValue, response.getHeader(LAST_MODIFIED));
     }
@@ -103,15 +107,59 @@ public class StaticFileTest {
     @Test
     public void testFileNotFound() throws Exception {
         Reaction reaction = new StaticFile("/bogus.png", mimeTypeGuesser);
-        reaction.execute(response);
+        reaction.execute(request, response);
         assertNotFound();
     }
 
     @Test
     public void testDoNotMistakeDirectoryForFile() throws Exception {
         Reaction reaction = new StaticFile("/", mimeTypeGuesser);
-        reaction.execute(response);
+        reaction.execute(request, response);
         assertNotFound();
+    }
+
+    @Test
+    public void testReturnStatusNotModifiedIfNotModifiedSinceFileModificationDate() throws Exception {
+        Date modificationDate = getFileModificationDate();
+        Date ifModifiedSince = new Date(modificationDate.getTime() + 1000);
+
+        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.TIMESTAMP.format(ifModifiedSince));
+
+        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        reaction.execute(request, response);
+
+        assertEquals(StatusCode.NOT_MODIFIED, response.getStatusCode());
+    }
+
+    @Test
+    public void testReturnStatusNotModifiedIfModificationDateEqualsToIfModifiedSinceHeader() throws Exception {
+        Date modificationDate = getFileModificationDate();
+        Date ifModifiedSince = new Date(modificationDate.getTime());
+
+        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.TIMESTAMP.format(ifModifiedSince));
+
+        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        reaction.execute(request, response);
+
+        assertEquals(StatusCode.NOT_MODIFIED, response.getStatusCode());
+    }
+
+    @Test
+    public void testReturnOkIfModificationDateIsAfterIfModifiedSinceHeader() throws Exception {
+        Date modificationDate = getFileModificationDate();
+        Date ifModifiedSince = new Date(modificationDate.getTime() - 1000);
+
+        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.TIMESTAMP.format(ifModifiedSince));
+
+        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        reaction.execute(request, response);
+
+        assertEquals(StatusCode.OK, response.getStatusCode());
+    }
+
+    private Date getFileModificationDate() throws URISyntaxException {
+        File file = new File(getClass().getResource(RESOURCE_NAME).toURI());
+        return new Date(file.lastModified());
     }
 
     private void assertOk() {

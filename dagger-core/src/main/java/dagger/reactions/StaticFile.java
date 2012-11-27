@@ -1,10 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
-import dagger.http.Formats;
-import dagger.http.HttpHeaderNames;
-import dagger.http.Response;
-import dagger.http.StatusCode;
+import dagger.http.*;
 import dagger.lang.io.Files;
 import dagger.lang.mime.MimeTypeGuesser;
 
@@ -14,11 +11,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static dagger.http.HttpHeaderNames.IF_MODIFIED_SINCE;
 
 public class StaticFile implements Reaction {
 
@@ -34,12 +34,33 @@ public class StaticFile implements Reaction {
     }
 
     @Override
-    public void execute(Response response) throws Exception {
+    public void execute(Request request, Response response) throws Exception {
         URL url = getClass().getResource("/view/static" + path);
         if(url == null || !Files.isFile(url))
             writeNotFound(response);
-        else
+        else {
+            Date lastModificationDate = parseDate(request.getHeader(IF_MODIFIED_SINCE));
+            writeFileIfModifiedSince(lastModificationDate, url, response);
+        }
+    }
+
+    private void writeFileIfModifiedSince(Date lastModificationDate, URL url, Response response) throws URISyntaxException, IOException {
+        Date modificationDate = getFileModificationDate(url);
+        if(lastModificationDate == null || modificationDate.after(lastModificationDate))
             writeFileTo(response, url);
+        else
+            writeNotModified(response);
+    }
+
+    private void writeNotModified(Response response) throws IOException {
+        response.setStatusCode(StatusCode.NOT_MODIFIED);
+        write("Not modified", response);
+    }
+
+    private Date parseDate(String text) throws ParseException {
+        if(text != null)
+            return Formats.TIMESTAMP.parse(text);
+        return null;
     }
 
     private void writeNotFound(Response response) throws IOException {

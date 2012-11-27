@@ -1,6 +1,7 @@
 package dagger.server.netty;
 
 import dagger.http.Request;
+import dagger.lang.NotImplementedYet;
 import io.netty.handler.codec.http.HttpRequest;
 
 import java.util.Collections;
@@ -33,6 +34,11 @@ public class NettyRequest implements Request {
     public Map<String, String> getParameters() {
         QueryString queryString = QueryString.fromUri(request.getUri());
         return Collections.unmodifiableMap(queryString.map());
+    }
+
+    @Override
+    public String getHeader(String name) {
+        throw new NotImplementedYet();
     }
 
 }

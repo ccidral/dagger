@@ -1,6 +1,7 @@
 package dagger.reactions.view.freemarker;
 
 import dagger.Reaction;
+import dagger.http.Request;
 import dagger.http.Response;
 import freemarker.cache.URLTemplateLoader;
 import freemarker.template.Configuration;
@@ -33,7 +34,7 @@ public class RenderView implements Reaction {
     }
 
     @Override
-    public void execute(Response response) {
+    public void execute(Request request, Response response) throws Exception {
         Template template = getTemplate();
         Map<String, Object> modelMap = getModelMap();
         Writer writer = new OutputStreamWriter(response.getOutputStream());

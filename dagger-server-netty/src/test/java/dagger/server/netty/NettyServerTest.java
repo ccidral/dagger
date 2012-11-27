@@ -47,7 +47,7 @@ public class NettyServerTest {
             public Reaction execute(Request request) {
                 return new Reaction() {
                     @Override
-                    public void execute(Response response) {
+                    public void execute(Request request, Response response) throws Exception {
                         try {
                             response.getOutputStream().write("Hello world".getBytes());
                         } catch (IOException e) {
@@ -89,7 +89,7 @@ public class NettyServerTest {
             public Reaction execute(Request request) throws Exception {
                 return new Reaction() {
                     @Override
-                    public void execute(Response response) throws Exception {
+                    public void execute(Request request, Response response) throws Exception {
                         throw new Exception();
                     }
                 };

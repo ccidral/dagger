@@ -1,9 +1,10 @@
 package dagger;
 
+import dagger.http.Request;
 import dagger.http.Response;
 
 public interface Reaction {
 
-    void execute(Response response) throws Exception;
+    void execute(Request request, Response response) throws Exception;
 
 }

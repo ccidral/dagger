@@ -48,20 +48,20 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
     }
 
     private HttpResponse processRequest(HttpRequest msg) throws Exception {
-        Reaction reaction = handleRequest(msg);
-        return executeReaction(reaction);
+        Request request = new NettyRequest(msg);
+        Reaction reaction = handleRequest(request);
+        return executeReaction(reaction, request);
     }
 
-    private HttpResponse executeReaction(Reaction reaction) throws Exception {
+    private HttpResponse executeReaction(Reaction reaction, Request request) throws Exception {
         HttpResponse nettyHttpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
         Response response = new NettyResponse(nettyHttpResponse, new SystemClock());
-        reaction.execute(response);
+        reaction.execute(request, response);
         return nettyHttpResponse;
     }
 
-    private Reaction handleRequest(HttpRequest msg) throws Exception {
-        logger.debug("{} {}", msg.getMethod().getName(), msg.getUri());
-        Request request = new NettyRequest(msg);
+    private Reaction handleRequest(Request request) throws Exception {
+        logger.debug("{} {}", request.getMethod(), request.getURI());
         RequestHandler requestHandler = module.getHandlerFor(request);
         return requestHandler.handle(request);
     }

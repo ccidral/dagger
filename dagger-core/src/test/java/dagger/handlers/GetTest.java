@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.util.Map;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class GetTest {
 
@@ -28,7 +29,7 @@ public class GetTest {
 
     @Test
     public void testHandleRequest() throws Exception {
-        Reaction expectedReaction = new MockReaction();
+        Reaction expectedReaction = mock(Reaction.class);
         MockAction action = new MockAction(expectedReaction);
         RequestHandler get = new Get(route("/foo"), action);
 
@@ -67,6 +68,11 @@ public class GetTest {
             return null;
         }
 
+        @Override
+        public String getHeader(String name) {
+            return null;
+        }
+
     }
 
     private class UriEqualsTo implements Route {
@@ -101,14 +107,6 @@ public class GetTest {
         public Reaction execute(Request request) {
             this.receivedRequest = request;
             return reaction;
-        }
-
-    }
-
-    private class MockReaction implements Reaction {
-
-        @Override
-        public void execute(Response response) {
         }
 
     }
