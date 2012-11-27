@@ -64,7 +64,7 @@ public class StaticFileTest {
     @Test
     public void testExistingFileInsideJar() throws Exception {
         ClassLoader classLoader = createClassLoaderFor(createJar());
-        URL fileUrl = classLoader.getResource(RESOURCE_NAME.substring(1));
+        URL fileUrl = classLoader.getResource(withoutTrailingSlash(RESOURCE_NAME));
 
         when(mimeTypeGuesser.guessMimeType(fileUrl)).thenReturn(CONTENT_TYPE);
 
@@ -149,7 +149,7 @@ public class StaticFileTest {
         DelegateClassLoader parentClassLoader = new DelegateClassLoader();
 
         parentClassLoader.delegateClassToChildrenClassLoaders(StaticFile.class.getName());
-        parentClassLoader.delegateResourceToChildrenClassLoaders(RESOURCE_NAME.substring(1));
+        parentClassLoader.delegateResourceToChildrenClassLoaders(withoutTrailingSlash(RESOURCE_NAME));
 
         return new URLClassLoader(new URL[] { jarFile.toURI().toURL() }, parentClassLoader);
     }
