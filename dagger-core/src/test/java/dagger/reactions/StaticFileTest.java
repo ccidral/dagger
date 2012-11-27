@@ -1,6 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
+import dagger.http.Formats;
 import dagger.http.HttpHeaderNames;
 import dagger.http.StatusCode;
 import dagger.lang.DelegateClassLoader;
@@ -18,7 +19,11 @@ import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import static dagger.http.HttpHeaderNames.LAST_MODIFIED;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -57,7 +62,7 @@ public class StaticFileTest {
     }
 
     @Test
-    public void testExistingFileWithinJar() throws Exception {
+    public void testExistingFileInsideJar() throws Exception {
         ClassLoader classLoader = createClassLoaderFor(createJar());
         URL fileUrl = classLoader.getResource(RESOURCE_NAME.substring(1));
 
@@ -66,6 +71,33 @@ public class StaticFileTest {
         Reaction reaction = createReactionInstanceFrom(classLoader);
         reaction.execute(response);
         assertOk();
+    }
+
+    @Test
+    public void testLastModifiedHeader() throws Exception {
+        File file = new File(getClass().getResource(RESOURCE_NAME).toURI());
+        Date modificationDate = new Date(file.lastModified());
+        String expectedLastModifiedValue = Formats.TIMESTAMP.format(modificationDate);
+
+        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        reaction.execute(response);
+
+        assertEquals(expectedLastModifiedValue, response.getHeader("Last-Modified"));
+    }
+
+    @Test
+    public void testLastModifiedHeaderForFilesInsideJar() throws Exception {
+        File jarFile = createJar();
+        ZipFile jar = new ZipFile(jarFile);
+        ZipEntry fileInsideJar = jar.getEntry(withoutTrailingSlash(RESOURCE_NAME));
+        Date fileDateInsideJar = new Date(fileInsideJar.getTime());
+        String expectedLastModifiedValue = Formats.TIMESTAMP.format(fileDateInsideJar);
+
+        ClassLoader classLoader = createClassLoaderFor(createJar());
+        Reaction reaction = createReactionInstanceFrom(classLoader);
+        reaction.execute(response);
+
+        assertEquals(expectedLastModifiedValue, response.getHeader(LAST_MODIFIED));
     }
 
     @Test
@@ -120,6 +152,10 @@ public class StaticFileTest {
         parentClassLoader.delegateResourceToChildrenClassLoaders(RESOURCE_NAME.substring(1));
 
         return new URLClassLoader(new URL[] { jarFile.toURI().toURL() }, parentClassLoader);
+    }
+
+    private String withoutTrailingSlash(String resourceName) {
+        return RESOURCE_NAME.substring(1);
     }
 
 }
