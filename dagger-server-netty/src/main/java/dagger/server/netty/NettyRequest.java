@@ -38,7 +38,7 @@ public class NettyRequest implements Request {
 
     @Override
     public String getHeader(String name) {
-        throw new NotImplementedYet();
+        return request.getHeader(name);
     }
 
 }

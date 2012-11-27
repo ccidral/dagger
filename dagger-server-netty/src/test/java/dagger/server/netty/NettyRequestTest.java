@@ -51,6 +51,17 @@ public class NettyRequestTest {
         request.getParameters().put("fruit", "orange");
     }
 
+    @Test
+    public void testGetHeader() {
+        HttpRequest mockHttpRequest = mock(HttpRequest.class);
+        when(mockHttpRequest.getHeader("Movie")).thenReturn("Star Wars");
+        when(mockHttpRequest.getHeader("Color")).thenReturn("Black");
+
+        Request request = new NettyRequest(mockHttpRequest);
+        assertEquals("Star Wars", request.getHeader("Movie"));
+        assertEquals("Black", request.getHeader("Color"));
+    }
+
     private HttpRequest mockHttpRequest(String uri) {
         HttpRequest mockHttpRequest = mock(HttpRequest.class);
         when(mockHttpRequest.getUri()).thenReturn(uri);
