@@ -59,7 +59,7 @@ public class StaticFile implements Reaction {
 
     private Date parseDate(String text) throws ParseException {
         if(text != null)
-            return Formats.TIMESTAMP.parse(text);
+            return Formats.timestamp().parse(text);
         return null;
     }
 
@@ -74,7 +74,7 @@ public class StaticFile implements Reaction {
         Date modificationDate = getFileModificationDate(fileUrl);
         response.setStatusCode(StatusCode.OK);
         response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
-        response.setHeader(HttpHeaderNames.LAST_MODIFIED, Formats.TIMESTAMP.format(modificationDate));
+        response.setHeader(HttpHeaderNames.LAST_MODIFIED, Formats.timestamp().format(modificationDate));
         write(fileUrl, response);
     }
 

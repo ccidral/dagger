@@ -23,7 +23,7 @@ public class NettyResponse implements Response {
         this.buffer = Unpooled.buffer();
 
         response.setContent(buffer);
-        setHeader(HttpHeaderNames.DATE, Formats.TIMESTAMP.format(clock.now()));
+        setHeader(HttpHeaderNames.DATE, Formats.timestamp().format(clock.now()));
     }
 
     @Override

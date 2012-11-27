@@ -81,7 +81,7 @@ public class StaticFileTest {
     @Test
     public void testLastModifiedHeader() throws Exception {
         Date modificationDate = getFileModificationDate();
-        String expectedLastModifiedValue = Formats.TIMESTAMP.format(modificationDate);
+        String expectedLastModifiedValue = Formats.timestamp().format(modificationDate);
 
         Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
         reaction.execute(request, response);
@@ -95,7 +95,7 @@ public class StaticFileTest {
         ZipFile jar = new ZipFile(jarFile);
         ZipEntry fileInsideJar = jar.getEntry(withoutTrailingSlash(RESOURCE_NAME));
         Date fileDateInsideJar = new Date(fileInsideJar.getTime());
-        String expectedLastModifiedValue = Formats.TIMESTAMP.format(fileDateInsideJar);
+        String expectedLastModifiedValue = Formats.timestamp().format(fileDateInsideJar);
 
         ClassLoader classLoader = createClassLoaderFor(createJar());
         Reaction reaction = createReactionInstanceFrom(classLoader);
@@ -123,7 +123,7 @@ public class StaticFileTest {
         Date modificationDate = getFileModificationDate();
         Date ifModifiedSince = new Date(modificationDate.getTime() + 1000);
 
-        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.TIMESTAMP.format(ifModifiedSince));
+        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.timestamp().format(ifModifiedSince));
 
         Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
         reaction.execute(request, response);
@@ -136,7 +136,7 @@ public class StaticFileTest {
         Date modificationDate = getFileModificationDate();
         Date ifModifiedSince = new Date(modificationDate.getTime());
 
-        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.TIMESTAMP.format(ifModifiedSince));
+        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.timestamp().format(ifModifiedSince));
 
         Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
         reaction.execute(request, response);
@@ -149,7 +149,7 @@ public class StaticFileTest {
         Date modificationDate = getFileModificationDate();
         Date ifModifiedSince = new Date(modificationDate.getTime() - 1000);
 
-        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.TIMESTAMP.format(ifModifiedSince));
+        when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.timestamp().format(ifModifiedSince));
 
         Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
         reaction.execute(request, response);
