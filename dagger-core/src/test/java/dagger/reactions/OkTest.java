@@ -45,4 +45,18 @@ public class OkTest {
         assertEquals("image/png", response.getHeader(HttpHeaderNames.CONTENT_TYPE));
     }
 
+    @Test
+    public void testSetHeader() throws Exception {
+        MockResponse response = new MockResponse();
+
+        Ok ok = new Ok("Test");
+        ok.setHeader("Car", "mustang");
+        ok.setHeader("Fruit", "apple");
+
+        ok.execute(null, response);
+
+        assertEquals("mustang", response.getHeader("Car"));
+        assertEquals("apple", response.getHeader("Fruit"));
+    }
+
 }
