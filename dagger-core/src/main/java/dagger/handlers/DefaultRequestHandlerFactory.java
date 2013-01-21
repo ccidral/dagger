@@ -16,4 +16,10 @@ public class DefaultRequestHandlerFactory implements RequestHandlerFactory {
         return new Get(route, action);
     }
 
+    @Override
+    public RequestHandler createPut(String routeSpecification, Action action) {
+        Route route = routeFactory.create(routeSpecification);
+        return new Put(route, action);
+    }
+
 }

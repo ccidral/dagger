@@ -2,6 +2,7 @@ package dagger.handlers;
 
 import dagger.*;
 import dagger.http.Request;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,32 +11,59 @@ import static org.mockito.Mockito.when;
 
 public class RequestHandlerFactoryTest {
 
-    @Test
-    public void testCreateGet() throws Exception {
+    private Action action;
+    private RequestHandlerFactory requestHandlerFactory;
+
+    @Before
+    public void setUp() {
         Route route = mock(Route.class);
+        RouteFactory routeFactory = mock(RouteFactory.class);
+
         when(route.matches("/foo")).thenReturn(true);
         when(route.matches("/foo/bar")).thenReturn(true);
-
-        RouteFactory routeFactory = mock(RouteFactory.class);
         when(routeFactory.create("/foo")).thenReturn(route);
 
-        Action action = mock(Action.class);
+        action = mock(Action.class);
+        requestHandlerFactory = new DefaultRequestHandlerFactory(routeFactory);
+    }
 
-        RequestHandlerFactory factory = new DefaultRequestHandlerFactory(routeFactory);
-        RequestHandler get = factory.createGet("/foo", action);
-
+    @Test
+    public void testCreateGet() throws Exception {
+        RequestHandler get = requestHandlerFactory.createGet("/foo", action);
 
         assertNotNull(get);
         assertTrue(get.canHandle(mockRequest("GET", "/foo")));
         assertTrue(get.canHandle(mockRequest("GET", "/foo/bar")));
         assertFalse(get.canHandle(mockRequest("GET", "/hello")));
         assertFalse(get.canHandle(mockRequest("POST", "/foo")));
+        assertFalse(get.canHandle(mockRequest("PUT", "/foo")));
+        assertFalse(get.canHandle(mockRequest("DELETE", "/foo")));
 
         Request request = mockRequest("GET", "/foo");
         Reaction expectedReaction = mock(Reaction.class);
         when(action.execute(request)).thenReturn(expectedReaction);
 
         Reaction reaction = get.handle(request);
+        assertSame(expectedReaction, reaction);
+    }
+
+    @Test
+    public void testCreatePut() throws Exception {
+        RequestHandler put = requestHandlerFactory.createPut("/foo", action);
+
+        assertNotNull(put);
+        assertTrue(put.canHandle(mockRequest("PUT", "/foo")));
+        assertTrue(put.canHandle(mockRequest("PUT", "/foo/bar")));
+        assertFalse(put.canHandle(mockRequest("PUT", "/hello")));
+        assertFalse(put.canHandle(mockRequest("POST", "/foo")));
+        assertFalse(put.canHandle(mockRequest("GET", "/foo")));
+        assertFalse(put.canHandle(mockRequest("DELETE", "/foo")));
+
+        Request request = mockRequest("PUT", "/foo");
+        Reaction expectedReaction = mock(Reaction.class);
+        when(action.execute(request)).thenReturn(expectedReaction);
+
+        Reaction reaction = put.handle(request);
         assertSame(expectedReaction, reaction);
     }
 

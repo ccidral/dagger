@@ -18,4 +18,10 @@ public class DefaultModuleBuilder implements ModuleBuilder {
         module.add(get);
     }
 
+    @Override
+    public void put(String route, Action action) {
+        RequestHandler handler = requestHandlerFactory.createPut(route, action);
+        module.add(handler);
+    }
+
 }
