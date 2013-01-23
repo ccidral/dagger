@@ -84,6 +84,15 @@ public class QueryStringTest {
     }
 
     @Test
+    public void testParametersAreDecoded() {
+        QueryString params = QueryString.fromUri("/hello/world?greeting=Hello%20World");
+
+        assertNotNull("Query parameters is not null", params);
+        assertEquals("There is only one query parameter", 1, params.size());
+        assertEquals("Hello World", params.get("greeting"));
+    }
+
+    @Test
     public void testMap() {
         QueryString params = QueryString.fromUri("/hello/world?fruit=apple&car=mustang");
         Map<String,String> map = params.map();

@@ -1,5 +1,7 @@
 package dagger.server.netty;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +17,20 @@ public class QueryString {
             boolean isEmptyValue = pair.endsWith("=");
             if(!key.isEmpty()) {
                 String value = getValue(keyValue, isEmptyValue);
-                map.put(key, value);
+                String decodedValue = decode(value);
+                map.put(key, decodedValue);
             }
+        }
+    }
+
+    private String decode(String value) {
+        if(value == null)
+            return null;
+
+        try {
+            return URLDecoder.decode(value, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 
