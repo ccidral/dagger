@@ -22,4 +22,10 @@ public class DefaultRequestHandlerFactory implements RequestHandlerFactory {
         return new Put(route, action);
     }
 
+    @Override
+    public RequestHandler createPost(String routeSpecification, Action action) {
+        Route route = routeFactory.create(routeSpecification);
+        return new Post(route, action);
+    }
+
 }

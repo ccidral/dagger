@@ -39,4 +39,19 @@ public class ModuleBuilderTest {
         verify(mockModule).add(put);
     }
 
+    @Test
+    public void testAddPostHandler() {
+        Module mockModule = mock(Module.class);
+        Action mockAction = mock(Action.class);
+        RequestHandlerFactory mockRequestHandlerFactory = mock(RequestHandlerFactory.class);
+        ModuleBuilder moduleBuilder = new DefaultModuleBuilder(mockModule, mockRequestHandlerFactory);
+
+        RequestHandler post = mock(RequestHandler.class);
+        when(mockRequestHandlerFactory.createPost("/foo", mockAction)).thenReturn(post);
+
+        moduleBuilder.post("/foo", mockAction);
+
+        verify(mockModule).add(post);
+    }
+
 }

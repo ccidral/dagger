@@ -6,4 +6,6 @@ public interface ModuleBuilder {
 
     void put(String route, Action action);
 
+    void post(String route, Action action);
+
 }

@@ -67,6 +67,26 @@ public class RequestHandlerFactoryTest {
         assertSame(expectedReaction, reaction);
     }
 
+    @Test
+    public void testCreatePost() throws Exception {
+        RequestHandler post = requestHandlerFactory.createPost("/foo", action);
+
+        assertNotNull(post);
+        assertTrue(post.canHandle(mockRequest("POST", "/foo")));
+        assertTrue(post.canHandle(mockRequest("POST", "/foo/bar")));
+        assertFalse(post.canHandle(mockRequest("POST", "/hello")));
+        assertFalse(post.canHandle(mockRequest("PUT", "/foo")));
+        assertFalse(post.canHandle(mockRequest("GET", "/foo")));
+        assertFalse(post.canHandle(mockRequest("DELETE", "/foo")));
+
+        Request request = mockRequest("POST", "/foo");
+        Reaction expectedReaction = mock(Reaction.class);
+        when(action.execute(request)).thenReturn(expectedReaction);
+
+        Reaction reaction = post.handle(request);
+        assertSame(expectedReaction, reaction);
+    }
+
     private Request mockRequest(String method, String uri) {
         Request request = mock(Request.class);
         when(request.getMethod()).thenReturn(method);

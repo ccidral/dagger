@@ -6,4 +6,6 @@ public interface RequestHandlerFactory {
 
     RequestHandler createPut(String route, Action action);
 
+    RequestHandler createPost(String route, Action action);
+
 }

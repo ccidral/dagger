@@ -24,4 +24,10 @@ public class DefaultModuleBuilder implements ModuleBuilder {
         module.add(handler);
     }
 
+    @Override
+    public void post(String route, Action action) {
+        RequestHandler handler = requestHandlerFactory.createPost(route, action);
+        module.add(handler);
+    }
+
 }
