@@ -1,10 +1,10 @@
 package dagger.server.netty;
 
 import dagger.http.Request;
-import dagger.lang.NotImplementedYet;
 import io.netty.handler.codec.http.HttpRequest;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class NettyRequest implements Request {
@@ -39,6 +39,27 @@ public class NettyRequest implements Request {
     @Override
     public String getHeader(String name) {
         return request.getHeader(name);
+    }
+
+    @Override
+    public String getCookie(String name) {
+        String cookieString = request.getHeader("Cookie");
+        Map<String, String> cookiesMap = parseCookies(cookieString);
+        if(cookiesMap == null)
+            return null;
+        return cookiesMap.get(name);
+    }
+
+    private Map<String, String> parseCookies(String cookiesString) {
+        if(cookiesString == null)
+            return null;
+
+        Map<String, String> map = new HashMap<>();
+        for(String cookie : cookiesString.split("; ")) {
+            String[] keyValue = cookie.split("=");
+            map.put(keyValue[0], keyValue[1]);
+        }
+        return map;
     }
 
 }

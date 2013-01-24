@@ -2,7 +2,6 @@ package dagger.handlers;
 
 import dagger.*;
 import dagger.http.Request;
-import dagger.http.Response;
 import org.junit.Test;
 
 import java.util.Map;
@@ -70,6 +69,11 @@ public class GetTest {
 
         @Override
         public String getHeader(String name) {
+            return null;
+        }
+
+        @Override
+        public String getCookie(String name) {
             return null;
         }
 

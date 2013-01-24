@@ -1,9 +1,6 @@
 package dagger.server.netty;
 
-import dagger.http.Formats;
-import dagger.http.HttpHeaderNames;
-import dagger.http.Response;
-import dagger.http.StatusCode;
+import dagger.http.*;
 import dagger.lang.time.Clock;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -12,6 +9,9 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class NettyResponse implements Response {
 
@@ -42,6 +42,20 @@ public class NettyResponse implements Response {
     }
 
     @Override
+    public void setCookie(String name, String value) {
+        validateCookie(name, value);
+        setCookieWithoutValidatingIt(name, value);
+    }
+
+    @Override
+    public void setCookie(String name, String value, CookieOptions options) {
+        validateCookie(name, value);
+        String optionsString = options.getOptionsString();
+        String valueWithOptions = value + (optionsString != null ? "; " + optionsString : "");
+        setCookieWithoutValidatingIt(name, valueWithOptions);
+    }
+
+    @Override
     public OutputStream getOutputStream() {
         return new OutputStream() {
             @Override
@@ -49,6 +63,32 @@ public class NettyResponse implements Response {
                 buffer.writeByte(oneByte);
             }
         };
+    }
+
+    private void validateCookie(String name, String value) {
+        if(name.contains("=")) throw new IllegalArgumentException("Cookie name cannot contain the equals sign (=)");
+        if(value.contains(",")) throw new IllegalArgumentException("Cookie value cannot contain commas (,)");
+        if(value.contains(";")) throw new IllegalArgumentException("Cookie value cannot contain semicolons (;)");
+        if(value.contains(" ")) throw new IllegalArgumentException("Cookie value cannot contain whitespaces");
+    }
+
+    private void setCookieWithoutValidatingIt(String name, String value) {
+        List<String> allOtherCookieHeaders = getAllCookiesExcept(name);
+        allOtherCookieHeaders.add(name + "=" + value);
+        response.setHeader("Set-Cookie", allOtherCookieHeaders);
+    }
+
+    private List<String> getAllCookiesExcept(String exceptionCookieName) {
+        List<String> allCookieHeaders = new ArrayList<>(response.getHeaders("Set-Cookie"));
+        Iterator<String> iterator = allCookieHeaders.iterator();
+        while(iterator.hasNext()) {
+            String cookieHeader = iterator.next();
+            if(cookieHeader.startsWith(exceptionCookieName + "=")) {
+                iterator.remove();
+                break;
+            }
+        }
+        return allCookieHeaders;
     }
 
 }

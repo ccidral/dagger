@@ -7,16 +7,13 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpTransferEncoding;
 import io.netty.handler.codec.http.HttpVersion;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 class MockNettyHttpResponse implements HttpResponse {
 
     private ByteBuf byteBuf;
     private HttpResponseStatus httpResponseStatus;
-    private Map headers = new HashMap();
+    private Map<String, List<Object>> headers = new HashMap<>();
 
     public String getWrittenText() {
         return new String(byteBuf.array(), 0, byteBuf.readableBytes());
@@ -43,24 +40,30 @@ class MockNettyHttpResponse implements HttpResponse {
     }
 
     @Override
-    public String getHeader(String s) {
-        if(headers.containsKey(s))
-            return headers.get(s).toString();
+    public String getHeader(String name) {
+        if(headers.containsKey(name))
+            return headers.get(name).get(0).toString();
 
         return null;
     }
 
     @Override
-    public void setHeader(String s, Object o) {
-        headers.put(s, o);
+    public void setHeader(String name, Object value) {
+        List<Object> values = new ArrayList<>();
+        values.add(value);
+        headers.put(name, values);
     }
 
 
     // ~~~ NOT IMPLEMENTED YET ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
     @Override
-    public List<String> getHeaders(String s) {
-        throw new NotImplementedYet();
+    public List<String> getHeaders(String headerName) {
+        List<String> list = new ArrayList<>();
+        if(headers.containsKey(headerName))
+            for(Object value : headers.get(headerName))
+                list.add(value.toString());
+        return Collections.unmodifiableList(list);
     }
 
     @Override
@@ -89,13 +92,22 @@ class MockNettyHttpResponse implements HttpResponse {
     }
 
     @Override
-    public void addHeader(String s, Object o) {
-        throw new NotImplementedYet();
+    public void addHeader(String name, Object value) {
+        List<Object> values = headers.get(name);
+        if(values == null) {
+            values = new ArrayList<>();
+            headers.put(name, values);
+        }
+        values.add(value);
     }
 
     @Override
-    public void setHeader(String s, Iterable<?> objects) {
-        throw new NotImplementedYet();
+    public void setHeader(String name, Iterable<?> values) {
+        Iterator<?> iterator = values.iterator();
+        ArrayList<Object> list = new ArrayList<>();
+        while(iterator.hasNext())
+            list.add(iterator.next());
+        headers.put(name, list);
     }
 
     @Override

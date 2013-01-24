@@ -122,6 +122,11 @@ public class ModuleTest {
             return null;
         }
 
+        @Override
+        public String getCookie(String name) {
+            return null;
+        }
+
     }
 
 }

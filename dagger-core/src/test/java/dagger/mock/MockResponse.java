@@ -1,7 +1,9 @@
 package dagger.mock;
 
+import dagger.http.CookieOptions;
 import dagger.http.Response;
 import dagger.http.StatusCode;
+import dagger.lang.NotImplementedYet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,6 +25,16 @@ public class MockResponse implements Response {
     @Override
     public void setHeader(String name, String value) {
         headers.put(name, value);
+    }
+
+    @Override
+    public void setCookie(String name, String value) {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public void setCookie(String name, String value, CookieOptions options) {
+        throw new NotImplementedYet();
     }
 
     @Override

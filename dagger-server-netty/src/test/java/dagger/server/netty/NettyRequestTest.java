@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,6 +61,24 @@ public class NettyRequestTest {
         Request request = new NettyRequest(mockHttpRequest);
         assertEquals("Star Wars", request.getHeader("Movie"));
         assertEquals("Black", request.getHeader("Color"));
+    }
+
+    @Test
+    public void testGettingUnexistentCookieReturnsNull() {
+        HttpRequest mockHttpRequest = mock(HttpRequest.class);
+        Request request = new NettyRequest(mockHttpRequest);
+        assertNull(request.getCookie("bogus"));
+    }
+
+    @Test
+    public void testGetCookie() {
+        HttpRequest mockHttpRequest = mock(HttpRequest.class);
+        when(mockHttpRequest.getHeader("Cookie"))
+            .thenReturn("foo=bar; hello=world");
+
+        Request request = new NettyRequest(mockHttpRequest);
+        assertEquals("bar", request.getCookie("foo"));
+        assertEquals("world", request.getCookie("hello"));
     }
 
     private HttpRequest mockHttpRequest(String uri) {

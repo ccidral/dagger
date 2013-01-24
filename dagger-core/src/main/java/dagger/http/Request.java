@@ -12,4 +12,6 @@ public interface Request {
 
     String getHeader(String name);
 
+    String getCookie(String name);
+
 }

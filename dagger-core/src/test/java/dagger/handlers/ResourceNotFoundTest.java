@@ -47,5 +47,10 @@ public class ResourceNotFoundTest {
             return null;
         }
 
+        @Override
+        public String getCookie(String name) {
+            return null;
+        }
+
     }
 }

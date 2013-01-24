@@ -75,6 +75,11 @@ public class PutTest {
             return null;
         }
 
+        @Override
+        public String getCookie(String name) {
+            return null;
+        }
+
     }
 
     private class UriEqualsTo implements Route {
