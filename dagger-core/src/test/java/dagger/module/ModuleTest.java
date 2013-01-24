@@ -8,9 +8,9 @@ import dagger.http.Request;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Map;
-
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ModuleTest {
 
@@ -30,7 +30,7 @@ public class ModuleTest {
 
     @Test
     public void testRequestHandlerForRequest() {
-        Request request = new MockRequest("/foo/bar");
+        Request request = mockRequest("/foo/bar");
         RequestHandler requestHandler = module.getHandlerFor(request);
 
         assertSame(handler1, requestHandler);
@@ -38,7 +38,7 @@ public class ModuleTest {
 
     @Test
     public void testRequestHandlerNotFoundForRequest() {
-        Request request = new MockRequest("/bar");
+        Request request = mockRequest("/bar");
         RequestHandler requestHandler = module.getHandlerFor(request);
 
         assertNotNull(requestHandler);
@@ -47,8 +47,14 @@ public class ModuleTest {
 
     @Test
     public void testRequestHandlersAreProcessedInTheSameOrderAsTheyWereAdded() {
-        assertSame(handler1, module.getHandlerFor(new MockRequest("/foo/bar")));
-        assertSame(handler2, module.getHandlerFor(new MockRequest("/foo/bar/baz")));
+        assertSame(handler1, module.getHandlerFor(mockRequest("/foo/bar")));
+        assertSame(handler2, module.getHandlerFor(mockRequest("/foo/bar/baz")));
+    }
+
+    private Request mockRequest(String uri) {
+        Request request = mock(Request.class);
+        when(request.getURI()).thenReturn(uri);
+        return request;
     }
 
     private static class UriEqualsTo implements RequestHandler {
@@ -92,39 +98,6 @@ public class ModuleTest {
         @Override
         public String toString() {
             return "uri starting with "+ prefix;
-        }
-
-    }
-
-    private static class MockRequest implements Request {
-
-        private final String uri;
-
-        public MockRequest(String uri) {
-            this.uri = uri;
-        }
-
-        public String getURI() {
-            return uri;
-        }
-
-        public String getMethod() {
-            return null;
-        }
-
-        @Override
-        public Map<String, String> getParameters() {
-            return null;
-        }
-
-        @Override
-        public String getHeader(String name) {
-            return null;
-        }
-
-        @Override
-        public String getCookie(String name) {
-            return null;
         }
 
     }

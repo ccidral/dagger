@@ -5,11 +5,10 @@ import dagger.http.Request;
 import dagger.reactions.NotFound;
 import org.junit.Test;
 
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class ResourceNotFoundTest {
 
@@ -20,37 +19,11 @@ public class ResourceNotFoundTest {
 
     @Test
     public void testReturnsNotFoundResultWhenHandlingRequest() {
-        Request request = new MockRequest();
+        Request request = mock(Request.class);
         Reaction reaction = new ResourceNotFound().handle(request);
 
         assertNotNull(reaction);
         assertEquals(NotFound.class, reaction.getClass());
     }
 
-    private static class MockRequest implements Request {
-
-        public String getURI() {
-            return null;
-        }
-
-        public String getMethod() {
-            return null;
-        }
-
-        @Override
-        public Map<String, String> getParameters() {
-            return null;
-        }
-
-        @Override
-        public String getHeader(String name) {
-            return null;
-        }
-
-        @Override
-        public String getCookie(String name) {
-            return null;
-        }
-
-    }
 }

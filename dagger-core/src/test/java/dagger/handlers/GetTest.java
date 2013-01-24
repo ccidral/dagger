@@ -4,26 +4,25 @@ import dagger.*;
 import dagger.http.Request;
 import org.junit.Test;
 
-import java.util.Map;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class GetTest {
 
     @Test
     public void testHandlesGetMethodOnly() {
         RequestHandler get = new Get(route("/foo"), new MockAction());
-        assertTrue("Should handle GET", get.canHandle(new MockRequest("GET", "/foo")));
-        assertFalse("Should not handle POST", get.canHandle(new MockRequest("POST", "/foo")));
-        assertFalse("Should not handle PUT", get.canHandle(new MockRequest("PUT", "/foo")));
-        assertFalse("Should not handle DELETE", get.canHandle(new MockRequest("DELETE", "/foo")));
+        assertTrue("Should handle GET", get.canHandle(mockRequest("GET", "/foo")));
+        assertFalse("Should not handle POST", get.canHandle(mockRequest("POST", "/foo")));
+        assertFalse("Should not handle PUT", get.canHandle(mockRequest("PUT", "/foo")));
+        assertFalse("Should not handle DELETE", get.canHandle(mockRequest("DELETE", "/foo")));
     }
 
     @Test
     public void testDoesNotHandleDifferentResource() {
         RequestHandler get = new Get(route("/foo"), new MockAction());
-        assertFalse("Should not handle route /bar", get.canHandle(new MockRequest("GET", "/bar")));
+        assertFalse("Should not handle route /bar", get.canHandle(mockRequest("GET", "/bar")));
     }
 
     @Test
@@ -32,51 +31,21 @@ public class GetTest {
         MockAction action = new MockAction(expectedReaction);
         RequestHandler get = new Get(route("/foo"), action);
 
-        Request request = new MockRequest("GET", "/foo");
+        Request request = mockRequest("GET", "/foo");
         Reaction actualReaction = get.handle(request);
         assertSame(request, action.receivedRequest);
         assertSame(expectedReaction, actualReaction);
     }
 
-    private Route route(String uri) {
-        return new UriEqualsTo(uri);
+    private Request mockRequest(String method, String uri) {
+        Request request = mock(Request.class);
+        when(request.getMethod()).thenReturn(method);
+        when(request.getURI()).thenReturn(uri);
+        return request;
     }
 
-    private static class MockRequest implements Request {
-
-        private final String method;
-        private final String uri;
-
-        public MockRequest(String method, String uri) {
-            this.method = method;
-            this.uri = uri;
-        }
-
-        @Override
-        public String getURI() {
-            return uri;
-        }
-
-        @Override
-        public String getMethod() {
-            return method;
-        }
-
-        @Override
-        public Map<String, String> getParameters() {
-            return null;
-        }
-
-        @Override
-        public String getHeader(String name) {
-            return null;
-        }
-
-        @Override
-        public String getCookie(String name) {
-            return null;
-        }
-
+    private Route route(String uri) {
+        return new UriEqualsTo(uri);
     }
 
     private class UriEqualsTo implements Route {
