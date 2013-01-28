@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -20,13 +21,12 @@ public class NettyResponseTest {
 
     private MockNettyHttpResponse mockNettyHttpResponse;
     private Response response;
-    private Clock mockClock;
 
     @Before
     public void setUp() throws Exception {
         mockNettyHttpResponse = new MockNettyHttpResponse();
-        mockClock = mock(Clock.class);
 
+        Clock mockClock = mock(Clock.class);
         when(mockClock.now()).thenReturn(CURRENT_TIME);
 
         response = new NettyResponse(mockNettyHttpResponse, mockClock);
@@ -73,66 +73,73 @@ public class NettyResponseTest {
 
     @Test
     public void testSetNewCookie() {
-        response.setCookie("foo", "bar");
+        Cookie cookie = mockCookie("Greeting", "Hello");
+
+        response.setCookie(cookie);
 
         List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
         assertEquals(1, cookieHeaders.size());
-        assertTrue(cookieHeaders.contains("foo=bar"));
-    }
-
-    @Test
-    public void testSetTwoDifferentNewCookies() {
-        response.setCookie("foo", "bar");
-        response.setCookie("hello", "world");
-
-        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
-        assertEquals(2, cookieHeaders.size());
-        assertTrue(cookieHeaders.contains("foo=bar"));
-        assertTrue(cookieHeaders.contains("hello=world"));
-    }
-
-    @Test
-    public void testSetExistingCookie() {
-        response.setCookie("foo", "bar");
-        response.setCookie("foo", "blurbles");
-
-        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
-        assertEquals(1, cookieHeaders.size());
-        assertTrue(cookieHeaders.contains("foo=blurbles"));
-    }
-
-    @Test
-    public void testSettingExistingCookieDoesNotAffectOtherCookies() {
-        response.setCookie("foo", "bar");
-        response.setCookie("hello", "world");
-        response.setCookie("foo", "blurbles");
-
-        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
-        assertEquals(2, cookieHeaders.size());
-        assertTrue(cookieHeaders.contains("foo=blurbles"));
-        assertTrue(cookieHeaders.contains("hello=world"));
+        assertTrue(cookieHeaders.contains("Greeting=Hello"));
     }
 
     @Test
     public void testSetCookieWithOptions() {
-        CookieOptions options = mock(CookieOptions.class);
-        when(options.getOptionsString()).thenReturn("Secure; HttpOnly");
+        Cookie cookie = mockCookie("Greeting", "Hello", "Option1", "Option2");
 
-        response.setCookie("hello", "world", options);
+        response.setCookie(cookie);
 
         List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
-        assertEquals("hello=world; Secure; HttpOnly", cookieHeaders.get(0));
+        assertEquals(1, cookieHeaders.size());
+        assertEquals("Greeting=Hello; Option1; Option2", cookieHeaders.get(0));
+    }
+
+    @Test
+    public void testSetTwoDifferentNewCookies() {
+        Cookie greeting = mockCookie("Greeting", "Hello");
+        Cookie fruit = mockCookie("Fruit", "Apple");
+
+        response.setCookie(greeting);
+        response.setCookie(fruit);
+
+        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
+        assertEquals(2, cookieHeaders.size());
+        assertTrue(cookieHeaders.contains("Greeting=Hello"));
+        assertTrue(cookieHeaders.contains("Fruit=Apple"));
+    }
+
+    @Test
+    public void testSetExistingCookie() {
+        Cookie hello = mockCookie("Greeting", "Hello");
+        Cookie ahoy = mockCookie("Greeting", "Ahoy");
+
+        response.setCookie(hello);
+        response.setCookie(ahoy);
+
+        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
+        assertEquals(1, cookieHeaders.size());
+        assertTrue(cookieHeaders.contains("Greeting=Ahoy"));
+    }
+
+    @Test
+    public void testSettingExistingCookieDoesNotAffectOtherCookies() {
+        Cookie fruit = mockCookie("Fruit", "Apple");
+        Cookie hello = mockCookie("Greeting", "Hello");
+        Cookie ahoy = mockCookie("Greeting", "Ahoy");
+
+        response.setCookie(hello);
+        response.setCookie(fruit);
+        response.setCookie(ahoy);
+
+        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
+        assertEquals(2, cookieHeaders.size());
+        assertTrue(cookieHeaders.contains("Fruit=Apple"));
+        assertTrue(cookieHeaders.contains("Greeting=Ahoy"));
     }
 
     @Test
     public void testCookieNameCannotContainTheEqualsSign() {
         try {
-            response.setCookie("hello=", "world");
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {}
-
-        try {
-            response.setCookie("hello=", "world", mock(CookieOptions.class));
+            response.setCookie(mockCookie("hello=", "world"));
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {}
     }
@@ -140,12 +147,7 @@ public class NettyResponseTest {
     @Test
     public void testCookieValueCannotContainCommas() {
         try {
-            response.setCookie("hello", "wor,ld");
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {}
-
-        try {
-            response.setCookie("hello", "wor,ld", mock(CookieOptions.class));
+            response.setCookie(mockCookie("hello", "wor,ld"));
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {}
     }
@@ -153,12 +155,7 @@ public class NettyResponseTest {
     @Test
     public void testCookieValueCannotContainSemicolons() {
         try {
-            response.setCookie("hello", "wor;ld");
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {}
-
-        try {
-            response.setCookie("hello", "wor;ld", mock(CookieOptions.class));
+            response.setCookie(mockCookie("hello", "wor;ld"));
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {}
     }
@@ -166,14 +163,30 @@ public class NettyResponseTest {
     @Test
     public void testCookieValueCannotContainWhitespaces() {
         try {
-            response.setCookie("hello", "wor ld");
+            response.setCookie(mockCookie("hello", "wor ld"));
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {}
+    }
 
-        try {
-            response.setCookie("hello", "wor ld", mock(CookieOptions.class));
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {}
+    private Cookie mockCookie(String name, String value, String... options) {
+        Cookie hello = mock(Cookie.class);
+        List<CookieOption> cookieOptions = mockCookieOptions(options);
+
+        when(hello.getName()).thenReturn(name);
+        when(hello.getValue()).thenReturn(value);
+        when(hello.getOptions()).thenReturn(cookieOptions);
+
+        return hello;
+    }
+
+    private List<CookieOption> mockCookieOptions(String[] optionValues) {
+        List<CookieOption> options = new ArrayList<>();
+        for(String value : optionValues) {
+            CookieOption option = mock(CookieOption.class);
+            when(option.getValue()).thenReturn(value);
+            options.add(option);
+        }
+        return options;
     }
 
     private static Date timestamp(int year, int month, int day, int hours, int minutes, int seconds) {

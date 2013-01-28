@@ -42,17 +42,19 @@ public class NettyResponse implements Response {
     }
 
     @Override
-    public void setCookie(String name, String value) {
-        validateCookie(name, value);
-        setCookieWithoutValidatingIt(name, value);
+    public void setCookie(Cookie cookie) {
+        validateCookie(cookie);
+        String value = getCookieValueWithOptions(cookie);
+        List<String> allOtherCookieHeaders = getAllCookiesExcept(cookie.getName());
+        allOtherCookieHeaders.add(cookie.getName() + "=" + value);
+        response.setHeader("Set-Cookie", allOtherCookieHeaders);
     }
 
-    @Override
-    public void setCookie(String name, String value, CookieOptions options) {
-        validateCookie(name, value);
-        String optionsString = options.getOptionsString();
-        String valueWithOptions = value + (optionsString != null ? "; " + optionsString : "");
-        setCookieWithoutValidatingIt(name, valueWithOptions);
+    private String getCookieValueWithOptions(Cookie cookie) {
+        String value = cookie.getValue();
+        if(!cookie.getOptions().isEmpty())
+            value = value + printCookieOptions(cookie);
+        return value;
     }
 
     @Override
@@ -65,17 +67,13 @@ public class NettyResponse implements Response {
         };
     }
 
-    private void validateCookie(String name, String value) {
+    private void validateCookie(Cookie cookie) {
+        String name = cookie.getName();
+        String value = cookie.getValue();
         if(name.contains("=")) throw new IllegalArgumentException("Cookie name cannot contain the equals sign (=)");
         if(value.contains(",")) throw new IllegalArgumentException("Cookie value cannot contain commas (,)");
         if(value.contains(";")) throw new IllegalArgumentException("Cookie value cannot contain semicolons (;)");
         if(value.contains(" ")) throw new IllegalArgumentException("Cookie value cannot contain whitespaces");
-    }
-
-    private void setCookieWithoutValidatingIt(String name, String value) {
-        List<String> allOtherCookieHeaders = getAllCookiesExcept(name);
-        allOtherCookieHeaders.add(name + "=" + value);
-        response.setHeader("Set-Cookie", allOtherCookieHeaders);
     }
 
     private List<String> getAllCookiesExcept(String exceptionCookieName) {
@@ -89,6 +87,13 @@ public class NettyResponse implements Response {
             }
         }
         return allCookieHeaders;
+    }
+
+    private String printCookieOptions(Cookie cookie) {
+        String result = "";
+        for(CookieOption option : cookie.getOptions())
+            result += "; " + option.getValue();
+        return result;
     }
 
 }

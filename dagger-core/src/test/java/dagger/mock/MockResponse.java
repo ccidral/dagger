@@ -1,6 +1,6 @@
 package dagger.mock;
 
-import dagger.http.CookieOptions;
+import dagger.http.Cookie;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.lang.NotImplementedYet;
@@ -28,12 +28,7 @@ public class MockResponse implements Response {
     }
 
     @Override
-    public void setCookie(String name, String value) {
-        throw new NotImplementedYet();
-    }
-
-    @Override
-    public void setCookie(String name, String value, CookieOptions options) {
+    public void setCookie(Cookie cookie) {
         throw new NotImplementedYet();
     }
 
