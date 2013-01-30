@@ -71,6 +71,7 @@ public class NettyResponse implements Response {
         String name = cookie.getName();
         String value = cookie.getValue();
         if(name.contains("=")) throw new IllegalArgumentException("Cookie name cannot contain the equals sign (=)");
+        if(value == null) throw new IllegalArgumentException("Cookie value cannot be null");
         if(value.contains(",")) throw new IllegalArgumentException("Cookie value cannot contain commas (,)");
         if(value.contains(";")) throw new IllegalArgumentException("Cookie value cannot contain semicolons (;)");
         if(value.contains(" ")) throw new IllegalArgumentException("Cookie value cannot contain whitespaces");

@@ -145,6 +145,14 @@ public class NettyResponseTest {
     }
 
     @Test
+    public void testCookieValueCannotBeNull() {
+        try {
+            response.setCookie(mockCookie("hello", null));
+            fail("Should throw IllegalArgumentException");
+        } catch (IllegalArgumentException e) {}
+    }
+
+    @Test
     public void testCookieValueCannotContainCommas() {
         try {
             response.setCookie(mockCookie("hello", "wor,ld"));
