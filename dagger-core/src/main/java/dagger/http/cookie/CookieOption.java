@@ -1,4 +1,4 @@
-package dagger.http;
+package dagger.http.cookie;
 
 public interface CookieOption {
 

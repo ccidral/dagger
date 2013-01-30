@@ -1,7 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
-import dagger.http.Cookie;
+import dagger.http.cookie.Cookie;
 import dagger.http.Request;
 import dagger.http.Response;
 

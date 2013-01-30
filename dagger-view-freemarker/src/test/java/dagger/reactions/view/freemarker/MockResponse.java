@@ -1,6 +1,6 @@
 package dagger.reactions.view.freemarker;
 
-import dagger.http.Cookie;
+import dagger.http.cookie.Cookie;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.lang.NotImplementedYet;

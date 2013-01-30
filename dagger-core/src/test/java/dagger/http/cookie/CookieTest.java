@@ -1,5 +1,8 @@
-package dagger.http;
+package dagger.http.cookie;
 
+import dagger.http.cookie.Cookie;
+import dagger.http.cookie.CookieImpl;
+import dagger.http.cookie.CookieOption;
 import org.junit.Before;
 import org.junit.Test;
 

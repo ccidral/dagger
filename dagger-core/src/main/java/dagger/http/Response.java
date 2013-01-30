@@ -1,5 +1,7 @@
 package dagger.http;
 
+import dagger.http.cookie.Cookie;
+
 import java.io.OutputStream;
 
 public interface Response {

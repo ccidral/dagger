@@ -1,4 +1,4 @@
-package dagger.http;
+package dagger.http.cookie;
 
 import java.util.ArrayList;
 import java.util.Collections;

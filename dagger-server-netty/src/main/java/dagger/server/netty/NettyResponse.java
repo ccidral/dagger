@@ -1,6 +1,8 @@
 package dagger.server.netty;
 
 import dagger.http.*;
+import dagger.http.cookie.Cookie;
+import dagger.http.cookie.CookieOption;
 import dagger.lang.time.Clock;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
