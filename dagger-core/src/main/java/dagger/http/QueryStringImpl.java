@@ -1,4 +1,4 @@
-package dagger.server.netty;
+package dagger.http;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -6,11 +6,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QueryString {
+public class QueryStringImpl implements QueryString {
 
     Map<String, String> map = new HashMap<>();
 
-    public QueryString(String queryString) {
+    public QueryStringImpl(String queryString) {
         for(String pair : queryString.split("&")) {
             String[] keyValue = pair.split("=");
             String key = keyValue[0].trim();
@@ -47,17 +47,20 @@ public class QueryString {
     public static QueryString fromUri(String uri) {
         int questionMarkIndex = uri.indexOf('?');
         String queryString = questionMarkIndex > -1 ? uri.substring(questionMarkIndex + 1) : "";
-        return new QueryString(queryString);
+        return new QueryStringImpl(queryString);
     }
 
+    @Override
     public int size() {
         return map.size();
     }
 
+    @Override
     public String get(String name) {
         return map.get(name);
     }
 
+    @Override
     public Map<String, String> map() {
         return Collections.unmodifiableMap(map);
     }

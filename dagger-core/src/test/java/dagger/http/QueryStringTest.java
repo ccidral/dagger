@@ -1,4 +1,4 @@
-package dagger.server.netty;
+package dagger.http;
 
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ public class QueryStringTest {
 
     @Test
     public void testNoQueryParametersFromUri() {
-        QueryString params = QueryString.fromUri("/hello/world");
+        QueryString params = QueryStringImpl.fromUri("/hello/world");
 
         assertNotNull("QueryString is not null", params);
         assertEquals("Has zero parameters", 0, params.size());
@@ -18,7 +18,7 @@ public class QueryStringTest {
 
     @Test
     public void testQueryParametersFromUri() {
-        QueryString params = QueryString.fromUri("/hello/world?fruit=apple&car=mustang");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?fruit=apple&car=mustang");
 
         assertNotNull("Query parameters is not null", params);
         assertEquals("Two query parameters", 2, params.size());
@@ -28,7 +28,7 @@ public class QueryStringTest {
 
     @Test
     public void testDiscardParameterWithEmptyName() {
-        QueryString params = QueryString.fromUri("/hello/world?=apple&car=fiesta");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?=apple&car=fiesta");
 
         assertNotNull("Query parameters is not null", params);
         assertEquals("There is only one query parameter", 1, params.size());
@@ -37,7 +37,7 @@ public class QueryStringTest {
 
     @Test
     public void testDiscardParameterWithWhitespaceOnlyName() {
-        QueryString params = QueryString.fromUri("/hello/world?   =apple&car=fiesta");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?   =apple&car=fiesta");
 
         assertNotNull("Query parameters is not null", params);
         assertEquals("There is only one query parameter", 1, params.size());
@@ -46,7 +46,7 @@ public class QueryStringTest {
 
     @Test
     public void testDiscardWhitespaceOnlyParameter() {
-        QueryString params = QueryString.fromUri("/hello/world?   &car=fiesta");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?   &car=fiesta");
 
         assertNotNull("Query parameters is not null", params);
         assertEquals("There is only one query parameter", 1, params.size());
@@ -55,7 +55,7 @@ public class QueryStringTest {
 
     @Test
     public void testParameterWithEmptyValueIsEmptyString() {
-        QueryString params = QueryString.fromUri("/hello/world?fruit=&car=mustang");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?fruit=&car=mustang");
 
         assertNotNull("Query parameters is not null", params);
         assertEquals("There are two query parameters", 2, params.size());
@@ -65,7 +65,7 @@ public class QueryStringTest {
 
     @Test
     public void testParameterWithNoValueIsNull() {
-        QueryString params = QueryString.fromUri("/hello/world?fruit&car=ferrari");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?fruit&car=ferrari");
 
         assertNotNull("Query parameters is not null", params);
         assertEquals("There are two query parameters", 2, params.size());
@@ -75,7 +75,7 @@ public class QueryStringTest {
 
     @Test
     public void testParameterWithWhitespaceOnlyValue() {
-        QueryString params = QueryString.fromUri("/hello/world?fruit=   &car=bmw");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?fruit=   &car=bmw");
 
         assertNotNull("Query parameters is not null", params);
         assertEquals("There are two query parameters", 2, params.size());
@@ -85,7 +85,7 @@ public class QueryStringTest {
 
     @Test
     public void testParametersAreDecoded() {
-        QueryString params = QueryString.fromUri("/hello/world?greeting=Hello%20World");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?greeting=Hello%20World");
 
         assertNotNull("Query parameters is not null", params);
         assertEquals("There is only one query parameter", 1, params.size());
@@ -94,7 +94,7 @@ public class QueryStringTest {
 
     @Test
     public void testMap() {
-        QueryString params = QueryString.fromUri("/hello/world?fruit=apple&car=mustang");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?fruit=apple&car=mustang");
         Map<String,String> map = params.map();
 
         assertNotNull("Returned map is not null", map);
@@ -105,13 +105,13 @@ public class QueryStringTest {
 
     @Test
     public void testNeverReturnSameMapInstance() {
-        QueryString params = QueryString.fromUri("/hello/world?fruit=apple&car=mustang");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?fruit=apple&car=mustang");
         assertNotSame(params.map(), params.map());
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testReturnedMapIsUnmodifiable() {
-        QueryString params = QueryString.fromUri("/hello/world?fruit=apple&car=mustang");
+        QueryString params = QueryStringImpl.fromUri("/hello/world?fruit=apple&car=mustang");
         params.map().put("fruit", "orange");
     }
 

@@ -1,15 +1,12 @@
 package dagger.server.netty;
 
+import dagger.http.QueryString;
 import dagger.http.Request;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import org.junit.Test;
 
-import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,17 +36,11 @@ public class NettyRequestTest {
     @Test
     public void testParametersFromQueryString() {
         Request request = new NettyRequest(mockHttpRequest("/hello/world?fruit=apple&car=mustang"));
-        Map<String, String> queryParameters = request.getParameters();
+        QueryString queryParameters = request.getQueryString();
 
         assertNotNull(queryParameters);
         assertEquals("apple", queryParameters.get("fruit"));
         assertEquals("mustang", queryParameters.get("car"));
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void testParametersFromQueryStringAreUnmodifiable() {
-        Request request = new NettyRequest(mockHttpRequest("/hello/world?fruit=apple&car=mustang"));
-        request.getParameters().put("fruit", "orange");
     }
 
     @Test
