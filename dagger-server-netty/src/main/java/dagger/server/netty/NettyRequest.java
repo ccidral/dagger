@@ -3,8 +3,10 @@ package dagger.server.netty;
 import dagger.http.QueryString;
 import dagger.http.QueryStringImpl;
 import dagger.http.Request;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.http.HttpRequest;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +50,11 @@ public class NettyRequest implements Request {
         if(cookiesMap == null)
             return null;
         return cookiesMap.get(name);
+    }
+
+    @Override
+    public InputStream getBody() {
+        return new ByteBufInputStream(request.getContent());
     }
 
     private Map<String, String> parseCookies(String cookiesString) {

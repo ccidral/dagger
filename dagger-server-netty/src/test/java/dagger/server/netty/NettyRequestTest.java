@@ -2,9 +2,15 @@ package dagger.server.netty;
 
 import dagger.http.QueryString;
 import dagger.http.Request;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -70,6 +76,20 @@ public class NettyRequestTest {
         Request request = new NettyRequest(mockHttpRequest);
         assertEquals("bar", request.getCookie("foo"));
         assertEquals("world", request.getCookie("hello"));
+    }
+
+    @Test
+    public void testBody() throws IOException {
+        ByteBuf requestContent = Unpooled.copiedBuffer("Hello world".getBytes());
+
+        HttpRequest mockHttpRequest = mock(HttpRequest.class);
+        when(mockHttpRequest.getContent()).thenReturn(requestContent);
+
+        Request request = new NettyRequest(mockHttpRequest);
+
+        InputStream inputStream = request.getBody();
+        String bodyString = IOUtils.toString(inputStream);
+        assertEquals("Hello world", bodyString);
     }
 
     private HttpRequest mockHttpRequest(String uri) {
