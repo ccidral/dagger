@@ -4,6 +4,7 @@ import dagger.Module;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.http.HttpChunkAggregator;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
@@ -21,6 +22,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         ChannelPipeline p = ch.pipeline();
 
         p.addLast("decoder", new HttpRequestDecoder());
+        p.addLast("aggregator", new HttpChunkAggregator(1024 * 1024));
         p.addLast("encoder", new HttpResponseEncoder());
         p.addLast("deflater", new HttpContentCompressor());
         p.addLast("handler", new HttpServerHandler(module));
