@@ -15,7 +15,7 @@ public class Expires implements CookieOption {
     private final Date expirationDate;
 
     static {
-        DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+        DATE_FORMAT = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss 'GMT'", Locale.US);
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
