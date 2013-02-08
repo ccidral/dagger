@@ -6,15 +6,11 @@
         </encoder>
     </appender>
 
-    <logger name="rtsbrasil" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-
     <logger name="dagger" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
 
-    <root level="warn">
+    <root level="info">
         <appender-ref ref="CONSOLE"/>
     </root>
 
