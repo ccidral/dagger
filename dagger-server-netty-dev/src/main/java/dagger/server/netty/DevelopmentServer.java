@@ -4,10 +4,12 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
+import java.io.InputStream;
 
 public class DevelopmentServer {
 
@@ -37,7 +39,7 @@ public class DevelopmentServer {
         return tempDirectoryCopy;
     }
 
-    private static void runServerUntilSomeJarIsChanged(String moduleFactoryClassName, ClassLoader classLoader, DirectoryWatcher jarDirectoryWatcher) throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InterruptedException {
+    private static void runServerUntilSomeJarIsChanged(String moduleFactoryClassName, ClassLoader classLoader, DirectoryWatcher jarDirectoryWatcher) throws Exception {
         Class<?> moduleFactoryClass = classLoader.loadClass(moduleFactoryClassName);
         Class<?> moduleInterface = classLoader.loadClass("dagger.Module");
         Class<?> nettyServerClass = classLoader.loadClass("dagger.server.netty.NettyServer");
@@ -47,13 +49,23 @@ public class DevelopmentServer {
         Object server = nettyServerClass.getConstructor(moduleInterface).newInstance(module);
 
         nettyServerClass.getDeclaredMethod("start").invoke(server);
+        playSound("beep-double");
 
         try {
             jarDirectoryWatcher.waitForChange();
             logger.info("Reloading server");
+            playSound("beep-single");
         } finally {
             nettyServerClass.getDeclaredMethod("stop").invoke(server);
         }
+    }
+
+    private static void playSound(String name) throws Exception {
+        Clip clip = AudioSystem.getClip();
+        InputStream soundFile = DevelopmentServer.class.getResourceAsStream("/" + name + ".wav");
+        AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
+        clip.open(ais);
+        clip.start();
     }
 
     public static File createTempDirectory() throws IOException {
