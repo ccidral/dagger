@@ -79,6 +79,27 @@ public class NettyRequestTest {
     }
 
     @Test
+    public void testGetCookieWithEmptyValue() {
+        HttpRequest mockHttpRequest = mock(HttpRequest.class);
+        when(mockHttpRequest.getHeader("Cookie"))
+                .thenReturn("foo=bar; empty-cookie=; hello=world");
+
+        Request request = new NettyRequest(mockHttpRequest);
+        assertNull(request.getCookie("empty-cookie"));
+    }
+
+    @Test
+    public void testGetCookieWithValueContainingTheEqualSign() {
+        HttpRequest mockHttpRequest = mock(HttpRequest.class);
+        when(mockHttpRequest.getHeader("Cookie"))
+                .thenReturn("foo=i_have_the=sign; hello=i_dont_have_it");
+
+        Request request = new NettyRequest(mockHttpRequest);
+        assertEquals("i_have_the=sign", request.getCookie("foo"));
+        assertEquals("i_dont_have_it", request.getCookie("hello"));
+    }
+
+    @Test
     public void testBody() throws IOException {
         ByteBuf requestContent = Unpooled.copiedBuffer("Hello world".getBytes());
 

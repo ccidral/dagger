@@ -63,10 +63,16 @@ public class NettyRequest implements Request {
 
         Map<String, String> map = new HashMap<>();
         for(String cookie : cookiesString.split("; ")) {
-            String[] keyValue = cookie.split("=");
-            map.put(keyValue[0], keyValue[1]);
+            int firstEqualSignPosition = cookie.indexOf("=");
+            String name = cookie.substring(0, firstEqualSignPosition);
+            String value = cookie.substring(firstEqualSignPosition + 1);
+            map.put(name, nullIfEmptyString(value));
         }
         return map;
+    }
+
+    private String nullIfEmptyString(String value) {
+        return "".equals(value) ? null : value;
     }
 
 }
