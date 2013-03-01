@@ -1,6 +1,7 @@
 package dagger.reactions.view.freemarker;
 
 import dagger.Reaction;
+import dagger.http.HttpHeaderNames;
 import dagger.http.Request;
 import dagger.http.Response;
 import freemarker.cache.URLTemplateLoader;
@@ -21,11 +22,13 @@ import java.util.Map;
 public class RenderView implements Reaction {
 
     private final String templateName;
+    private final String contentType;
     private final Object model;
     private final Configuration configuration;
 
-    public RenderView(String templateName, Object model) {
+    public RenderView(String templateName, String contentType, Object model) {
         this.templateName = templateName;
+        this.contentType = contentType;
         this.model = model;
         configuration = new Configuration();
 
@@ -37,6 +40,8 @@ public class RenderView implements Reaction {
     public void execute(Request request, Response response) throws Exception {
         Template template = getTemplate();
         Map<String, Object> modelMap = getModelMap();
+
+        response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
         Writer writer = new OutputStreamWriter(response.getOutputStream());
 
         try {
@@ -71,7 +76,7 @@ public class RenderView implements Reaction {
 
         @Override
         protected URL getURL(String templateName) {
-            logger.info("Template name: {}", templateName);
+            logger.debug("Template name: {}", templateName);
             return getClass().getResource("/view/templates/"+templateName);
         }
     }

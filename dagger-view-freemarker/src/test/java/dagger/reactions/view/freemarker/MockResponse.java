@@ -7,10 +7,13 @@ import dagger.lang.NotImplementedYet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MockResponse implements Response {
 
-    private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private final Map<String, String> headers = new HashMap<>();
 
     @Override
     public OutputStream getOutputStream() {
@@ -29,7 +32,7 @@ public class MockResponse implements Response {
 
     @Override
     public void setHeader(String name, String value) {
-        throw new NotImplementedYet();
+        headers.put(name, value);
     }
 
     @Override
@@ -39,6 +42,10 @@ public class MockResponse implements Response {
 
     public String getOutputAsString() {
         return new String(outputStream.toByteArray());
+    }
+
+    public String getHeader(String name) {
+        return headers.get(name);
     }
 
 }
