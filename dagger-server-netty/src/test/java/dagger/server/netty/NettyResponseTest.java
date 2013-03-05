@@ -37,7 +37,7 @@ public class NettyResponseTest {
     @Test
     public void testDateHeaderIsCreatedInTheConstructor() {
         String expectedDate = Formats.timestamp().format(CURRENT_TIME);
-        assertEquals(expectedDate, mockNettyHttpResponse.getHeader(HttpHeaderNames.DATE));
+        assertEquals(expectedDate, mockNettyHttpResponse.headers().get(HttpHeaderNames.DATE));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class NettyResponseTest {
     public void testWriteToOutputStream() throws IOException {
         response.getOutputStream().write("hello world".getBytes());
 
-        assertNotNull(mockNettyHttpResponse.getContent());
+        assertNotNull(mockNettyHttpResponse.data());
         assertEquals("hello world", mockNettyHttpResponse.getWrittenText());
     }
 
@@ -58,7 +58,7 @@ public class NettyResponseTest {
         response.setStatusCode(StatusCode.OK);
 
         assertNotNull(mockNettyHttpResponse.getStatus());
-        assertEquals(StatusCode.OK.getNumber(), mockNettyHttpResponse.getStatus().getCode());
+        assertEquals(StatusCode.OK.getNumber(), mockNettyHttpResponse.getStatus().code());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class NettyResponseTest {
     @Test
     public void testSetHeader() {
         response.setHeader("Fruit", "apple");
-        assertEquals("apple", mockNettyHttpResponse.getHeader("Fruit"));
+        assertEquals("apple", mockNettyHttpResponse.headers().get("Fruit"));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class NettyResponseTest {
 
         response.setCookie(cookie);
 
-        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
+        List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(1, cookieHeaders.size());
         assertTrue(cookieHeaders.contains("Greeting=Hello"));
     }
@@ -90,7 +90,7 @@ public class NettyResponseTest {
 
         response.setCookie(cookie);
 
-        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
+        List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(1, cookieHeaders.size());
         assertEquals("Greeting=Hello; Option1; Option2", cookieHeaders.get(0));
     }
@@ -103,7 +103,7 @@ public class NettyResponseTest {
         response.setCookie(greeting);
         response.setCookie(fruit);
 
-        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
+        List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(2, cookieHeaders.size());
         assertTrue(cookieHeaders.contains("Greeting=Hello"));
         assertTrue(cookieHeaders.contains("Fruit=Apple"));
@@ -117,7 +117,7 @@ public class NettyResponseTest {
         response.setCookie(hello);
         response.setCookie(ahoy);
 
-        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
+        List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(1, cookieHeaders.size());
         assertTrue(cookieHeaders.contains("Greeting=Ahoy"));
     }
@@ -132,7 +132,7 @@ public class NettyResponseTest {
         response.setCookie(fruit);
         response.setCookie(ahoy);
 
-        List<String> cookieHeaders = mockNettyHttpResponse.getHeaders("Set-Cookie");
+        List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(2, cookieHeaders.size());
         assertTrue(cookieHeaders.contains("Fruit=Apple"));
         assertTrue(cookieHeaders.contains("Greeting=Ahoy"));

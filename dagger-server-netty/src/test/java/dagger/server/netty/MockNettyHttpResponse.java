@@ -2,31 +2,30 @@ package dagger.server.netty;
 
 import dagger.lang.NotImplementedYet;
 import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.HttpResponse;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.DecoderResult;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpTransferEncoding;
 import io.netty.handler.codec.http.HttpVersion;
 
-import java.util.*;
+class MockNettyHttpResponse implements FullHttpResponse {
 
-class MockNettyHttpResponse implements HttpResponse {
-
-    private ByteBuf byteBuf;
+    private final ByteBuf byteBuf;
+    private final MockHeaders headers = new MockHeaders();
     private HttpResponseStatus httpResponseStatus;
-    private Map<String, List<Object>> headers = new HashMap<>();
+
+    public MockNettyHttpResponse() {
+        byteBuf = Unpooled.buffer();
+    }
 
     public String getWrittenText() {
         return new String(byteBuf.array(), 0, byteBuf.readableBytes());
     }
 
     @Override
-    public ByteBuf getContent() {
+    public ByteBuf data() {
         return this.byteBuf;
-    }
-
-    @Override
-    public void setContent(ByteBuf byteBuf) {
-        this.byteBuf = byteBuf;
     }
 
     @Override
@@ -35,49 +34,62 @@ class MockNettyHttpResponse implements HttpResponse {
     }
 
     @Override
-    public void setStatus(HttpResponseStatus httpResponseStatus) {
+    public FullHttpResponse setStatus(HttpResponseStatus httpResponseStatus) {
         this.httpResponseStatus = httpResponseStatus;
+        return this;
     }
 
     @Override
-    public String getHeader(String name) {
-        if(headers.containsKey(name))
-            return headers.get(name).get(0).toString();
-
-        return null;
-    }
-
-    @Override
-    public void setHeader(String name, Object value) {
-        List<Object> values = new ArrayList<>();
-        values.add(value);
-        headers.put(name, values);
+    public HttpHeaders headers() {
+        return headers;
     }
 
 
     // ~~~ NOT IMPLEMENTED YET ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
-    @Override
-    public List<String> getHeaders(String headerName) {
-        List<String> list = new ArrayList<>();
-        if(headers.containsKey(headerName))
-            for(Object value : headers.get(headerName))
-                list.add(value.toString());
-        return Collections.unmodifiableList(list);
-    }
 
     @Override
-    public List<Map.Entry<String, String>> getHeaders() {
+    public DecoderResult getDecoderResult() {
         throw new NotImplementedYet();
     }
 
     @Override
-    public boolean containsHeader(String s) {
+    public void setDecoderResult(DecoderResult decoderResult) {
         throw new NotImplementedYet();
     }
 
     @Override
-    public Set<String> getHeaderNames() {
+    public HttpHeaders trailingHeaders() {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public FullHttpResponse copy() {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public FullHttpResponse retain(int i) {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public boolean release() {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public boolean release(int i) {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public int refCnt() {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public FullHttpResponse retain() {
         throw new NotImplementedYet();
     }
 
@@ -87,46 +99,7 @@ class MockNettyHttpResponse implements HttpResponse {
     }
 
     @Override
-    public void setProtocolVersion(HttpVersion httpVersion) {
-        throw new NotImplementedYet();
-    }
-
-    @Override
-    public void addHeader(String name, Object value) {
-        List<Object> values = headers.get(name);
-        if(values == null) {
-            values = new ArrayList<>();
-            headers.put(name, values);
-        }
-        values.add(value);
-    }
-
-    @Override
-    public void setHeader(String name, Iterable<?> values) {
-        Iterator<?> iterator = values.iterator();
-        ArrayList<Object> list = new ArrayList<>();
-        while(iterator.hasNext())
-            list.add(iterator.next());
-        headers.put(name, list);
-    }
-
-    @Override
-    public void removeHeader(String s) {
-        throw new NotImplementedYet();
-    }
-
-    @Override
-    public void clearHeaders() {
-        throw new NotImplementedYet();
-    }
-
-    @Override
-    public HttpTransferEncoding getTransferEncoding() {
-        throw new NotImplementedYet();
-    }
-
-    @Override
-    public void setTransferEncoding(HttpTransferEncoding httpTransferEncoding) {
+    public FullHttpResponse setProtocolVersion(HttpVersion httpVersion) {
         throw new NotImplementedYet();
     }
 

@@ -43,7 +43,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
-            <version>4.0.0.Alpha3</version>
+            <version>4.0.0.Beta2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

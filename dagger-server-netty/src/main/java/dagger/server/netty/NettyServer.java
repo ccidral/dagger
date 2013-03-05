@@ -3,7 +3,7 @@ package dagger.server.netty;
 import dagger.Module;
 import dagger.server.Server;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.socket.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +32,10 @@ public class NettyServer implements Server {
     public void start() {
         serverBootstrap = new ServerBootstrap();
         try {
-            serverBootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
-                    .channel(new NioServerSocketChannel())
+            serverBootstrap.group(
+                    new NioEventLoopGroup(),
+                    new NioEventLoopGroup())
+                    .channel(NioServerSocketChannel.class)
                     .childHandler(new HttpServerInitializer(module))
                     .localAddress(new InetSocketAddress(port));
 
@@ -42,7 +44,7 @@ public class NettyServer implements Server {
             logger.info("Listening on port {}", port);
 
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Error during server bootstrap", e);
         }
     }
 

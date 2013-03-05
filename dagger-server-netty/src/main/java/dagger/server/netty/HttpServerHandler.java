@@ -8,9 +8,7 @@ import dagger.http.Response;
 import dagger.lang.time.SystemClock;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
-import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,31 +28,31 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
 
     @Override
     public void messageReceived(ChannelHandlerContext context, Object msg) throws Exception {
-        HttpResponse nettyHttpResponse;
+        FullHttpResponse nettyHttpResponse;
 
         try {
-            nettyHttpResponse = processRequest((HttpRequest) msg);
+            nettyHttpResponse = processRequest((FullHttpRequest) msg);
         } catch (Exception e) {
             logger.error("Error while handling request", e);
             nettyHttpResponse = createErrorResponse();
         }
 
-        nettyHttpResponse.setHeader(CONTENT_LENGTH, nettyHttpResponse.getContent().readableBytes());
+        nettyHttpResponse.headers().set(CONTENT_LENGTH, nettyHttpResponse.data().readableBytes());
         context.write(nettyHttpResponse);
     }
 
-    private HttpResponse createErrorResponse() {
-        return new DefaultHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
+    private FullHttpResponse createErrorResponse() {
+        return new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
     }
 
-    private HttpResponse processRequest(HttpRequest msg) throws Exception {
+    private FullHttpResponse processRequest(FullHttpRequest msg) throws Exception {
         Request request = new NettyRequest(msg);
         Reaction reaction = handleRequest(request);
         return executeReaction(reaction, request);
     }
 
-    private HttpResponse executeReaction(Reaction reaction, Request request) throws Exception {
-        HttpResponse nettyHttpResponse = new DefaultHttpResponse(HTTP_1_1, OK);
+    private FullHttpResponse executeReaction(Reaction reaction, Request request) throws Exception {
+        FullHttpResponse nettyHttpResponse = new DefaultFullHttpResponse(HTTP_1_1, OK);
         Response response = new NettyResponse(nettyHttpResponse, new SystemClock());
         reaction.execute(request, response);
         return nettyHttpResponse;

@@ -4,7 +4,7 @@ import dagger.http.QueryString;
 import dagger.http.QueryStringImpl;
 import dagger.http.Request;
 import io.netty.buffer.ByteBufInputStream;
-import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.FullHttpRequest;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -12,9 +12,9 @@ import java.util.Map;
 
 public class NettyRequest implements Request {
 
-    private final HttpRequest request;
+    private final FullHttpRequest request;
 
-    public NettyRequest(HttpRequest request) {
+    public NettyRequest(FullHttpRequest request) {
         this.request = request;
     }
 
@@ -30,7 +30,7 @@ public class NettyRequest implements Request {
 
     @Override
     public String getMethod() {
-        return request.getMethod().getName();
+        return request.getMethod().name();
     }
 
     @Override
@@ -40,12 +40,12 @@ public class NettyRequest implements Request {
 
     @Override
     public String getHeader(String name) {
-        return request.getHeader(name);
+        return request.headers().get(name);
     }
 
     @Override
     public String getCookie(String name) {
-        String cookieString = request.getHeader("Cookie");
+        String cookieString = request.headers().get("Cookie");
         Map<String, String> cookiesMap = parseCookies(cookieString);
         if(cookiesMap == null)
             return null;
@@ -54,7 +54,7 @@ public class NettyRequest implements Request {
 
     @Override
     public InputStream getBody() {
-        return new ByteBufInputStream(request.getContent());
+        return new ByteBufInputStream(request.data());
     }
 
     private Map<String, String> parseCookies(String cookiesString) {

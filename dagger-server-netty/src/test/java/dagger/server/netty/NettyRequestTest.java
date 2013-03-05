@@ -4,8 +4,9 @@ import dagger.http.QueryString;
 import dagger.http.Request;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpRequest;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
@@ -51,9 +52,12 @@ public class NettyRequestTest {
 
     @Test
     public void testGetHeader() {
-        HttpRequest mockHttpRequest = mock(HttpRequest.class);
-        when(mockHttpRequest.getHeader("Movie")).thenReturn("Star Wars");
-        when(mockHttpRequest.getHeader("Color")).thenReturn("Black");
+        HttpHeaders headers = new MockHeaders();
+        headers.set("Movie", "Star Wars");
+        headers.set("Color", "Black");
+
+        FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
+        when(mockHttpRequest.headers()).thenReturn(headers);
 
         Request request = new NettyRequest(mockHttpRequest);
         assertEquals("Star Wars", request.getHeader("Movie"));
@@ -62,16 +66,21 @@ public class NettyRequestTest {
 
     @Test
     public void testGettingUnexistentCookieReturnsNull() {
-        HttpRequest mockHttpRequest = mock(HttpRequest.class);
+        HttpHeaders headers = new MockHeaders();
+        FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
+        when(mockHttpRequest.headers()).thenReturn(headers);
+
         Request request = new NettyRequest(mockHttpRequest);
         assertNull(request.getCookie("bogus"));
     }
 
     @Test
     public void testGetCookie() {
-        HttpRequest mockHttpRequest = mock(HttpRequest.class);
-        when(mockHttpRequest.getHeader("Cookie"))
-            .thenReturn("foo=bar; hello=world");
+        HttpHeaders headers = new MockHeaders();
+        headers.set("Cookie", "foo=bar; hello=world");
+
+        FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
+        when(mockHttpRequest.headers()).thenReturn(headers);
 
         Request request = new NettyRequest(mockHttpRequest);
         assertEquals("bar", request.getCookie("foo"));
@@ -80,9 +89,11 @@ public class NettyRequestTest {
 
     @Test
     public void testGetCookieWithEmptyValue() {
-        HttpRequest mockHttpRequest = mock(HttpRequest.class);
-        when(mockHttpRequest.getHeader("Cookie"))
-                .thenReturn("foo=bar; empty-cookie=; hello=world");
+        HttpHeaders headers = new MockHeaders();
+        headers.set("Cookie", "foo=bar; empty-cookie=; hello=world");
+
+        FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
+        when(mockHttpRequest.headers()).thenReturn(headers);
 
         Request request = new NettyRequest(mockHttpRequest);
         assertNull(request.getCookie("empty-cookie"));
@@ -90,9 +101,11 @@ public class NettyRequestTest {
 
     @Test
     public void testGetCookieWithValueContainingTheEqualSign() {
-        HttpRequest mockHttpRequest = mock(HttpRequest.class);
-        when(mockHttpRequest.getHeader("Cookie"))
-                .thenReturn("foo=i_have_the=sign; hello=i_dont_have_it");
+        HttpHeaders headers = new MockHeaders();
+        headers.set("Cookie", "foo=i_have_the=sign; hello=i_dont_have_it");
+
+        FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
+        when(mockHttpRequest.headers()).thenReturn(headers);
 
         Request request = new NettyRequest(mockHttpRequest);
         assertEquals("i_have_the=sign", request.getCookie("foo"));
@@ -103,8 +116,8 @@ public class NettyRequestTest {
     public void testBody() throws IOException {
         ByteBuf requestContent = Unpooled.copiedBuffer("Hello world".getBytes());
 
-        HttpRequest mockHttpRequest = mock(HttpRequest.class);
-        when(mockHttpRequest.getContent()).thenReturn(requestContent);
+        FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
+        when(mockHttpRequest.data()).thenReturn(requestContent);
 
         Request request = new NettyRequest(mockHttpRequest);
 
@@ -113,14 +126,14 @@ public class NettyRequestTest {
         assertEquals("Hello world", bodyString);
     }
 
-    private HttpRequest mockHttpRequest(String uri) {
-        HttpRequest mockHttpRequest = mock(HttpRequest.class);
+    private FullHttpRequest mockHttpRequest(String uri) {
+        FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
         when(mockHttpRequest.getUri()).thenReturn(uri);
         return mockHttpRequest;
     }
 
-    private HttpRequest mockHttpRequest(HttpMethod method) {
-        HttpRequest mockHttpRequest = mock(HttpRequest.class);
+    private FullHttpRequest mockHttpRequest(HttpMethod method) {
+        FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
         when(mockHttpRequest.getMethod()).thenReturn(method);
         return mockHttpRequest;
     }

@@ -1,12 +1,14 @@
 package dagger.server.netty;
 
-import dagger.http.*;
+import dagger.http.Formats;
+import dagger.http.HttpHeaderNames;
+import dagger.http.Response;
+import dagger.http.StatusCode;
 import dagger.http.cookie.Cookie;
 import dagger.http.cookie.CookieOption;
 import dagger.lang.time.Clock;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
 import java.io.IOException;
@@ -17,20 +19,19 @@ import java.util.List;
 
 public class NettyResponse implements Response {
 
-    private final HttpResponse response;
+    private final FullHttpResponse response;
     private final ByteBuf buffer;
 
-    public NettyResponse(HttpResponse response, Clock clock) {
+    public NettyResponse(FullHttpResponse response, Clock clock) {
         this.response = response;
-        this.buffer = Unpooled.buffer();
+        this.buffer = response.data();
 
-        response.setContent(buffer);
         setHeader(HttpHeaderNames.DATE, Formats.timestamp().format(clock.now()));
     }
 
     @Override
     public StatusCode getStatusCode() {
-        return StatusCode.get(response.getStatus().getCode());
+        return StatusCode.get(response.getStatus().code());
     }
 
     @Override
@@ -40,7 +41,7 @@ public class NettyResponse implements Response {
 
     @Override
     public void setHeader(String name, String value) {
-        response.setHeader(name, value);
+        response.headers().set(name, value);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class NettyResponse implements Response {
         String value = getCookieValueWithOptions(cookie);
         List<String> allOtherCookieHeaders = getAllCookiesExcept(cookie.getName());
         allOtherCookieHeaders.add(cookie.getName() + "=" + value);
-        response.setHeader("Set-Cookie", allOtherCookieHeaders);
+        response.headers().set("Set-Cookie", allOtherCookieHeaders);
     }
 
     private String getCookieValueWithOptions(Cookie cookie) {
@@ -80,7 +81,7 @@ public class NettyResponse implements Response {
     }
 
     private List<String> getAllCookiesExcept(String exceptionCookieName) {
-        List<String> allCookieHeaders = new ArrayList<>(response.getHeaders("Set-Cookie"));
+        List<String> allCookieHeaders = new ArrayList<>(response.headers().getAll("Set-Cookie"));
         Iterator<String> iterator = allCookieHeaders.iterator();
         while(iterator.hasNext()) {
             String cookieHeader = iterator.next();
