@@ -2,6 +2,8 @@ package dagger.handlers;
 
 import dagger.*;
 import dagger.http.Request;
+import dagger.mock.MockAction;
+import dagger.mock.UriEqualsTo;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -26,6 +28,15 @@ public class GetTest {
     }
 
     @Test
+    public void testDoesNotHandleUpgradeRequest() {
+        Request request = mockRequest("GET", "/bar");
+        when(request.getHeader("Upgrade")).thenReturn("Foo Bar");
+
+        RequestHandler get = new Get(route("/bar"), new MockAction());
+        assertFalse("Should not handle upgrade requests", get.canHandle(request));
+    }
+
+    @Test
     public void testHandleRequest() throws Exception {
         Reaction expectedReaction = mock(Reaction.class);
         MockAction action = new MockAction(expectedReaction);
@@ -46,42 +57,6 @@ public class GetTest {
 
     private Route route(String uri) {
         return new UriEqualsTo(uri);
-    }
-
-    private class UriEqualsTo implements Route {
-
-        private final String uri;
-
-        public UriEqualsTo(String uri) {
-            this.uri = uri;
-        }
-
-        @Override
-        public boolean matches(String uri) {
-            return uri.equals(this.uri);
-        }
-
-    }
-
-    private class MockAction implements Action {
-
-        private final Reaction reaction;
-        public Request receivedRequest;
-
-        public MockAction() {
-            this(null);
-        }
-
-        public MockAction(Reaction reaction) {
-            this.reaction = reaction;
-        }
-
-        @Override
-        public Reaction execute(Request request) {
-            this.receivedRequest = request;
-            return reaction;
-        }
-
     }
 
 }

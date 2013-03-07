@@ -25,6 +25,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         p.addLast("aggregator", new HttpObjectAggregator(1024 * 1024));
         p.addLast("encoder", new HttpResponseEncoder());
         p.addLast("deflater", new HttpContentCompressor());
+        p.addLast("websocket", new WebSocketHandler(module));
         p.addLast("handler", new HttpServerHandler(module));
     }
 

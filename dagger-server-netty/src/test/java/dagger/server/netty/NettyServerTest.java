@@ -1,6 +1,9 @@
 package dagger.server.netty;
 
-import dagger.*;
+import dagger.Action;
+import dagger.Module;
+import dagger.Reaction;
+import dagger.RequestHandler;
 import dagger.handlers.Get;
 import dagger.http.HttpHeaderNames;
 import dagger.http.Request;
@@ -9,6 +12,7 @@ import dagger.http.StatusCode;
 import dagger.module.DefaultModule;
 import dagger.routes.ExactRoute;
 import dagger.server.Server;
+import de.roderick.weberknecht.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -19,9 +23,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.*;
 
 public class NettyServerTest {
 
@@ -40,7 +45,7 @@ public class NettyServerTest {
         server.stop();
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testSuccessfulRequest() throws Exception {
         on(get("/hello", new Action() {
             @Override
@@ -102,6 +107,38 @@ public class NettyServerTest {
         assertEquals(500, response.getStatusLine().getStatusCode());
     }
 
+    @Test(timeout = 2000)
+    public void testWebSocket() throws Exception {
+        on(ws("/greet", new Greeting()));
+
+        WebSocketClientHandler clientConnection = new WebSocketClientHandler();
+
+        WebSocket client = new WebSocketConnection(new URI("ws://localhost:8123/greet"));
+        client.setEventHandler(clientConnection);
+        client.connect();
+        client.send("World");
+
+        String message = clientConnection.waitForMessage();
+        assertEquals("Message received by the websocket server", "Hello World", message);
+        client.close();
+    }
+
+    @Test(timeout = 2000)
+    public void testDoNotAllowWebSocketOnGetRoutes() throws Exception {
+        on(get("/greet", new Greeting()));
+
+        WebSocketClientHandler clientConnection = new WebSocketClientHandler();
+        WebSocket client = new WebSocketConnection(new URI("ws://localhost:8123/greet"));
+        client.setEventHandler(clientConnection);
+
+        try {
+            client.connect();
+        }
+        catch(WebSocketException exception) {
+            assertEquals("connection failed: 404 not found", exception.getMessage());
+        }
+    }
+
     private HttpResponse request(String uri) throws IOException {
         HttpClient client = new DefaultHttpClient();
         return client.execute(new HttpGet("http://localhost:8123" + uri));
@@ -115,4 +152,47 @@ public class NettyServerTest {
         return new Get(new ExactRoute(resourceName), action);
     }
 
+    private RequestHandler ws(String resourceName, Action action) {
+        return new dagger.handlers.WebSocket(new ExactRoute(resourceName), action);
+    }
+
+    private static class Greeting implements Action {
+        @Override
+        public Reaction execute(Request request) throws Exception {
+            return new Reaction() {
+                @Override
+                public void execute(Request request, Response response) throws Exception {
+                    String body = IOUtils.toString(request.getBody());
+                    OutputStream outputStream = response.getOutputStream();
+                    outputStream.write(("Hello " + body).getBytes());
+                }
+            };
+        }
+    }
+
+    private static class WebSocketClientHandler implements WebSocketEventHandler {
+        private final StringBuffer buffer = new StringBuffer();
+
+        @Override public void onOpen() {
+        }
+
+        @Override public void onClose() {
+        }
+
+        @Override
+        public void onMessage(WebSocketMessage message) {
+            synchronized (buffer) {
+                buffer.append(message.getText());
+                buffer.notifyAll();
+            }
+        }
+
+        public String waitForMessage() throws InterruptedException {
+            synchronized (buffer) {
+                if(buffer.length() == 0)
+                    buffer.wait();
+                return buffer.toString();
+            }
+        }
+    }
 }
