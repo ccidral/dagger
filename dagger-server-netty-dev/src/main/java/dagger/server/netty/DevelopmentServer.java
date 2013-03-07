@@ -60,12 +60,16 @@ public class DevelopmentServer {
         }
     }
 
-    private static void playSound(String name) throws Exception {
-        Clip clip = AudioSystem.getClip();
-        InputStream soundFile = DevelopmentServer.class.getResourceAsStream("/" + name + ".wav");
-        AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
-        clip.open(ais);
-        clip.start();
+    private static void playSound(String name) {
+        try {
+            Clip clip = AudioSystem.getClip();
+            InputStream soundFile = DevelopmentServer.class.getResourceAsStream("/" + name + ".wav");
+            AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
+            clip.open(ais);
+            clip.start();
+        } catch(Exception e) {
+            logger.warn("Failed to play sound", e);
+        }
     }
 
     public static File createTempDirectory() throws IOException {
