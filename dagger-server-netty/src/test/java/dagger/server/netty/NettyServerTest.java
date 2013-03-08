@@ -5,6 +5,7 @@ import dagger.Module;
 import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.handlers.Get;
+import dagger.handlers.Post;
 import dagger.http.HttpHeaderNames;
 import dagger.http.Request;
 import dagger.http.Response;
@@ -17,6 +18,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +29,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class NettyServerTest {
 
@@ -46,7 +50,7 @@ public class NettyServerTest {
     }
 
     @Test(timeout = 2000)
-    public void testSuccessfulRequest() throws Exception {
+    public void testSuccessfulGetRequest() throws Exception {
         on(get("/hello", new Action() {
             @Override
             public Reaction execute(Request request) {
@@ -65,10 +69,38 @@ public class NettyServerTest {
             }
         }));
 
-        HttpResponse response = request("/hello");
+        HttpResponse response = get("/hello");
 
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertEquals("Hello world", IOUtils.toString(response.getEntity().getContent()));
+        assertEquals("text/plain", response.getEntity().getContentType().getValue());
+    }
+
+    @Test(timeout = 2000)
+    public void testSuccessfulPostRequestWithBody() throws Exception {
+        on(post("/greet", new Action() {
+            @Override
+            public Reaction execute(Request request) {
+                return new Reaction() {
+                    @Override
+                    public void execute(Request request, Response response) throws Exception {
+                        String body = IOUtils.toString(request.getBody());
+                        try {
+                            response.getOutputStream().write(("Hello " + body).getBytes());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        response.setStatusCode(StatusCode.OK);
+                        response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+                    }
+                };
+            }
+        }));
+
+        HttpResponse response = post("/greet", "John");
+
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals("Hello John", IOUtils.toString(response.getEntity().getContent()));
         assertEquals("text/plain", response.getEntity().getContentType().getValue());
     }
 
@@ -81,7 +113,7 @@ public class NettyServerTest {
             }
         }));
 
-        HttpResponse response = request("/hi");
+        HttpResponse response = get("/hi");
 
         assertNotNull(response);
         assertEquals(500, response.getStatusLine().getStatusCode());
@@ -101,7 +133,7 @@ public class NettyServerTest {
             }
         }));
 
-        HttpResponse response = request("/hi");
+        HttpResponse response = get("/hi");
 
         assertNotNull(response);
         assertEquals(500, response.getStatusLine().getStatusCode());
@@ -124,7 +156,7 @@ public class NettyServerTest {
     }
 
     @Test(timeout = 2000)
-    public void testDoNotAllowWebSocketOnGetRoutes() throws Exception {
+    public void testDoNotAllowWebSocketOnRegularGetRoutes() throws Exception {
         on(get("/greet", new Greeting()));
 
         WebSocketClientHandler clientConnection = new WebSocketClientHandler();
@@ -139,9 +171,16 @@ public class NettyServerTest {
         }
     }
 
-    private HttpResponse request(String uri) throws IOException {
+    private HttpResponse get(String uri) throws IOException {
         HttpClient client = new DefaultHttpClient();
         return client.execute(new HttpGet("http://localhost:8123" + uri));
+    }
+
+    private HttpResponse post(String uri, String body) throws IOException {
+        HttpClient client = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost("http://localhost:8123" + uri);
+        httpPost.setEntity(new StringEntity(body));
+        return client.execute(httpPost);
     }
 
     private void on(RequestHandler requestHandler) {
@@ -150,6 +189,10 @@ public class NettyServerTest {
 
     private RequestHandler get(String resourceName, Action action) {
         return new Get(new ExactRoute(resourceName), action);
+    }
+
+    private RequestHandler post(String resourceName, Action action) {
+        return new Post(new ExactRoute(resourceName), action);
     }
 
     private RequestHandler ws(String resourceName, Action action) {

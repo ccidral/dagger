@@ -49,6 +49,7 @@ public class WebSocketHandler extends ChannelInboundMessageHandlerAdapter<Object
             if(isWebSocket(nettyHttpRequest))
                 handleWebSocketRequest(context, (FullHttpRequest) msg);
             else {
+                nettyHttpRequest.retain();
                 context.nextInboundMessageBuffer().add(msg);
             }
         }
