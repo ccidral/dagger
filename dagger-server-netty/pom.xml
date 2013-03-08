@@ -19,6 +19,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+		        <id>dagger</id>
+		        <url>https://bitbucket.org/ccidral/dagger/raw/master/maven/releases/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>dagger</groupId>
@@ -58,11 +65,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>weberknecht</groupId>
+            <groupId>de.roderick</groupId>
             <artifactId>weberknecht</artifactId>
             <version>0.1.1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/weberknecht-0.1.1.jar</systemPath>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
