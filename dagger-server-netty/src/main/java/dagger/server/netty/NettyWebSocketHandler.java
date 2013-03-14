@@ -76,8 +76,6 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
             return;
         }
 
-        requestHandler.handle(request);
-
         Channel channel = context.channel();
         WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(getWebSocketLocation(httpRequest), null, false);
         handshaker = wsFactory.newHandshaker(httpRequest);
@@ -88,6 +86,13 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
             handshaker.handshake(channel, httpRequest);
             connections.put(channel.id(), httpRequest);
         }
+
+        Reaction reaction = requestHandler.handle(request);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        reaction.execute(request, new NettyWebSocketResponse(outputStream));
+
+        context.channel().write(new TextWebSocketFrame(Unpooled.copiedBuffer(outputStream.toByteArray())));
     }
 
     private String getWebSocketLocation(FullHttpRequest req) {
@@ -120,7 +125,8 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
         else if (frame instanceof CloseWebSocketFrame)
             closeWebSocket(context, (CloseWebSocketFrame) frame);
 
-        throw new UnsupportedOperationException(String.format("%s frame types not supported", frame.getClass().getName()));
+        else
+            throw new UnsupportedOperationException(String.format("%s frame types not supported", frame.getClass().getName()));
     }
 
     private void handleWebSocketMessage(ChannelHandlerContext context, TextWebSocketFrame frame) throws Exception {

@@ -147,6 +147,8 @@ public class NettyServerTest {
         WebSocketServerHandler serverOpenHandler = new WebSocketServerHandler();
         on(wsopen("/greet", serverOpenHandler));
 
+        serverOpenHandler.replyWith("Ready!");
+
         WebSocketClientHandler clientConnection = new WebSocketClientHandler();
         WebSocket client = new WebSocketConnection(new URI("ws://localhost:8123/greet"));
         client.setEventHandler(clientConnection);
@@ -156,6 +158,9 @@ public class NettyServerTest {
 
         String message = serverOpenHandler.waitForMessage();
         assertEquals("Empty message", "", message);
+
+        String reply = clientConnection.waitForReply();
+        assertEquals("Reply from server", "Ready!", reply);
 
         client.close();
     }
@@ -286,14 +291,16 @@ public class NettyServerTest {
         private final Object connectionStateMonitor = new Object();
         private boolean isOpen;
 
-        @Override public void onOpen() {
+        @Override
+        public void onOpen() {
             synchronized (connectionStateMonitor) {
                 isOpen = true;
                 connectionStateMonitor.notifyAll();
             }
         }
 
-        @Override public void onClose() {
+        @Override
+        public void onClose() {
             synchronized (connectionStateMonitor) {
                 isOpen = false;
                 connectionStateMonitor.notifyAll();
