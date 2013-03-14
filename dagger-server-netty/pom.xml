@@ -21,8 +21,8 @@
 
     <repositories>
         <repository>
-		        <id>dagger</id>
-		        <url>https://bitbucket.org/ccidral/dagger/raw/master/maven/releases/</url>
+            <id>dagger</id>
+            <url>https://bitbucket.org/ccidral/dagger/raw/master/maven/releases/</url>
         </repository>
     </repositories>
 
