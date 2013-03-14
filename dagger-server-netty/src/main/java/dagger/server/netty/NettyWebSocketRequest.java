@@ -4,19 +4,20 @@ import dagger.http.QueryString;
 import dagger.http.QueryStringImpl;
 import dagger.http.Request;
 import dagger.lang.NotImplementedYet;
-import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public class NettyWebSocketRequest implements Request {
 
-    private final TextWebSocketFrame frame;
+    private final String message;
+    private final String method;
     private final FullHttpRequest httpRequest;
 
-    public NettyWebSocketRequest(TextWebSocketFrame frame, FullHttpRequest httpRequest) {
-        this.frame = frame;
+    public NettyWebSocketRequest(String message, String method, FullHttpRequest httpRequest) {
+        this.message = message;
+        this.method = method;
         this.httpRequest = httpRequest;
     }
 
@@ -30,7 +31,7 @@ public class NettyWebSocketRequest implements Request {
 
     @Override
     public String getMethod() {
-        return httpRequest.getMethod().name();
+        return method;
     }
 
     @Override
@@ -50,7 +51,7 @@ public class NettyWebSocketRequest implements Request {
 
     @Override
     public InputStream getBody() {
-        return new ByteBufInputStream(frame.data());
+        return new ByteArrayInputStream(message.getBytes());
     }
 
 }

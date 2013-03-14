@@ -3,7 +3,6 @@ package dagger.server.netty;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.http.cookie.Cookie;
-import dagger.lang.NotImplementedYet;
 
 import java.io.OutputStream;
 
@@ -22,22 +21,19 @@ public class NettyWebSocketResponse implements Response {
 
     @Override
     public StatusCode getStatusCode() {
-        throw new NotImplementedYet();
+        return StatusCode.OK;
     }
 
     @Override
     public void setStatusCode(StatusCode statusCode) {
-        throw new NotImplementedYet();
     }
 
     @Override
     public void setHeader(String name, String value) {
-        throw new NotImplementedYet();
     }
 
     @Override
     public void setCookie(Cookie cookie) {
-        throw new NotImplementedYet();
     }
 
 }

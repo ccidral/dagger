@@ -6,11 +6,14 @@ import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.handlers.Get;
 import dagger.handlers.Post;
+import dagger.handlers.WebSocketClose;
+import dagger.handlers.WebSocketOpen;
 import dagger.http.HttpHeaderNames;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.module.DefaultModule;
+import dagger.reactions.Ok;
 import dagger.routes.ExactRoute;
 import dagger.server.Server;
 import de.roderick.weberknecht.*;
@@ -140,18 +143,67 @@ public class NettyServerTest {
     }
 
     @Test(timeout = 2000)
-    public void testWebSocket() throws Exception {
-        on(ws("/greet", new Greeting()));
+    public void testOpenWebSocket() throws Exception {
+        WebSocketServerHandler serverOpenHandler = new WebSocketServerHandler();
+        on(wsopen("/greet", serverOpenHandler));
 
         WebSocketClientHandler clientConnection = new WebSocketClientHandler();
-
         WebSocket client = new WebSocketConnection(new URI("ws://localhost:8123/greet"));
         client.setEventHandler(clientConnection);
-        client.connect();
-        client.send("World");
 
-        String message = clientConnection.waitForMessage();
-        assertEquals("Message received by the websocket server", "Hello World", message);
+        client.connect();
+        clientConnection.waitToOpen();
+
+        String message = serverOpenHandler.waitForMessage();
+        assertEquals("Empty message", "", message);
+
+        client.close();
+    }
+
+    @Test(timeout = 2000)
+    public void testWebSocketMessage() throws Exception {
+        WebSocketServerHandler serverMessageHandler = new WebSocketServerHandler();
+        serverMessageHandler.replyWith("World");
+
+        on(wsopen("/greet", new WebSocketServerHandler()));
+        on(wsmessage("/greet", serverMessageHandler));
+
+        WebSocketClientHandler clientConnection = new WebSocketClientHandler();
+        WebSocket client = new WebSocketConnection(new URI("ws://localhost:8123/greet"));
+        client.setEventHandler(clientConnection);
+
+        client.connect();
+        clientConnection.waitToOpen();
+
+        client.send("Hello");
+        String messageReceivedFromClient = serverMessageHandler.waitForMessage();
+        assertEquals("Message received from client", "Hello", messageReceivedFromClient);
+
+        String reply = clientConnection.waitForReply();
+        assertEquals("Reply from server", "World", reply);
+
+        client.close();
+    }
+
+    @Test(timeout = 2000)
+    public void testCloseWebSocket() throws Exception {
+        WebSocketServerHandler serverCloseHandler = new WebSocketServerHandler();
+        on(wsopen("/greet", new WebSocketServerHandler()));
+        on(wsclose("/greet", serverCloseHandler));
+
+        WebSocketClientHandler clientConnection = new WebSocketClientHandler();
+        WebSocket client = new WebSocketConnection(new URI("ws://localhost:8123/greet"));
+        client.setEventHandler(clientConnection);
+
+        client.connect();
+        clientConnection.waitToOpen();
+
+        client.close();
+        clientConnection.waitToClose();
+
+        String message = serverCloseHandler.waitForMessage();
+        assertEquals("Empty message", "", message);
+
         client.close();
     }
 
@@ -195,31 +247,57 @@ public class NettyServerTest {
         return new Post(new ExactRoute(resourceName), action);
     }
 
-    private RequestHandler ws(String resourceName, Action action) {
-        return new dagger.handlers.WebSocket(new ExactRoute(resourceName), action);
+    private RequestHandler wsopen(String resourceName, Action action) {
+        return new WebSocketOpen(new ExactRoute(resourceName), action);
+    }
+
+    private RequestHandler wsmessage(String resourceName, Action action) {
+        return new dagger.handlers.WebSocketMessage(new ExactRoute(resourceName), action);
+    }
+
+    private RequestHandler wsclose(String resourceName, Action action) {
+        return new WebSocketClose(new ExactRoute(resourceName), action);
     }
 
     private static class Greeting implements Action {
+        private String message;
+
         @Override
         public Reaction execute(Request request) throws Exception {
             return new Reaction() {
                 @Override
                 public void execute(Request request, Response response) throws Exception {
-                    String body = IOUtils.toString(request.getBody());
+                    setMessage(IOUtils.toString(request.getBody()));
                     OutputStream outputStream = response.getOutputStream();
-                    outputStream.write(("Hello " + body).getBytes());
+                    outputStream.write(("Hello " + message).getBytes());
                 }
             };
         }
+
+        private synchronized void setMessage(String newMessage) {
+            this.message = newMessage;
+            notifyAll();
+        }
+
     }
 
     private static class WebSocketClientHandler implements WebSocketEventHandler {
         private final StringBuffer buffer = new StringBuffer();
+        private final Object connectionStateMonitor = new Object();
+        private boolean isOpen;
 
         @Override public void onOpen() {
+            synchronized (connectionStateMonitor) {
+                isOpen = true;
+                connectionStateMonitor.notifyAll();
+            }
         }
 
         @Override public void onClose() {
+            synchronized (connectionStateMonitor) {
+                isOpen = false;
+                connectionStateMonitor.notifyAll();
+            }
         }
 
         @Override
@@ -230,12 +308,53 @@ public class NettyServerTest {
             }
         }
 
-        public String waitForMessage() throws InterruptedException {
+        public String waitForReply() throws InterruptedException {
             synchronized (buffer) {
                 if(buffer.length() == 0)
                     buffer.wait();
                 return buffer.toString();
             }
         }
+
+        public void waitToOpen() throws InterruptedException {
+            synchronized (connectionStateMonitor) {
+                if(!isOpen)
+                    wait();
+            }
+        }
+
+        public void waitToClose() throws InterruptedException {
+            synchronized (connectionStateMonitor) {
+                if(isOpen)
+                    wait();
+            }
+        }
     }
+
+    private class WebSocketServerHandler implements Action {
+
+        private String message;
+        private String reply;
+
+        @Override
+        public Reaction execute(Request request) throws Exception {
+            synchronized (this) {
+                this.message = IOUtils.toString(request.getBody());
+                notifyAll();
+            }
+            return new Ok(reply == null ? "" : reply);
+        }
+
+        public synchronized String waitForMessage() throws InterruptedException {
+            if(this.message == null)
+                wait();
+            return message;
+        }
+
+        public void replyWith(String reply) {
+            this.reply = reply;
+        }
+
+    }
+
 }

@@ -6,19 +6,21 @@ import dagger.RequestHandler;
 import dagger.Route;
 import dagger.http.Request;
 
-public class WebSocket implements RequestHandler {
+public class WebSocketMessage implements RequestHandler {
+
+    public static final String METHOD = "WSMESSAGE";
 
     private final Route route;
     private final Action action;
 
-    public WebSocket(Route route, Action action) {
+    public WebSocketMessage(Route route, Action action) {
         this.route = route;
         this.action = action;
     }
 
     @Override
     public boolean canHandle(Request request) {
-        if(!request.getMethod().equals("GET"))
+        if(!request.getMethod().equals(METHOD))
             return false;
 
         if(!"WebSocket".equals(request.getHeader("Upgrade")))
@@ -30,6 +32,14 @@ public class WebSocket implements RequestHandler {
     @Override
     public Reaction handle(Request request) throws Exception {
         return action.execute(request);
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public Action getAction() {
+        return action;
     }
 
 }

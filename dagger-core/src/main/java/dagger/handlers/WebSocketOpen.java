@@ -6,19 +6,24 @@ import dagger.RequestHandler;
 import dagger.Route;
 import dagger.http.Request;
 
-public class Post implements RequestHandler {
+public class WebSocketOpen implements RequestHandler {
+
+    public static final String METHOD = "WSOPEN";
 
     private final Route route;
     private final Action action;
 
-    public Post(Route route, Action action) {
+    public WebSocketOpen(Route route, Action action) {
         this.route = route;
         this.action = action;
     }
 
     @Override
     public boolean canHandle(Request request) {
-        if(!request.getMethod().equals("POST"))
+        if(!request.getMethod().equals(METHOD))
+            return false;
+
+        if(!"WebSocket".equals(request.getHeader("Upgrade")))
             return false;
 
         return route.matches(request.getURI());

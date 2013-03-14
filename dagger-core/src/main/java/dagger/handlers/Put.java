@@ -29,4 +29,12 @@ public class Put implements RequestHandler {
         return action.execute(request);
     }
 
+    public Route getRoute() {
+        return route;
+    }
+
+    public Action getAction() {
+        return action;
+    }
+
 }

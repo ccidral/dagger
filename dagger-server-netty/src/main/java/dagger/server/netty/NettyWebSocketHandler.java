@@ -4,6 +4,9 @@ import dagger.Module;
 import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.handlers.ResourceNotFound;
+import dagger.handlers.WebSocketClose;
+import dagger.handlers.WebSocketMessage;
+import dagger.handlers.WebSocketOpen;
 import dagger.http.Request;
 import dagger.http.Response;
 import io.netty.buffer.Unpooled;
@@ -13,8 +16,6 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -27,23 +28,25 @@ import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public class WebSocketHandler extends ChannelInboundMessageHandlerAdapter<Object> {
+/**
+ * Warning: WebSocket support is experimental.
+ */
+public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<Object> {
 
     private final Module module;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private WebSocketServerHandshaker handshaker;
-    private Map<Integer, WebSocketConnection> connections = new HashMap<>();
+    private Map<Integer, FullHttpRequest> connections = new HashMap<>();
 
-    public WebSocketHandler(Module module) {
+    public NettyWebSocketHandler(Module module) {
         this.module = module;
     }
 
     @Override
     public void messageReceived(ChannelHandlerContext context, Object msg) throws Exception {
-        if (msg instanceof WebSocketFrame) {
+        if (msg instanceof WebSocketFrame)
             handleWebSocketFrame(context, (WebSocketFrame) msg);
-        }
+
         else if (msg instanceof FullHttpRequest) {
             FullHttpRequest nettyHttpRequest = (FullHttpRequest) msg;
             if(isWebSocket(nettyHttpRequest))
@@ -65,12 +68,15 @@ public class WebSocketHandler extends ChannelInboundMessageHandlerAdapter<Object
             return;
         }
 
-        Request request = new NettyRequest(httpRequest);
+        Request request = new NettyWebSocketRequest("", WebSocketOpen.METHOD, httpRequest);
         RequestHandler requestHandler = module.getHandlerFor(request);
+
         if (requestHandler instanceof ResourceNotFound) {
             sendHttpResponse(context, httpRequest, new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND));
             return;
         }
+
+        requestHandler.handle(request);
 
         Channel channel = context.channel();
         WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(getWebSocketLocation(httpRequest), null, false);
@@ -80,7 +86,7 @@ public class WebSocketHandler extends ChannelInboundMessageHandlerAdapter<Object
         }
         else {
             handshaker.handshake(channel, httpRequest);
-            connections.put(channel.id(), new WebSocketConnection(channel, httpRequest));
+            connections.put(channel.id(), httpRequest);
         }
     }
 
@@ -88,16 +94,15 @@ public class WebSocketHandler extends ChannelInboundMessageHandlerAdapter<Object
         return "ws://" + req.headers().get(HOST) + req.getUri();
     }
 
-    private static void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res) {
-        if (res.getStatus().code() != 200) {
-            res.data().writeBytes(Unpooled.copiedBuffer(res.getStatus().toString(), CharsetUtil.UTF_8));
-            setContentLength(res, res.data().readableBytes());
+    private static void sendHttpResponse(ChannelHandlerContext context, FullHttpRequest request, FullHttpResponse response) {
+        if (response.getStatus().code() != 200) {
+            response.data().writeBytes(Unpooled.copiedBuffer(response.getStatus().toString(), CharsetUtil.UTF_8));
+            setContentLength(response, response.data().readableBytes());
         }
 
-        ChannelFuture f = ctx.channel().write(res);
-        if (!isKeepAlive(req) || res.getStatus().code() != 200) {
-            f.addListener(ChannelFutureListener.CLOSE);
-        }
+        ChannelFuture futureWrite = context.channel().write(response);
+        if (!isKeepAlive(request) || response.getStatus().code() != 200)
+            futureWrite.addListener(ChannelFutureListener.CLOSE);
     }
 
     private boolean isWebSocket(FullHttpRequest nettyHttpRequest) {
@@ -106,44 +111,47 @@ public class WebSocketHandler extends ChannelInboundMessageHandlerAdapter<Object
     }
 
     private void handleWebSocketFrame(ChannelHandlerContext context, WebSocketFrame frame) throws Exception {
-        if (frame instanceof CloseWebSocketFrame) {
-            frame.retain();
-            handshaker.close(context.channel(), (CloseWebSocketFrame) frame);
-            return;
-        }
-        if (frame instanceof PingWebSocketFrame) {
-            frame.data().retain();
-            context.channel().write(new PongWebSocketFrame(frame.data()));
-            return;
-        }
-        if (!(frame instanceof TextWebSocketFrame)) {
-            throw new UnsupportedOperationException(String.format("%s frame types not supported", frame.getClass().getName()));
-        }
+        if(frame instanceof TextWebSocketFrame)
+            handleWebSocketMessage(context, (TextWebSocketFrame) frame);
 
-        WebSocketConnection connection = connections.get(context.channel().id());
-        TextWebSocketFrame textFrame = (TextWebSocketFrame) frame;
+        else if (frame instanceof PingWebSocketFrame)
+            pong(context, frame);
 
-        Request request = new NettyWebSocketRequest(textFrame, connection.request);
+        else if (frame instanceof CloseWebSocketFrame)
+            closeWebSocket(context, (CloseWebSocketFrame) frame);
+
+        throw new UnsupportedOperationException(String.format("%s frame types not supported", frame.getClass().getName()));
+    }
+
+    private void handleWebSocketMessage(ChannelHandlerContext context, TextWebSocketFrame frame) throws Exception {
+        String response = handleWebSocketEvent(frame.text(), WebSocketMessage.METHOD, context);
+        context.channel().write(new TextWebSocketFrame(response));
+    }
+
+    private void pong(ChannelHandlerContext context, WebSocketFrame frame) {
+        frame.data().retain();
+        context.channel().write(new PongWebSocketFrame(frame.data()));
+    }
+
+    private void closeWebSocket(ChannelHandlerContext context, CloseWebSocketFrame frame) throws Exception {
+        frame.retain();
+        handshaker.close(context.channel(), frame);
+        try {
+            handleWebSocketEvent("", WebSocketClose.METHOD, context);
+        } finally {
+            connections.remove(context.channel().id());
+        }
+    }
+
+    private String handleWebSocketEvent(String message, String method, ChannelHandlerContext context) throws Exception {
+        FullHttpRequest nettyHttpRequest = connections.get(context.channel().id());
+        Request request = new NettyWebSocketRequest(message, method, nettyHttpRequest);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Response response = new NettyWebSocketResponse(outputStream);
         RequestHandler requestHandler = module.getHandlerFor(request);
-
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
-
-        String text = new String(outputStream.toByteArray());
-        context.channel().write(new TextWebSocketFrame(text));
+        return new String(outputStream.toByteArray());
     }
 
-    private class WebSocketConnection {
-
-        private final Channel channel;
-        private final FullHttpRequest request;
-
-        public WebSocketConnection(Channel channel, FullHttpRequest request) {
-            this.channel = channel;
-            this.request = request;
-        }
-
-    }
 }
