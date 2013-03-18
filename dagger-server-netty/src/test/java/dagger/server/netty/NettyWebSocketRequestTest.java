@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,6 +55,17 @@ public class NettyWebSocketRequestTest {
     public void testHeaders() {
         httpRequest.headers().add("Foo", "Bar");
         assertEquals("Bar", request.getHeader("Foo"));
+    }
+
+    @Test
+    public void testCookies() {
+        assertNull(request.getCookie("Hello"));
+        assertNull(request.getCookie("Foo"));
+
+        httpRequest.headers().set("Cookie", "Hello=World; Foo=Bar");
+
+        assertEquals("World", request.getCookie("Hello"));
+        assertEquals("Bar", request.getCookie("Foo"));
     }
 
 }

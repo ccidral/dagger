@@ -3,11 +3,12 @@ package dagger.server.netty;
 import dagger.http.QueryString;
 import dagger.http.QueryStringImpl;
 import dagger.http.Request;
-import dagger.lang.NotImplementedYet;
+import dagger.http.cookie.CookieParser;
 import io.netty.handler.codec.http.FullHttpRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Map;
 
 public class NettyWebSocketRequest implements Request {
 
@@ -46,7 +47,11 @@ public class NettyWebSocketRequest implements Request {
 
     @Override
     public String getCookie(String name) {
-        throw new NotImplementedYet();
+        String cookieString = httpRequest.headers().get("Cookie");
+        Map<String, String> cookiesMap = new CookieParser().parseCookies(cookieString);
+        if(cookiesMap == null)
+            return null;
+        return cookiesMap.get(name);
     }
 
     @Override
