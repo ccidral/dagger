@@ -349,7 +349,18 @@ public class NettyServerTest {
                 this.message = IOUtils.toString(request.getBody());
                 notifyAll();
             }
-            return new Ok(reply == null ? "" : reply);
+
+            if(reply == null)
+                return new Ok("");
+
+            return new Reaction() {
+                @Override
+                public void execute(Request request, Response response) throws Exception {
+                    OutputStream outputStream = response.getOutputStream();
+                    outputStream.write(reply.getBytes());
+                    outputStream.flush();
+                }
+            };
         }
 
         public synchronized String waitForMessage() throws InterruptedException {

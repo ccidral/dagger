@@ -3,6 +3,7 @@ package dagger.server.netty;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.http.cookie.Cookie;
+import io.netty.channel.Channel;
 
 import java.io.OutputStream;
 
@@ -10,8 +11,8 @@ public class NettyWebSocketResponse implements Response {
 
     private final OutputStream outputStream;
 
-    public NettyWebSocketResponse(OutputStream outputStream) {
-        this.outputStream = outputStream;
+    public NettyWebSocketResponse(Channel channel) {
+        this.outputStream = new WebSocketOutputStream(channel);
     }
 
     @Override

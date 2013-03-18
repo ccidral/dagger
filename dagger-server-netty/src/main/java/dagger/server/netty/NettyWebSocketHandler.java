@@ -17,7 +17,6 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
 
-import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,18 +80,13 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
         handshaker = wsFactory.newHandshaker(httpRequest);
         if (handshaker == null) {
             WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(channel);
+            return;
         }
-        else {
-            handshaker.handshake(channel, httpRequest);
-            connections.put(channel.id(), httpRequest);
-        }
+        handshaker.handshake(channel, httpRequest);
+        connections.put(channel.id(), httpRequest);
 
         Reaction reaction = requestHandler.handle(request);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        reaction.execute(request, new NettyWebSocketResponse(outputStream));
-
-        context.channel().write(new TextWebSocketFrame(Unpooled.copiedBuffer(outputStream.toByteArray())));
+        reaction.execute(request, new NettyWebSocketResponse(channel));
     }
 
     private String getWebSocketLocation(FullHttpRequest req) {
@@ -130,8 +124,7 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
     }
 
     private void handleWebSocketMessage(ChannelHandlerContext context, TextWebSocketFrame frame) throws Exception {
-        String response = handleWebSocketEvent(frame.text(), WebSocketMessage.METHOD, context);
-        context.channel().write(new TextWebSocketFrame(response));
+        handleWebSocketEvent(frame.text(), WebSocketMessage.METHOD, context);
     }
 
     private void pong(ChannelHandlerContext context, WebSocketFrame frame) {
@@ -149,15 +142,13 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
         }
     }
 
-    private String handleWebSocketEvent(String message, String method, ChannelHandlerContext context) throws Exception {
+    private void handleWebSocketEvent(String message, String method, ChannelHandlerContext context) throws Exception {
         FullHttpRequest nettyHttpRequest = connections.get(context.channel().id());
         Request request = new NettyWebSocketRequest(message, method, nettyHttpRequest);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Response response = new NettyWebSocketResponse(outputStream);
+        Response response = new NettyWebSocketResponse(context.channel());
         RequestHandler requestHandler = module.getHandlerFor(request);
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
-        return new String(outputStream.toByteArray());
     }
 
 }
