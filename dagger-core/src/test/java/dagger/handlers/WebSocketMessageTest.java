@@ -35,6 +35,14 @@ public class WebSocketMessageTest {
     }
 
     @Test
+    public void testIgnoreCaseWhenComparingTheUpgradeHeader() {
+        RequestHandler handler = new WebSocketMessage(route("/foo"), new MockAction());
+        assertTrue("Should handle WSMESSAGE with 'Upgrade: WebSocket' header", handler.canHandle(mockRequest("WSMESSAGE", "/foo", "WebSocket")));
+        assertTrue("Should handle WSMESSAGE with 'Upgrade: WebSocket' header", handler.canHandle(mockRequest("WSMESSAGE", "/foo", "websocket")));
+        assertTrue("Should handle WSMESSAGE with 'Upgrade: WebSocket' header", handler.canHandle(mockRequest("WSMESSAGE", "/foo", "WEBSOCKET")));
+    }
+
+    @Test
     public void testDoesNotHandleDifferentResource() {
         RequestHandler handler = new WebSocketMessage(route("/foo"), new MockAction());
         assertFalse("Should not handle route /bar", handler.canHandle(mockRequest(WebSocketMessage.METHOD, "/bar", "WebSocket")));

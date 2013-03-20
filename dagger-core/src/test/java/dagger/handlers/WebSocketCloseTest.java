@@ -33,6 +33,14 @@ public class WebSocketCloseTest {
     }
 
     @Test
+    public void testIgnoreCaseWhenComparingTheUpgradeHeader() {
+        RequestHandler handler = new WebSocketClose(route("/foo"), new MockAction());
+        assertTrue("Should handle WSCLOSE with 'Upgrade: WebSocket' header", handler.canHandle(mockRequest("WSCLOSE", "/foo", "WebSocket")));
+        assertTrue("Should handle WSCLOSE with 'Upgrade: WebSocket' header", handler.canHandle(mockRequest("WSCLOSE", "/foo", "websocket")));
+        assertTrue("Should handle WSCLOSE with 'Upgrade: WebSocket' header", handler.canHandle(mockRequest("WSCLOSE", "/foo", "WEBSOCKET")));
+    }
+
+    @Test
     public void testDoesNotHandleDifferentResource() {
         RequestHandler handler = new WebSocketClose(route("/foo"), new MockAction());
         assertFalse("Should not handle route /bar", handler.canHandle(mockRequest(WebSocketClose.METHOD, "/bar", "WebSocket")));

@@ -23,7 +23,7 @@ public class WebSocketMessage implements RequestHandler {
         if(!request.getMethod().equals(METHOD))
             return false;
 
-        if(!"WebSocket".equals(request.getHeader("Upgrade")))
+        if(!"WebSocket".equalsIgnoreCase(request.getHeader("Upgrade")))
             return false;
 
         return route.matches(request.getURI());
