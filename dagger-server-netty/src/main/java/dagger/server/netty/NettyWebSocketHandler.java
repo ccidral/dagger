@@ -18,6 +18,8 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +42,7 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
 
     private WebSocketServerHandshaker handshaker;
     private Map<Integer, FullHttpRequest> connections = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public NettyWebSocketHandler(Module module) {
         this.module = module;
@@ -100,22 +103,40 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
             return;
         }
 
-
         // Everything is ok, connection will start...
-        Channel channel = context.channel();
-        String websocketLocation = getWebSocketLocation(httpRequest);
-        WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(websocketLocation, null, false);
-        handshaker = wsFactory.newHandshaker(httpRequest);
-        if (handshaker == null) {
-            WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(channel);
+        if(!handshake(context, httpRequest)) {
+            //... unless the handshake fails.
             return;
         }
-        handshaker.handshake(channel, httpRequest);
-        connections.put(channel.id(), httpRequest);
+
+        context.channel().closeFuture().addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                Channel channel = channelFuture.channel();
+                logger.info("Channel closed  ~  channel={} cause={}", channel.id(), channelFuture.cause());
+                closeWebSocket(channel, new CloseWebSocketFrame());
+            }
+        });
 
         // Write the contents of the response to the websocket channel.
         responseOutputStream.setChannel(context.channel());
         responseOutputStream.flush();
+    }
+
+    private boolean handshake(ChannelHandlerContext context, FullHttpRequest httpRequest) {
+        final Channel channel = context.channel();
+        String websocketLocation = getWebSocketLocation(httpRequest);
+        WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(websocketLocation, null, false);
+        handshaker = wsFactory.newHandshaker(httpRequest);
+
+        if (handshaker == null) {
+            WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(channel);
+            return false;
+        }
+
+        handshaker.handshake(channel, httpRequest);
+        connections.put(channel.id(), httpRequest);
+        return true;
     }
 
     private String getWebSocketLocation(FullHttpRequest req) {
@@ -146,35 +167,36 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
             pong(context, frame);
 
         else if (frame instanceof CloseWebSocketFrame)
-            closeWebSocket(context, (CloseWebSocketFrame) frame);
+            closeWebSocket(context.channel(), (CloseWebSocketFrame) frame);
 
         else
             throw new UnsupportedOperationException(String.format("%s frame types not supported", frame.getClass().getName()));
     }
 
     private void handleWebSocketMessage(ChannelHandlerContext context, TextWebSocketFrame frame) throws Exception {
-        handleWebSocketEvent(frame.text(), WebSocketMessage.METHOD, context);
+        handleWebSocketEvent(frame.text(), WebSocketMessage.METHOD, context.channel());
     }
 
     private void pong(ChannelHandlerContext context, WebSocketFrame frame) {
+        logger.info("Ping  ~  channel={}", context.channel().id());
         frame.data().retain();
         context.channel().write(new PongWebSocketFrame(frame.data()));
     }
 
-    private void closeWebSocket(ChannelHandlerContext context, CloseWebSocketFrame frame) throws Exception {
+    private void closeWebSocket(Channel channel, CloseWebSocketFrame frame) throws Exception {
         frame.retain();
-        handshaker.close(context.channel(), frame);
+        handshaker.close(channel, frame);
         try {
-            handleWebSocketEvent("", WebSocketClose.METHOD, context);
+            handleWebSocketEvent("", WebSocketClose.METHOD, channel);
         } finally {
-            connections.remove(context.channel().id());
+            connections.remove(channel.id());
         }
     }
 
-    private void handleWebSocketEvent(String message, String method, ChannelHandlerContext context) throws Exception {
-        FullHttpRequest nettyHttpRequest = connections.get(context.channel().id());
+    private void handleWebSocketEvent(String message, String method, Channel channel) throws Exception {
+        FullHttpRequest nettyHttpRequest = connections.get(channel.id());
         Request request = new NettyWebSocketRequest(message, method, nettyHttpRequest);
-        Response response = new NettyWebSocketResponse(context.channel());
+        Response response = new NettyWebSocketResponse(channel);
         RequestHandler requestHandler = module.getHandlerFor(request);
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
