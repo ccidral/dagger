@@ -9,11 +9,13 @@ import dagger.handlers.WebSocketMessage;
 import dagger.handlers.WebSocketOpen;
 import dagger.http.Request;
 import dagger.http.Response;
+import dagger.http.StatusCode;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
 
@@ -27,9 +29,11 @@ import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+
 /**
- * Warning: WebSocket support is experimental.
+ * Warning: WebSocket support is experimental. Crappy code ahead.
  */
+
 public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<Object> {
 
     private final Module module;
@@ -67,16 +71,40 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
             return;
         }
 
+
+        // Find a request handler...
         Request request = new NettyWebSocketRequest("", WebSocketOpen.METHOD, httpRequest);
         RequestHandler requestHandler = module.getHandlerFor(request);
 
+
+        // No handler found for this request, returning 404 NOT FOUND.
         if (requestHandler instanceof ResourceNotFound) {
             sendHttpResponse(context, httpRequest, new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND));
             return;
         }
 
+
+        // There is a handler, let it handle the request...
+        WebSocketOutputStream responseOutputStream = new WebSocketOutputStream();
+        NettyWebSocketResponse response = new NettyWebSocketResponse(responseOutputStream);
+
+        // ... also let's execute the reaction
+        Reaction reaction = requestHandler.handle(request);
+        reaction.execute(request, response);
+
+
+        // Execution resulted in failure, which means that we cannot make websocket connection.
+        if(!StatusCode.OK.equals(response.getStatusCode())) {
+            HttpResponseStatus status = HttpResponseStatus.valueOf(response.getStatusCode().getNumber());
+            sendHttpResponse(context, httpRequest, new DefaultFullHttpResponse(HTTP_1_1, status));
+            return;
+        }
+
+
+        // Everything is ok, connection will start...
         Channel channel = context.channel();
-        WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(getWebSocketLocation(httpRequest), null, false);
+        String websocketLocation = getWebSocketLocation(httpRequest);
+        WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(websocketLocation, null, false);
         handshaker = wsFactory.newHandshaker(httpRequest);
         if (handshaker == null) {
             WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(channel);
@@ -85,8 +113,9 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
         handshaker.handshake(channel, httpRequest);
         connections.put(channel.id(), httpRequest);
 
-        Reaction reaction = requestHandler.handle(request);
-        reaction.execute(request, new NettyWebSocketResponse(channel));
+        // Write the contents of the response to the websocket channel.
+        responseOutputStream.setChannel(context.channel());
+        responseOutputStream.flush();
     }
 
     private String getWebSocketLocation(FullHttpRequest req) {
@@ -106,7 +135,7 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
 
     private boolean isWebSocket(FullHttpRequest nettyHttpRequest) {
         String upgradeHeader = nettyHttpRequest.headers().get("Upgrade");
-        return "WebSocket".equals(upgradeHeader);
+        return "websocket".equalsIgnoreCase(upgradeHeader);
     }
 
     private void handleWebSocketFrame(ChannelHandlerContext context, WebSocketFrame frame) throws Exception {

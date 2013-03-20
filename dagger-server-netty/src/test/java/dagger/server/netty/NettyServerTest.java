@@ -34,6 +34,7 @@ import java.net.URI;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.fail;
 
 public class NettyServerTest {
 
@@ -225,6 +226,33 @@ public class NettyServerTest {
         }
         catch(WebSocketException exception) {
             assertEquals("connection failed: 404 not found", exception.getMessage());
+        }
+    }
+
+    @Test(timeout = 2000)
+    public void testDoNotAcceptWebSocketRequestIfStatusCodeIsNot200() throws Exception {
+        on(wsopen("/greet", new Action() {
+            @Override
+            public Reaction execute(Request request) throws Exception {
+                return new Reaction() {
+                    @Override
+                    public void execute(Request request, Response response) throws Exception {
+                        response.setStatusCode(StatusCode.SEE_OTHER);
+                    }
+                };
+            }
+        }));
+
+        WebSocketClientHandler clientConnection = new WebSocketClientHandler();
+        WebSocket client = new WebSocketConnection(new URI("ws://localhost:8123/greet"));
+        client.setEventHandler(clientConnection);
+
+        try {
+            client.connect();
+            fail("Should not succeed");
+        }
+        catch(WebSocketException exception) {
+            assertEquals("connection failed: unknown status code 303", exception.getMessage());
         }
     }
 

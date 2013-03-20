@@ -20,11 +20,13 @@ public class WebSocketOpen implements RequestHandler {
 
     @Override
     public boolean canHandle(Request request) {
-        if(!request.getMethod().equals(METHOD))
+        if(!request.getMethod().equals(METHOD)) {
             return false;
+        }
 
-        if(!"WebSocket".equals(request.getHeader("Upgrade")))
+        if(!"WebSocket".equalsIgnoreCase(request.getHeader("Upgrade"))) {
             return false;
+        }
 
         return route.matches(request.getURI());
     }
