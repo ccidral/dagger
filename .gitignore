@@ -1,6 +1,7 @@
 *.iml
 *.ipr
 *.iws
+target/
 dagger-core/*.iml
 dagger-core/target/
 dagger-server-netty/*.iml
