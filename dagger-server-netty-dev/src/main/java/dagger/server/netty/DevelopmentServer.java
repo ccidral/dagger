@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +65,7 @@ public class DevelopmentServer {
         try {
             Clip clip = AudioSystem.getClip();
             InputStream soundFile = DevelopmentServer.class.getResourceAsStream("/" + name + ".wav");
-            AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new BufferedInputStream(soundFile));
             clip.open(ais);
             clip.start();
         } catch(Exception e) {
