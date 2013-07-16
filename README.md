@@ -24,6 +24,8 @@ Features
 * Everything is pluggable. Every tiny bit is injectable.
   Small interfaces everywhere.
 * The core doesn't depend upon the Servlet API.
+* Websocket support (experimental. Works fine for me though).
+* Freemarker templates support.
 * Lightweight web server. Starts up quickly, can be injected with anything.
 * Auto-reloadable development web server.
 * Servlet support (coming soon).
