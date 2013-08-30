@@ -3,6 +3,7 @@ package dagger.http;
 public enum StatusCode {
 
     OK(200),
+    NO_CONTENT(204),
     SEE_OTHER(303),
     NOT_MODIFIED(304),
     NOT_FOUND(404),
