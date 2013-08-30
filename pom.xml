@@ -15,8 +15,8 @@
     </properties>
 
     <scm>
-        <connection>scm:git:ssh://git@bitbucket.org/ccidral/dagger.git</connection>
-        <developerConnection>scm:git:ssh://git@bitbucket.org/ccidral/dagger.git</developerConnection>
+        <connection>scm:git:ssh://git@github.com:ccidral/dagger.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:ccidral/dagger.git</developerConnection>
     </scm>
 
     <dependencies>
