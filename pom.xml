@@ -67,20 +67,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-            </extension>
-        </extensions>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>saturno</id>
-            <name>RTS Brasil Saturno</name>
-            <url>scpexe://maven@cpro12868.publiccloud.com.br/var/www/dev.rtsbrasil.com.br/maven/</url>
-        </repository>
-    </distributionManagement>
 
 </project>
