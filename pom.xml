@@ -50,8 +50,10 @@
         <module>dagger-server</module>
         <module>dagger-server-netty</module>
         <module>dagger-server-netty-dev</module>
+        <module>dagger-servlet3</module>
         <module>dagger-view-freemarker</module>
         <module>dagger-sample-todo</module>
+        <module>dagger-servlet3-sample</module>
     </modules>
 
     <build>

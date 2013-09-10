@@ -8,13 +8,13 @@
     <parent>
         <groupId>dagger</groupId>
         <artifactId>dagger</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <groupId>dagger</groupId>
-    <artifactId>dagger-servlet3-sample</artifactId>
-    <packaging>war</packaging>
-    <name>Dagger Servlet 3 Sample Web Project</name>
+    <artifactId>dagger-servlet3</artifactId>
+    <name>Dagger Servlet 3</name>
+    <description>Servlet support for Dagger</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,8 +23,14 @@
     <dependencies>
         <dependency>
             <groupId>dagger</groupId>
-            <artifactId>dagger-servlet3</artifactId>
+            <artifactId>dagger-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+        </dependency>
     </dependencies>
+
 </project>

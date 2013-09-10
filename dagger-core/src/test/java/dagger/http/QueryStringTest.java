@@ -5,8 +5,15 @@ import org.junit.Test;
 import java.util.Map;
 
 import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 public class QueryStringTest {
+
+    @Test
+    public void testNullQueryStringIsLegal() {
+        QueryString params = new QueryStringImpl(null);
+        assertEquals("Has zero parameters", 0, params.size());
+    }
 
     @Test
     public void testNoQueryParametersFromUri() {

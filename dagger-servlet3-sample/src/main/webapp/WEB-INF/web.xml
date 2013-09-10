@@ -3,20 +3,15 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
+
     <display-name>Dagger Servlet 3 Sample Web Project</display-name>
 
     <servlet>
         <servlet-name>dagger</servlet-name>
         <servlet-class>dagger.servlet3.DaggerServlet</servlet-class>
-
         <init-param>
-            <param-name>dagger.module.class</param-name>
-            <param-value>dagger.module.DefaultModule</param-value>
-        </init-param>
-
-        <init-param>
-            <param-name>dagger.bootstrapper.class</param-name>
-            <param-value></param-value>
+            <param-name>dagger.module.factory.class</param-name>
+            <param-value>dagger.servlet3.sample.SampleModuleFactory</param-value>
         </init-param>
     </servlet>
 
@@ -24,4 +19,5 @@
         <servlet-name>dagger</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
 </web-app>

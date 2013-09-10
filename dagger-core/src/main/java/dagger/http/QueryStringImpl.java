@@ -11,6 +11,13 @@ public class QueryStringImpl implements QueryString {
     Map<String, String> map = new HashMap<>();
 
     public QueryStringImpl(String queryString) {
+        if(queryString == null)
+            return;
+
+        parse(queryString);
+    }
+
+    private void parse(String queryString) {
         for(String pair : queryString.split("&")) {
             String[] keyValue = pair.split("=");
             String key = keyValue[0].trim();
