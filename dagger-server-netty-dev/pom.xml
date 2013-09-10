@@ -13,6 +13,11 @@
     <artifactId>dagger-server-netty-dev</artifactId>
     <name>Dagger Netty Development Server</name>
 
+    <description>
+        Development web server that automatically reloads itself
+        when a change is detected in one or more application jars.
+    </description>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
