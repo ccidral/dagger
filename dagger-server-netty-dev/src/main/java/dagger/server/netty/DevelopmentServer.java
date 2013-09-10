@@ -1,6 +1,5 @@
 package dagger.server.netty;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
