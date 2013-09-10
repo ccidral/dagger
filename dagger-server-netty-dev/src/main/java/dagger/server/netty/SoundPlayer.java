@@ -16,7 +16,7 @@ public class SoundPlayer {
     public static void playSound(String name) {
         try {
             Clip clip = AudioSystem.getClip();
-            InputStream soundFile = DevelopmentServer.class.getResourceAsStream("/" + name + ".wav");
+            InputStream soundFile = SoundPlayer.class.getResourceAsStream("/" + name + ".wav");
             AudioInputStream ais = AudioSystem.getAudioInputStream(new BufferedInputStream(soundFile));
             clip.open(ais);
             clip.start();
