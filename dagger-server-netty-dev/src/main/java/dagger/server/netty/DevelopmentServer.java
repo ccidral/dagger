@@ -8,6 +8,7 @@ import java.io.File;
 
 import static dagger.server.netty.FileSystem.copyFilesToRandomTemporaryDirectory;
 import static dagger.server.netty.SoundPlayer.playSound;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 public class DevelopmentServer {
 
@@ -35,7 +36,7 @@ public class DevelopmentServer {
                 File copyOfApplicationJarsDirectory = copyFilesToRandomTemporaryDirectory(applicationJarsDirectory);
                 ClassLoader classLoader = new JarDirectoryClassLoader(copyOfApplicationJarsDirectory);
                 runWebServerUntilSomeJarIsChanged(classLoader, directoryWatcher);
-                FileUtils.deleteDirectory(copyOfApplicationJarsDirectory);
+                deleteDirectory(copyOfApplicationJarsDirectory);
                 logger.info("Reloading server");
                 playSound("beep-single");
             }
