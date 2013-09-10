@@ -29,17 +29,8 @@ public class DaggerServlet implements Servlet {
         this.module = createModule(servletConfig);
     }
 
-    private Module createModule(ServletConfig servletConfig) throws DaggerServletConfigurationException {
-        String moduleFactoryClassName = getModuleFactoryClassName(servletConfig);
-        ModuleFactory moduleFactory = createModuleFactory(moduleFactoryClassName);
-        return moduleFactory.create();
-    }
-
-    private String getModuleFactoryClassName(ServletConfig servletConfig) throws DaggerServletConfigurationException {
-        String moduleFactoryClassName = servletConfig.getInitParameter("dagger.module.factory.class");
-        if(moduleFactoryClassName == null)
-            throw new DaggerServletConfigurationException("Module factory class is not configured");
-        return moduleFactoryClassName;
+    @Override
+    public void destroy() {
     }
 
     @Override
@@ -64,6 +55,19 @@ public class DaggerServlet implements Servlet {
         }
     }
 
+    private Module createModule(ServletConfig servletConfig) throws DaggerServletConfigurationException {
+        String moduleFactoryClassName = getModuleFactoryClassName(servletConfig);
+        ModuleFactory moduleFactory = createModuleFactory(moduleFactoryClassName);
+        return moduleFactory.create();
+    }
+
+    private String getModuleFactoryClassName(ServletConfig servletConfig) throws DaggerServletConfigurationException {
+        String moduleFactoryClassName = servletConfig.getInitParameter("dagger.module.factory.class");
+        if(moduleFactoryClassName == null)
+            throw new DaggerServletConfigurationException("Module factory class is not configured");
+        return moduleFactoryClassName;
+    }
+
     private void handleRequest(Request daggerRequest, Response daggerResponse) throws Exception {
         RequestHandler requestHandler = module.getHandlerFor(daggerRequest);
         Reaction reaction = requestHandler.handle(daggerRequest);
@@ -72,10 +76,6 @@ public class DaggerServlet implements Servlet {
 
     private void respondWithInternalServerError(ServletResponse servletResponse) {
         ((HttpServletResponse)servletResponse).setStatus(SC_INTERNAL_SERVER_ERROR);
-    }
-
-    @Override
-    public void destroy() {
     }
 
     private ModuleFactory createModuleFactory(String className) throws DaggerServletConfigurationException {
