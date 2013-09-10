@@ -22,6 +22,7 @@ public class DaggerServlet implements Servlet {
     private ServletConfig servletConfig;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         logger.info("Initializing servlet");
         this.servletConfig = servletConfig;
@@ -41,14 +42,17 @@ public class DaggerServlet implements Servlet {
         return moduleFactoryClassName;
     }
 
+    @Override
     public ServletConfig getServletConfig() {
         return servletConfig;
     }
 
+    @Override
     public String getServletInfo() {
         return "Dagger Servlet";
     }
 
+    @Override
     public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
         Request daggerRequest = new DaggerServletRequest((HttpServletRequest) servletRequest);
         Response daggerResponse = new DaggerServletResponse((HttpServletResponse) servletResponse);
@@ -70,6 +74,7 @@ public class DaggerServlet implements Servlet {
         ((HttpServletResponse)servletResponse).setStatus(SC_INTERNAL_SERVER_ERROR);
     }
 
+    @Override
     public void destroy() {
     }
 
