@@ -9,11 +9,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-public class DirectoryWithJarsClassLoader extends URLClassLoader {
+public class JarDirectoryClassLoader extends URLClassLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(DirectoryWithJarsClassLoader.class);
+    private static Logger logger = LoggerFactory.getLogger(JarDirectoryClassLoader.class);
 
-    public DirectoryWithJarsClassLoader(File directory) throws MalformedURLException {
+    public JarDirectoryClassLoader(File directory) throws MalformedURLException {
         super(urls(directory), new DelegateDaggerClassesToChildClassLoader());
     }
 
