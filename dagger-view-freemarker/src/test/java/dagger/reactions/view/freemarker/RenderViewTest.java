@@ -23,7 +23,7 @@ public class RenderViewTest {
 
         reaction.execute(request, response);
 
-        assertEquals("Hello World!", contentWrittenTo(response));
+        assertEquals("Hello World!", renderedContent(response));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class RenderViewTest {
 
         reaction.execute(request, response);
 
-        assertEquals("The request URI is /foo/bar", contentWrittenTo(response));
+        assertEquals("The request URI is /foo/bar", renderedContent(response));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class RenderViewTest {
 
         reaction.execute(request, response);
 
-        assertEquals("The context path is /bananas", contentWrittenTo(response));
+        assertEquals("The context path is /bananas", renderedContent(response));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class RenderViewTest {
         return response;
     }
 
-    private String contentWrittenTo(Response response) {
+    private String renderedContent(Response response) {
         ByteArrayOutputStream outputStream = (ByteArrayOutputStream) response.getOutputStream();
         return new String(outputStream.toByteArray());
     }
