@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 public class RenderViewTest {
 
     @Test
-    public void test_content_written_to_the_response() throws Exception {
+    public void test_model_is_accessible_from_the_template() throws Exception {
         String model = "World";
         String contentType = "foo/bar";
         Response response = createResponse();
@@ -25,7 +25,7 @@ public class RenderViewTest {
     }
 
     @Test
-    public void test_content_type_header() throws Exception {
+    public void test_content_type_header_is_set_on_the_response() throws Exception {
         String model = "World";
         String contentType = "foo/bar";
         Response response = createResponse();
