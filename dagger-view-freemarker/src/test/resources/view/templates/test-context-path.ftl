@@ -1,0 +1,1 @@
+The context path is ${request.contextPath}

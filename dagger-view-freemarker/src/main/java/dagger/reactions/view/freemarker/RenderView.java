@@ -67,6 +67,7 @@ public class RenderView implements Reaction {
 
     private Map<String, Object> createRequestModel(Request request) {
         Map<String, Object> map = new HashMap<>();
+        map.put("contextPath", request.getContextPath());
         map.put("uri", request.getURI());
         return map;
     }
