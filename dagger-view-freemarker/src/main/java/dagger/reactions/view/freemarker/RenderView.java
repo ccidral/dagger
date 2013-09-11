@@ -39,14 +39,14 @@ public class RenderView implements Reaction {
     @Override
     public void execute(Request request, Response response) throws Exception {
         response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
-        renderView(response);
+        renderView(request, response);
     }
 
-    private void renderView(Response response) throws TemplateException, IOException {
+    private void renderView(Request request, Response response) throws TemplateException, IOException {
         Template template = loadTemplate();
-        Map<String, Object> modelMap = createModelMap();
+        Map<String, Object> rootModel = createRootModel(request);
         Writer writer = new OutputStreamWriter(response.getOutputStream());
-        template.process(modelMap, writer);
+        template.process(rootModel, writer);
         writer.flush();
     }
 
@@ -54,10 +54,17 @@ public class RenderView implements Reaction {
         return configuration.getTemplate(templateName + ".ftl");
     }
 
-    private Map<String, Object> createModelMap() {
-        Map<String, Object> modelMap = new HashMap<>();
-        modelMap.put("model", model);
-        return modelMap;
+    private Map<String, Object> createRootModel(Request request) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("model", model);
+        map.put("request", createRequestModel(request));
+        return map;
+    }
+
+    private Map<String, Object> createRequestModel(Request request) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("uri", request.getURI());
+        return map;
     }
 
     private static class ClasspathTemplateLoader extends URLTemplateLoader {
