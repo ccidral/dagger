@@ -30,10 +30,14 @@ public class RenderView implements Reaction {
         this.templateName = templateName;
         this.contentType = contentType;
         this.model = model;
+        this.configuration = createConfiguration();
+    }
 
-        configuration = new Configuration();
+    private static Configuration createConfiguration() {
+        Configuration configuration = new Configuration();
         configuration.setTemplateLoader(new ClasspathTemplateLoader());
         configuration.setObjectWrapper(new DefaultObjectWrapper());
+        return configuration;
     }
 
     @Override
