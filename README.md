@@ -38,7 +38,7 @@ Running The Development Web Server
 The development server loads your application jars and watches for changes to them. When a jar changes,
 the development server automatically reloads your app. So to run the development server you must 
 configure your IDE to build your application jars (including dependencies) into some directory.
-Assuming your module factory is `com.acme.MyModuleFactory` and you chose to build your jars at
+Assuming your module factory class is `com.acme.MyModuleFactory` and you chose to build your jars at
 `/tmp/build/myapp`, open a terminal and type these commands:
 
 ```bash
