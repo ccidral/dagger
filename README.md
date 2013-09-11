@@ -29,7 +29,7 @@ Features
 * Freemarker templates support. You can write your own template support if you want.
 * Lightweight web server. Starts up quickly, can be injected with anything.
 * Auto-reloadable development web server.
-* Servlet support (coming soon).
+* Servlet support (almost done).
 
 
 Running The Development Web Server
