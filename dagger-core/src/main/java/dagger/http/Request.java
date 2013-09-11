@@ -4,6 +4,8 @@ import java.io.InputStream;
 
 public interface Request {
 
+    String getContextPath();
+
     String getURI();
 
     String getMethod();

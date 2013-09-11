@@ -30,6 +30,11 @@ public class NettyWebSocketRequestTest {
     }
 
     @Test
+    public void testContextPathIsAlwaysEmptyStringWhichMeansThereIsNoContextPath() {
+        assertEquals("", request.getContextPath());
+    }
+
+    @Test
     public void testMethod() {
         assertEquals("Request method", "HELLO", request.getMethod());
     }

@@ -19,6 +19,11 @@ public class NettyRequest implements Request {
     }
 
     @Override
+    public String getContextPath() {
+        return "";
+    }
+
+    @Override
     public String getURI() {
         String uri = request.getUri();
 

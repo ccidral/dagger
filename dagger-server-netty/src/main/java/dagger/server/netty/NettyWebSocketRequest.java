@@ -23,6 +23,11 @@ public class NettyWebSocketRequest implements Request {
     }
 
     @Override
+    public String getContextPath() {
+        return "";
+    }
+
+    @Override
     public String getURI() {
         String uri = httpRequest.getUri();
         if(uri.indexOf('?') > -1)

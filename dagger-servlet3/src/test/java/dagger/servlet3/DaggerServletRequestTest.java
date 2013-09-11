@@ -27,6 +27,12 @@ public class DaggerServletRequestTest {
     }
 
     @Test
+    public void test_get_context_path() {
+        when(httpServletRequest.getContextPath()).thenReturn("/myapp");
+        assertEquals("/myapp", request.getContextPath());
+    }
+
+    @Test
     public void test_get_uri_when_context_path_is_null() {
         when(httpServletRequest.getContextPath()).thenReturn(null);
         when(httpServletRequest.getRequestURI()).thenReturn("/foo/bar");

@@ -29,6 +29,12 @@ public class NettyRequestTest {
     }
 
     @Test
+    public void testContextPathIsAlwaysEmptyStringWhichMeansThereIsNoContextPath() {
+        Request request = new NettyRequest(mockHttpRequest("/foo/bar"));
+        assertEquals("", request.getContextPath());
+    }
+
+    @Test
     public void testUri() {
         Request request = new NettyRequest(mockHttpRequest("/foo/bar"));
         assertEquals("/foo/bar", request.getURI());
