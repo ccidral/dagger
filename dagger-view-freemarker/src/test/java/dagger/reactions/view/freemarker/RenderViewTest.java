@@ -1,26 +1,50 @@
 package dagger.reactions.view.freemarker;
 
 import dagger.Reaction;
-import dagger.http.HttpHeaderNames;
+import dagger.http.Response;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import java.io.ByteArrayOutputStream;
+
+import static dagger.http.HttpHeaderNames.CONTENT_TYPE;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 public class RenderViewTest {
 
     @Test
-    public void testWithSimpleModel() throws Exception {
+    public void test_content_written_to_the_response() throws Exception {
         String model = "World";
         String contentType = "foo/bar";
-
+        Response response = createResponse();
         Reaction reaction = new RenderView("test-with-simple-model", contentType, model);
-        MockResponse response = new MockResponse();
 
         reaction.execute(null, response);
 
-        assertThat(response.getOutputAsString(), equalTo("Hello World!"));
-        assertThat(response.getHeader(HttpHeaderNames.CONTENT_TYPE), equalTo(contentType));
+        assertEquals("Hello World!", contentWrittenTo(response));
+    }
+
+    @Test
+    public void test_content_type_header() throws Exception {
+        String model = "World";
+        String contentType = "foo/bar";
+        Response response = createResponse();
+        Reaction reaction = new RenderView("test-with-simple-model", contentType, model);
+
+        reaction.execute(null, response);
+
+        verify(response).setHeader(CONTENT_TYPE, contentType);
+    }
+
+    private Response createResponse() {
+        Response response = mock(Response.class);
+        when(response.getOutputStream()).thenReturn(new ByteArrayOutputStream());
+        return response;
+    }
+
+    private String contentWrittenTo(Response response) {
+        ByteArrayOutputStream outputStream = (ByteArrayOutputStream) response.getOutputStream();
+        return new String(outputStream.toByteArray());
     }
 
 }

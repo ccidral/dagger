@@ -30,44 +30,34 @@ public class RenderView implements Reaction {
         this.templateName = templateName;
         this.contentType = contentType;
         this.model = model;
-        configuration = new Configuration();
 
+        configuration = new Configuration();
         configuration.setTemplateLoader(new ClasspathTemplateLoader());
         configuration.setObjectWrapper(new DefaultObjectWrapper());
     }
 
     @Override
     public void execute(Request request, Response response) throws Exception {
-        Template template = getTemplate();
-        Map<String, Object> modelMap = getModelMap();
-
         response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
-        Writer writer = new OutputStreamWriter(response.getOutputStream());
-
-        try {
-            template.process(modelMap, writer);
-            writer.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        }
+        renderView(response);
     }
 
-    private Map<String, Object> getModelMap() {
-        Map<String, Object> modelMap = new HashMap<String, Object>();
+    private void renderView(Response response) throws TemplateException, IOException {
+        Template template = loadTemplate();
+        Map<String, Object> modelMap = createModelMap();
+        Writer writer = new OutputStreamWriter(response.getOutputStream());
+        template.process(modelMap, writer);
+        writer.flush();
+    }
+
+    private Template loadTemplate() throws IOException {
+        return configuration.getTemplate(templateName + ".ftl");
+    }
+
+    private Map<String, Object> createModelMap() {
+        Map<String, Object> modelMap = new HashMap<>();
         modelMap.put("model", model);
         return modelMap;
-    }
-
-    private Template getTemplate() {
-        Template template;
-        try {
-            template = configuration.getTemplate(templateName + ".ftl");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return template;
     }
 
     private static class ClasspathTemplateLoader extends URLTemplateLoader {
@@ -79,5 +69,7 @@ public class RenderView implements Reaction {
             logger.debug("Template name: {}", templateName);
             return getClass().getResource("/view/templates/"+templateName);
         }
+
     }
+
 }
