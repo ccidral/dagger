@@ -32,6 +32,27 @@ Features
 * Servlet support (coming soon).
 
 
+Running The Development Web Server
+----------------------------------
+
+The development server loads your application jars and watches for changes to them. When a jar changes,
+the development server automatically reloads your app. So to run the development server you must 
+configure your IDE to build your application jars (including dependencies) into some directory.
+Assuming your module factory is `com.acme.MyModuleFactory` and you chose to build your jars at
+`/tmp/build/myapp`, open a terminal and type these commands:
+
+```bash
+$ cd ~/my/projects
+$ git clone git@github.com:ccidral/dagger.git
+$ cd dagger
+$ mvn clean install
+$ cd ~/my/tools
+$ tar vxf ~/my/projects/dagger/dagger-server-netty-dev/target/dagger-server-netty-dev-bin.tar.bz2
+$ cd dagger-server-netty-dev
+$ java -jar dagger-server-netty-dev.jar /tmp/build/myapp com.acme.MyModuleFactory
+```
+
+
 But... There's Another Project Named "Dagger". What Now?
 --------------------------------------------------------
 
