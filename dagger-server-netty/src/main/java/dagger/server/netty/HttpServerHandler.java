@@ -7,8 +7,9 @@ import dagger.http.Request;
 import dagger.http.Response;
 import dagger.lang.time.SystemClock;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
+import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERR
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Object> {
+public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private final Module module;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -27,18 +28,35 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
     }
 
     @Override
-    public void messageReceived(ChannelHandlerContext context, Object msg) throws Exception {
-        FullHttpResponse nettyHttpResponse;
+    public void channelReadComplete(ChannelHandlerContext context) {
+        context.flush();
+    }
 
-        try {
-            nettyHttpResponse = processRequest((FullHttpRequest) msg);
-        } catch (Exception e) {
-            logger.error("Error while handling request", e);
-            nettyHttpResponse = createErrorResponse();
+    @Override
+    public void channelRead(ChannelHandlerContext context, Object msg) throws Exception {
+        if (msg instanceof HttpRequest) {
+            FullHttpResponse nettyHttpResponse;
+
+            try {
+                nettyHttpResponse = processRequest((FullHttpRequest) msg);
+            } catch (Exception e) {
+                logger.error("Error while handling request", e);
+                nettyHttpResponse = createErrorResponse();
+            }
+
+            nettyHttpResponse.headers().set(CONTENT_LENGTH, nettyHttpResponse.content().readableBytes());
+            context.write(nettyHttpResponse);
         }
 
-        nettyHttpResponse.headers().set(CONTENT_LENGTH, nettyHttpResponse.data().readableBytes());
-        context.write(nettyHttpResponse);
+        ReferenceCountUtil.release(msg);
+
+        super.channelRead(context, msg);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext context, Throwable cause) {
+        logger.error("Exception caught", cause);
+        context.close();
     }
 
     private FullHttpResponse createErrorResponse() {

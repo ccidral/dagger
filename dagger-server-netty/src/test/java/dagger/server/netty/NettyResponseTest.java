@@ -49,7 +49,7 @@ public class NettyResponseTest {
     public void testWriteToOutputStream() throws IOException {
         response.getOutputStream().write("hello world".getBytes());
 
-        assertNotNull(mockNettyHttpResponse.data());
+        assertNotNull(mockNettyHttpResponse.content());
         assertEquals("hello world", mockNettyHttpResponse.getWrittenText());
     }
 

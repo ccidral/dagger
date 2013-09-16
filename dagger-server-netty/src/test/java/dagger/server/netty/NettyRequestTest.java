@@ -123,7 +123,7 @@ public class NettyRequestTest {
         ByteBuf requestContent = Unpooled.copiedBuffer("Hello world".getBytes());
 
         FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
-        when(mockHttpRequest.data()).thenReturn(requestContent);
+        when(mockHttpRequest.content()).thenReturn(requestContent);
 
         Request request = new NettyRequest(mockHttpRequest);
 

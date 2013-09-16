@@ -59,7 +59,7 @@ public class NettyRequest implements Request {
 
     @Override
     public InputStream getBody() {
-        return new ByteBufInputStream(request.data());
+        return new ByteBufInputStream(request.content());
     }
 
 }

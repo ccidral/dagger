@@ -3,12 +3,12 @@ package dagger.server.netty;
 import dagger.Module;
 import dagger.server.Server;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.InetSocketAddress;
 
 public class NettyServer implements Server {
 
@@ -16,7 +16,8 @@ public class NettyServer implements Server {
     private final Module module;
     private final Logger logger;
 
-    private ServerBootstrap serverBootstrap;
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
 
     public NettyServer(Module module) {
         this(8080, module);
@@ -30,27 +31,26 @@ public class NettyServer implements Server {
 
     @Override
     public void start() {
-        serverBootstrap = new ServerBootstrap();
+        bossGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup();
         try {
-            serverBootstrap.group(
-                    new NioEventLoopGroup(),
-                    new NioEventLoopGroup())
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new HttpServerInitializer(module))
-                    .localAddress(new InetSocketAddress(port));
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
+            bootstrap.group(bossGroup, workerGroup)
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new HttpServerInitializer(module));
 
-            serverBootstrap.bind().sync().channel();
-
-            logger.info("Listening on port {}", port);
-
+            bootstrap.bind(port).sync();
         } catch (InterruptedException e) {
-            logger.error("Error during server bootstrap", e);
+            logger.error("Error during bootstrap", e);
         }
+
     }
 
     @Override
     public void stop() {
-        serverBootstrap.shutdown();
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
     }
 
 }

@@ -24,7 +24,7 @@ public class NettyResponse implements Response {
 
     public NettyResponse(FullHttpResponse response, Clock clock) {
         this.response = response;
-        this.buffer = response.data();
+        this.buffer = response.content();
 
         setHeader(HttpHeaderNames.DATE, Formats.timestamp().format(clock.now()));
     }

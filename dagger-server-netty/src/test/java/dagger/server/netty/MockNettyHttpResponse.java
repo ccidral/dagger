@@ -4,10 +4,7 @@ import dagger.lang.NotImplementedYet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderResult;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.*;
 
 class MockNettyHttpResponse implements FullHttpResponse {
 
@@ -24,7 +21,7 @@ class MockNettyHttpResponse implements FullHttpResponse {
     }
 
     @Override
-    public ByteBuf data() {
+    public ByteBuf content() {
         return this.byteBuf;
     }
 
@@ -65,6 +62,11 @@ class MockNettyHttpResponse implements FullHttpResponse {
 
     @Override
     public FullHttpResponse copy() {
+        throw new NotImplementedYet();
+    }
+
+    @Override
+    public HttpContent duplicate() {
         throw new NotImplementedYet();
     }
 
