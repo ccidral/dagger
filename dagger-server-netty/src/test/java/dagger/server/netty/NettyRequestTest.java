@@ -127,7 +127,7 @@ public class NettyRequestTest {
 
         Request request = new NettyRequest(mockHttpRequest);
 
-        InputStream inputStream = request.getBody();
+        InputStream inputStream = request.getOutputStream();
         String bodyString = IOUtils.toString(inputStream);
         assertEquals("Hello world", bodyString);
     }

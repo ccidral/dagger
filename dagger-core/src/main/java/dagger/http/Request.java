@@ -16,6 +16,6 @@ public interface Request {
 
     String getCookie(String name);
 
-    InputStream getBody();
+    InputStream getOutputStream();
 
 }

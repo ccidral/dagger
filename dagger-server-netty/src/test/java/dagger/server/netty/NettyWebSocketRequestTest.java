@@ -47,8 +47,8 @@ public class NettyWebSocketRequestTest {
 
     @Test
     public void testBody() throws IOException {
-        assertNotNull("Request body", request.getBody());
-        assertEquals("Request body", "Foo Bar", IOUtils.toString(request.getBody()));
+        assertNotNull("Request body", request.getOutputStream());
+        assertEquals("Request body", "Foo Bar", IOUtils.toString(request.getOutputStream()));
     }
 
     @Test

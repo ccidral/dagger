@@ -60,7 +60,7 @@ public class NettyWebSocketRequest implements Request {
     }
 
     @Override
-    public InputStream getBody() {
+    public InputStream getOutputStream() {
         return new ByteArrayInputStream(message.getBytes());
     }
 

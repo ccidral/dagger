@@ -109,7 +109,7 @@ public class DaggerServletRequestTest {
     @Test
     public void test_body() throws IOException {
         when(httpServletRequest.getInputStream()).thenReturn(new MockServletInputStream());
-        assertSame(httpServletRequest.getInputStream(), request.getBody());
+        assertSame(httpServletRequest.getInputStream(), request.getOutputStream());
     }
 
     private class MockServletInputStream extends ServletInputStream {

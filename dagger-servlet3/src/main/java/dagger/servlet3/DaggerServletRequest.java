@@ -61,7 +61,7 @@ public class DaggerServletRequest implements Request {
     }
 
     @Override
-    public InputStream getBody() {
+    public InputStream getOutputStream() {
         try {
             return httpServletRequest.getInputStream();
         } catch (IOException e) {
