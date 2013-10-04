@@ -53,6 +53,19 @@ public class RenderViewTest {
     }
 
     @Test
+    public void test_uri_function_prepends_the_context_path() throws Exception {
+        String contextPath = "/bananas";
+        String model = "/are/cheap";
+        Request request = createRequest(contextPath, "/foo/bar");
+        Response response = createResponse();
+
+        Reaction reaction = new RenderView("test-uri-function", "text/plain", model);
+        reaction.execute(request, response);
+
+        assertEquals("The URI is /bananas/are/cheap", renderedContent(response));
+    }
+
+    @Test
     public void test_content_type_header_is_set_on_the_response() throws Exception {
         String model = "World";
         String contentType = "foo/bar";
