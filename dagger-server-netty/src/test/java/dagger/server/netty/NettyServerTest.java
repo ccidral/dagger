@@ -88,7 +88,7 @@ public class NettyServerTest {
                 return new Reaction() {
                     @Override
                     public void execute(Request request, Response response) throws Exception {
-                        String body = IOUtils.toString(request.getOutputStream());
+                        String body = IOUtils.toString(request.getInputStream());
                         try {
                             response.getOutputStream().write(("Hello " + body).getBytes());
                         } catch (IOException e) {
@@ -300,7 +300,7 @@ public class NettyServerTest {
             return new Reaction() {
                 @Override
                 public void execute(Request request, Response response) throws Exception {
-                    setMessage(IOUtils.toString(request.getOutputStream()));
+                    setMessage(IOUtils.toString(request.getInputStream()));
                     OutputStream outputStream = response.getOutputStream();
                     outputStream.write(("Hello " + message).getBytes());
                 }
@@ -374,7 +374,7 @@ public class NettyServerTest {
         @Override
         public Reaction execute(Request request) throws Exception {
             synchronized (this) {
-                this.message = IOUtils.toString(request.getOutputStream());
+                this.message = IOUtils.toString(request.getInputStream());
                 notifyAll();
             }
 
