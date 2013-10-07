@@ -8,7 +8,7 @@
     <parent>
         <groupId>dagger</groupId>
         <artifactId>dagger</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>0.9-SNAPSHOT</version>
     </parent>
 
     <groupId>dagger</groupId>
