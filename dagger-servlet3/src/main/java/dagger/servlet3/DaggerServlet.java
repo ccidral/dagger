@@ -13,6 +13,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
@@ -21,16 +23,21 @@ public class DaggerServlet implements Servlet {
     private Module module;
     private ServletConfig servletConfig;
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private List<DaggerServletPlugin> plugins = new ArrayList<>();
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         logger.info("Initializing servlet");
+
         this.servletConfig = servletConfig;
         this.module = createModule(servletConfig);
+        this.plugins = createPlugins();
     }
 
     @Override
     public void destroy() {
+        logger.info("Destroying servlet");
+        destroyPlugins();
     }
 
     @Override
@@ -57,7 +64,8 @@ public class DaggerServlet implements Servlet {
 
     private Module createModule(ServletConfig servletConfig) throws DaggerServletConfigurationException {
         String moduleFactoryClassName = getModuleFactoryClassName(servletConfig);
-        ModuleFactory moduleFactory = createModuleFactory(moduleFactoryClassName);
+        logger.info("Creating instance of module factory: " + moduleFactoryClassName);
+        ModuleFactory moduleFactory = createInstanceOf(moduleFactoryClassName);
         return moduleFactory.create();
     }
 
@@ -66,6 +74,40 @@ public class DaggerServlet implements Servlet {
         if(moduleFactoryClassName == null)
             throw new DaggerServletConfigurationException("Module factory class is not configured");
         return moduleFactoryClassName;
+    }
+
+    private List<DaggerServletPlugin> createPlugins() throws DaggerServletConfigurationException {
+        List<DaggerServletPlugin> createdPlugins = new ArrayList<>();
+        String commaSeparatedListOfPluginClassNames = servletConfig.getInitParameter("dagger-servlet-plugins");
+        String[] pluginClassNames = parseListOfPluginClassNames(commaSeparatedListOfPluginClassNames);
+
+        for(String pluginClassName : pluginClassNames) {
+            DaggerServletPlugin plugin = createPlugin(pluginClassName);
+            createdPlugins.add(plugin);
+        }
+
+        return createdPlugins;
+    }
+
+    private DaggerServletPlugin createPlugin(String pluginClassName) throws DaggerServletConfigurationException {
+        logger.info("Creating instance of servlet plugin: "+pluginClassName);
+        DaggerServletPlugin plugin = createInstanceOf(pluginClassName);
+        plugin.initialize(module, servletConfig);
+        return plugin;
+    }
+
+    private void destroyPlugins() {
+        for(DaggerServletPlugin plugin : plugins)
+            plugin.destroy();
+    }
+
+    private String[] parseListOfPluginClassNames(String commaSeparatedListOfPluginClassNames) {
+        if(commaSeparatedListOfPluginClassNames == null)
+            return new String[] { };
+
+        return commaSeparatedListOfPluginClassNames
+            .trim()
+            .split(" *, *");
     }
 
     private void handleRequest(Request daggerRequest, Response daggerResponse) throws Exception {
@@ -78,16 +120,15 @@ public class DaggerServlet implements Servlet {
         ((HttpServletResponse)servletResponse).setStatus(SC_INTERNAL_SERVER_ERROR);
     }
 
-    private ModuleFactory createModuleFactory(String className) throws DaggerServletConfigurationException {
-        logger.info("Creating instance of module factory: " + className);
-        Class<ModuleFactory> clazz;
+    private <T> T createInstanceOf(String className) throws DaggerServletConfigurationException {
+        Class<?> clazz;
         try {
-            clazz = (Class<ModuleFactory>) Class.forName(className);
+            clazz = Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new DaggerServletConfigurationException(e);
         }
         try {
-            return clazz.newInstance();
+            return (T) clazz.newInstance();
         } catch (InstantiationException e) {
             throw new DaggerServletConfigurationException(e);
         } catch (IllegalAccessException e) {

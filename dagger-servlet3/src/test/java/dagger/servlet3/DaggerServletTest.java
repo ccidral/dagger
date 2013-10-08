@@ -17,9 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -37,7 +35,11 @@ public class DaggerServletTest {
         MockModuleFactory.initialize(module);
     }
 
-    private void given_that_the_servlet_is_properly_initialized() throws ServletException {
+    private void given_that_plugins_classes_are_defined_as_servlet_init_param(String commaSeparatedListOfPluginClasses) {
+        when(servletConfig.getInitParameter("dagger-servlet-plugins")).thenReturn(commaSeparatedListOfPluginClasses);
+    }
+
+    private void given_that_the_servlet_is_initialized_with_a_module_factory() throws ServletException {
         given_that_a_module_factory_class_is_configured();
         servlet.init(servletConfig);
     }
@@ -102,13 +104,13 @@ public class DaggerServletTest {
 
     @Test
     public void test_create_module_on_servlet_init() throws Exception {
-        given_that_the_servlet_is_properly_initialized();
+        given_that_the_servlet_is_initialized_with_a_module_factory();
         assertEquals("Has module been created?", true, MockModuleFactory.hasModuleBeenCreated());
     }
 
     @Test
     public void test_servlet_config_is_the_same_as_passed_into_the_init_method() throws Exception {
-        given_that_the_servlet_is_properly_initialized();
+        given_that_the_servlet_is_initialized_with_a_module_factory();
         assertSame(servletConfig, servlet.getServletConfig());
     }
 
@@ -117,7 +119,7 @@ public class DaggerServletTest {
         RequestHandler requestHandler = mock(RequestHandler.class);
         Reaction reaction = mock(Reaction.class);
 
-        given_that_the_servlet_is_properly_initialized();
+        given_that_the_servlet_is_initialized_with_a_module_factory();
         given_that_a_request_handler_is_found_for_the_request(requestHandler);
         given_that_a_reaction_is_produced_when_the_request_is_handled_by(requestHandler, reaction);
 
@@ -128,7 +130,7 @@ public class DaggerServletTest {
 
     @Test
     public void test_respond_with_status_code_500_on_error_during_attempt_to_find_a_request_handler() throws Exception {
-        given_that_the_servlet_is_properly_initialized();
+        given_that_the_servlet_is_initialized_with_a_module_factory();
         given_that_an_exception_is_thrown_while_attempting_to_find_a_request_handler();
 
         HttpServletResponse servletResponse = handleRequest();
@@ -140,7 +142,7 @@ public class DaggerServletTest {
     public void test_respond_with_status_code_500_on_error_during_attempt_to_handle_the_request() throws Exception {
         RequestHandler requestHandler = mock(RequestHandler.class);
 
-        given_that_the_servlet_is_properly_initialized();
+        given_that_the_servlet_is_initialized_with_a_module_factory();
         given_that_a_request_handler_is_found_for_the_request(requestHandler);
         given_that_an_exception_is_thrown_when_a_request_is_handled(requestHandler);
 
@@ -154,7 +156,7 @@ public class DaggerServletTest {
         RequestHandler requestHandler = mock(RequestHandler.class);
         Reaction reaction = mock(Reaction.class);
 
-        given_that_the_servlet_is_properly_initialized();
+        given_that_the_servlet_is_initialized_with_a_module_factory();
         given_that_a_request_handler_is_found_for_the_request(requestHandler);
         given_that_a_reaction_is_produced_when_the_request_is_handled_by(requestHandler, reaction);
         given_that_an_exception_is_thrown_when_a_reaction_is_executed(reaction);
@@ -162,6 +164,40 @@ public class DaggerServletTest {
         HttpServletResponse servletResponse = handleRequest();
 
         verify(servletResponse).setStatus(SC_INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void test_instantiate_plugins_on_servlet_initialization() throws Throwable {
+        given_that_plugins_classes_are_defined_as_servlet_init_param(FooPlugin.class.getName() + "," + BarPlugin.class.getName());
+        given_that_the_servlet_is_initialized_with_a_module_factory();
+
+        assertEquals("Has FooPlugin been correctly initialized?", true, FooPlugin.hasBeenInitializedWith(module, servletConfig));
+        assertEquals("Has BarPlugin been correctly initialized?", true, BarPlugin.hasBeenInitializedWith(module, servletConfig));
+    }
+
+    @Test
+    public void test_allow_whitespaces_between_plugin_class_names_in_servlet_init_param() throws Throwable {
+        given_that_plugins_classes_are_defined_as_servlet_init_param(
+            String.format("  %s  ,  %s  ",
+                FooPlugin.class.getName(),
+                BarPlugin.class.getName())
+        );
+
+        given_that_the_servlet_is_initialized_with_a_module_factory();
+
+        assertEquals("Has FooPlugin been correctly initialized?", true, FooPlugin.hasBeenInitializedWith(module, servletConfig));
+        assertEquals("Has BarPlugin been correctly initialized?", true, BarPlugin.hasBeenInitializedWith(module, servletConfig));
+    }
+
+    @Test
+    public void test_detroy_plugins_on_servlet_destroy() throws Throwable {
+        given_that_plugins_classes_are_defined_as_servlet_init_param(FooPlugin.class.getName() + "," + BarPlugin.class.getName());
+        given_that_the_servlet_is_initialized_with_a_module_factory();
+
+        servlet.destroy();
+
+        assertEquals("Has FooPlugin been destroyed?", true, FooPlugin.hasBeenDestroyed());
+        assertEquals("Has BarPlugin been destroyed?", true, BarPlugin.hasBeenDestroyed());
     }
 
     private DaggerServletRequest anyRequest() {
@@ -188,6 +224,58 @@ public class DaggerServletTest {
             return hasModuleBeenCreated;
         }
 
+    }
+
+    static class FooPlugin implements DaggerServletPlugin {
+
+        private static Module module;
+        private static ServletConfig servletConfig;
+        private static boolean hasBeenDestroyed;
+
+        public static boolean hasBeenInitializedWith(Module module, ServletConfig servletConfig) {
+            return FooPlugin.module == module && FooPlugin.servletConfig == servletConfig;
+        }
+
+        public static boolean hasBeenDestroyed() {
+            return hasBeenDestroyed;
+        }
+
+        @Override
+        public void initialize(Module module, ServletConfig servletConfig) {
+            FooPlugin.module = module;
+            FooPlugin.servletConfig = servletConfig;
+        }
+
+        @Override
+        public void destroy() {
+            hasBeenDestroyed = true;
+        }
+    }
+
+    static class BarPlugin implements DaggerServletPlugin {
+
+        private static Module module;
+        private static ServletConfig servletConfig;
+        private static boolean hasBeenDestroyed;
+
+        public static boolean hasBeenInitializedWith(Module module, ServletConfig servletConfig) {
+            return BarPlugin.module == module && BarPlugin.servletConfig == servletConfig;
+        }
+
+        public static boolean hasBeenDestroyed() {
+            return hasBeenDestroyed;
+        }
+
+        @Override
+        public void initialize(Module module, ServletConfig servletConfig) {
+            BarPlugin.module = module;
+            BarPlugin.servletConfig = servletConfig;
+        }
+
+        @Override
+        public void destroy() {
+            hasBeenDestroyed = true;
+        }
     }
 
 }
