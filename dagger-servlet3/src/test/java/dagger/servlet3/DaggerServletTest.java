@@ -5,6 +5,7 @@ import dagger.ModuleFactory;
 import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.http.Request;
+import dagger.servlet3.plugin.DaggerServletPluginManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +14,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
@@ -33,10 +33,6 @@ public class DaggerServletTest {
         servletConfig = mock(ServletConfig.class);
         module = mock(Module.class);
         MockModuleFactory.initialize(module);
-    }
-
-    private void given_that_plugins_classes_are_defined_as_servlet_init_param(String commaSeparatedListOfPluginClasses) {
-        when(servletConfig.getInitParameter("dagger-servlet-plugins")).thenReturn(commaSeparatedListOfPluginClasses);
     }
 
     private void given_that_the_servlet_is_initialized_with_a_module_factory() throws ServletException {
@@ -72,6 +68,16 @@ public class DaggerServletTest {
         doThrow(new RuntimeException()).when(reaction).execute(anyRequest(), any(DaggerServletResponse.class));
     }
 
+    private void given_that_a_plugin_manager_is_configured() {
+        when(servletConfig.getInitParameter("dagger-servlet-plugin-manager")).thenReturn(MockPluginManager.class.getName());
+    }
+
+    private void assertPluginManagerIsInitialized() {
+        assertEquals("Is plugin manager initialized?", true, MockPluginManager.isInitialized);
+        assertSame("Is plugin manager initialized with expected module", module, MockPluginManager.module);
+        assertSame("Is plugin manager initialized with expected module", servletConfig, MockPluginManager.servletConfig);
+    }
+
     private HttpServletResponse handleRequest() throws ServletException, IOException {
         HttpServletResponse servletResponse = mock(HttpServletResponse.class);
         servlet.service(mock(HttpServletRequest.class), servletResponse);
@@ -96,7 +102,7 @@ public class DaggerServletTest {
             servlet.init(servletConfig);
             fail("Should have thrown an exception");
         } catch(ServletException servletException) {
-            assertEquals("Exception class", DaggerServletConfigurationException.class, servletException.getClass());
+            assertEquals("Exception class", DaggerServletException.class, servletException.getClass());
             assertEquals("Is there a root cause?", true, servletException.getCause() != null);
             assertEquals("Root cause", ClassNotFoundException.class, servletException.getCause().getClass());
         }
@@ -167,44 +173,25 @@ public class DaggerServletTest {
     }
 
     @Test
-    public void test_instantiate_plugins_on_servlet_initialization() throws Throwable {
-        given_that_plugins_classes_are_defined_as_servlet_init_param(FooPlugin.class.getName() + "," + BarPlugin.class.getName());
+    public void test_create_plugin_manager() throws Throwable {
+        given_that_a_plugin_manager_is_configured();
         given_that_the_servlet_is_initialized_with_a_module_factory();
-
-        assertEquals("Has FooPlugin been correctly initialized?", true, FooPlugin.hasBeenInitializedWith(module, servletConfig));
-        assertEquals("Has BarPlugin been correctly initialized?", true, BarPlugin.hasBeenInitializedWith(module, servletConfig));
-    }
-
-    @Test
-    public void test_allow_whitespaces_between_plugin_class_names_in_servlet_init_param() throws Throwable {
-        given_that_plugins_classes_are_defined_as_servlet_init_param(
-            String.format("  %s  ,  %s  ",
-                FooPlugin.class.getName(),
-                BarPlugin.class.getName())
-        );
-
-        given_that_the_servlet_is_initialized_with_a_module_factory();
-
-        assertEquals("Has FooPlugin been correctly initialized?", true, FooPlugin.hasBeenInitializedWith(module, servletConfig));
-        assertEquals("Has BarPlugin been correctly initialized?", true, BarPlugin.hasBeenInitializedWith(module, servletConfig));
+        assertPluginManagerIsInitialized();
     }
 
     @Test
     public void test_detroy_plugins_on_servlet_destroy() throws Throwable {
-        given_that_plugins_classes_are_defined_as_servlet_init_param(FooPlugin.class.getName() + "," + BarPlugin.class.getName());
+        given_that_a_plugin_manager_is_configured();
         given_that_the_servlet_is_initialized_with_a_module_factory();
-
         servlet.destroy();
-
-        assertEquals("Has FooPlugin been destroyed?", true, FooPlugin.hasBeenDestroyed());
-        assertEquals("Has BarPlugin been destroyed?", true, BarPlugin.hasBeenDestroyed());
+        assertEquals("Is plugin manager destroyed?", true, MockPluginManager.isDestroyed);
     }
 
     private DaggerServletRequest anyRequest() {
         return any(DaggerServletRequest.class);
     }
 
-    static class MockModuleFactory implements ModuleFactory {
+    public static class MockModuleFactory implements ModuleFactory {
 
         private static Module module;
         private static boolean hasModuleBeenCreated;
@@ -226,56 +213,26 @@ public class DaggerServletTest {
 
     }
 
-    static class FooPlugin implements DaggerServletPlugin {
+    public static class MockPluginManager implements DaggerServletPluginManager {
 
-        private static Module module;
-        private static ServletConfig servletConfig;
-        private static boolean hasBeenDestroyed;
+        static boolean isInitialized;
+        static boolean isDestroyed;
 
-        public static boolean hasBeenInitializedWith(Module module, ServletConfig servletConfig) {
-            return FooPlugin.module == module && FooPlugin.servletConfig == servletConfig;
-        }
-
-        public static boolean hasBeenDestroyed() {
-            return hasBeenDestroyed;
-        }
+        static Module module;
+        static ServletConfig servletConfig;
 
         @Override
-        public void initialize(Module module, ServletConfig servletConfig) {
-            FooPlugin.module = module;
-            FooPlugin.servletConfig = servletConfig;
+        public void initialize(Module module, ServletConfig servletConfig) throws DaggerServletConfigurationException {
+            isInitialized = true;
+            MockPluginManager.module = module;
+            MockPluginManager.servletConfig = servletConfig;
         }
 
         @Override
         public void destroy() {
-            hasBeenDestroyed = true;
-        }
-    }
-
-    static class BarPlugin implements DaggerServletPlugin {
-
-        private static Module module;
-        private static ServletConfig servletConfig;
-        private static boolean hasBeenDestroyed;
-
-        public static boolean hasBeenInitializedWith(Module module, ServletConfig servletConfig) {
-            return BarPlugin.module == module && BarPlugin.servletConfig == servletConfig;
+            isDestroyed = true;
         }
 
-        public static boolean hasBeenDestroyed() {
-            return hasBeenDestroyed;
-        }
-
-        @Override
-        public void initialize(Module module, ServletConfig servletConfig) {
-            BarPlugin.module = module;
-            BarPlugin.servletConfig = servletConfig;
-        }
-
-        @Override
-        public void destroy() {
-            hasBeenDestroyed = true;
-        }
     }
 
 }
