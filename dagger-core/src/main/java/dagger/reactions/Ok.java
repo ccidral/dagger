@@ -14,7 +14,7 @@ public class Ok implements Reaction {
 
     private final byte[] content;
     private final String contentType;
-    private final Map<String, String> headers = new HashMap<>();
+    private final Map<String, String> headers = new HashMap<String, String>();
 
     public Ok(String content) {
         this(content, "text/plain");

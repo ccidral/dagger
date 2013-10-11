@@ -81,7 +81,7 @@ public class NettyResponse implements Response {
     }
 
     private List<String> getAllCookiesExcept(String exceptionCookieName) {
-        List<String> allCookieHeaders = new ArrayList<>(response.headers().getAll("Set-Cookie"));
+        List<String> allCookieHeaders = new ArrayList<String>(response.headers().getAll("Set-Cookie"));
         Iterator<String> iterator = allCookieHeaders.iterator();
         while(iterator.hasNext()) {
             String cookieHeader = iterator.next();

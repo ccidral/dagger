@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class QueryStringImpl implements QueryString {
 
-    Map<String, String> map = new HashMap<>();
+    Map<String, String> map = new HashMap<String, String>();
 
     public QueryStringImpl(String queryString) {
         if(queryString == null)

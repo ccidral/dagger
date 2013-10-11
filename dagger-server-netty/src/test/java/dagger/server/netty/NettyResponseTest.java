@@ -190,7 +190,7 @@ public class NettyResponseTest {
     }
 
     private List<CookieOption> mockCookieOptions(String[] optionValues) {
-        List<CookieOption> options = new ArrayList<>();
+        List<CookieOption> options = new ArrayList<CookieOption>();
         for(String value : optionValues) {
             CookieOption option = mock(CookieOption.class);
             when(option.getValue()).thenReturn(value);

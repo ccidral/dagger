@@ -9,7 +9,7 @@ public class CookieParser {
         if(cookiesString == null)
             return null;
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<String, String>();
         for(String cookie : cookiesString.split("; ")) {
             int firstEqualSignPosition = cookie.indexOf("=");
             String name = cookie.substring(0, firstEqualSignPosition);

@@ -41,7 +41,7 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
     private final Module module;
 
     private WebSocketServerHandshaker handshaker;
-    private Map<Integer, FullHttpRequest> connections = new HashMap<>();
+    private Map<Integer, FullHttpRequest> connections = new HashMap<Integer, FullHttpRequest>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public NettyWebSocketHandler(Module module) {
