@@ -59,7 +59,7 @@ public class RenderView implements Reaction {
     }
 
     private Map<String, Object> createRootModel(Request request) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("model", model);
         map.put("request", createRequestModel(request));
         map.put("uri", new UriMethod(request.getContextPath()));
@@ -67,7 +67,7 @@ public class RenderView implements Reaction {
     }
 
     private Map<String, Object> createRequestModel(Request request) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("contextPath", request.getContextPath());
         map.put("uri", request.getURI());
         return map;

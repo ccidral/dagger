@@ -8,7 +8,7 @@ public class CookieImpl implements Cookie {
 
     private final String name;
     private final String value;
-    private final List<CookieOption> options = new ArrayList<>();
+    private final List<CookieOption> options = new ArrayList<CookieOption>();
 
     public CookieImpl(String name, String value) {
         this.name = name;

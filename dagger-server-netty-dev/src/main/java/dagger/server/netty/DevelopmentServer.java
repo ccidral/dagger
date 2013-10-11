@@ -29,18 +29,14 @@ public class DevelopmentServer {
     }
 
     public void run() throws Throwable {
-        DirectoryWatcher directoryWatcher = new DirectoryWatcher(applicationJarsDirectory);
-        try {
-            while(true) {
-                File copyOfApplicationJarsDirectory = copyFilesToRandomTemporaryDirectory(applicationJarsDirectory);
-                ClassLoader classLoader = new JarDirectoryClassLoader(copyOfApplicationJarsDirectory);
-                runWebServerUntilSomeJarIsChanged(classLoader, directoryWatcher);
-                deleteDirectory(copyOfApplicationJarsDirectory);
-                logger.info("Reloading server");
-                playSound("beep-single");
-            }
-        } finally {
-            directoryWatcher.stopWatching();
+        DirectoryWatcher jarDirectoryWatcher = new DirectoryWatcher(applicationJarsDirectory);
+        while(true) {
+            File copyOfApplicationJarsDirectory = copyFilesToRandomTemporaryDirectory(applicationJarsDirectory);
+            ClassLoader classLoader = new JarDirectoryClassLoader(copyOfApplicationJarsDirectory);
+            runWebServerUntilSomeJarIsChanged(classLoader, jarDirectoryWatcher);
+            deleteDirectory(copyOfApplicationJarsDirectory);
+            logger.info("Reloading server");
+            playSound("beep-single");
         }
     }
 
@@ -48,6 +44,7 @@ public class DevelopmentServer {
         WebServer webServer = new WebServer(moduleFactoryClassName, classLoader);
 
         webServer.start();
+
         playSound("beep-double");
 
         try {

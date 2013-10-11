@@ -70,7 +70,7 @@ public class DaggerServletRequest implements Request {
     }
 
     private Map<String, String> getCookiesFromServletRequest() {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<String, String>();
         if(httpServletRequest.getCookies() != null) {
             for(Cookie cookie : httpServletRequest.getCookies()) {
                 map.put(cookie.getName(), cookie.getValue());
