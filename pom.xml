@@ -5,7 +5,7 @@
 
     <groupId>dagger</groupId>
     <artifactId>dagger</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
     <packaging>pom</packaging>
     <name>Dagger</name>
     <url>http://github.com/ccidral/dagger</url>
