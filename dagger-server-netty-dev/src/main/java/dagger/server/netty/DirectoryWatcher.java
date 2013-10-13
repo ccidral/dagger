@@ -28,6 +28,10 @@ public class DirectoryWatcher {
     }
 
     private class WatcherThread extends Thread {
+        public WatcherThread() {
+            super(WatcherThread.class.getSimpleName());
+        }
+
         @Override
         public void run() {
             long lastTimeSomethingChanged = latestTimestamp();
