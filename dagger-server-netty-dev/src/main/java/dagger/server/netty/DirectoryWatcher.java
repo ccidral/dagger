@@ -1,40 +1,58 @@
 package dagger.server.netty;
 
-import java.nio.file.*;
-import java.util.List;
+import java.io.File;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import static dagger.server.netty.Millis.seconds;
+import static dagger.server.netty.Millis.timeElapsedBetween;
 
 public class DirectoryWatcher {
 
-    private final WatchKey key;
-    private final WatchService watchService;
+    private final File directory;
+    private final Object lock = new Object();
+    private WatcherThread watcherThread;
 
-    public DirectoryWatcher(String directory) throws Throwable {
-        Path dir = FileSystems.getDefault().getPath(directory);
-
-        watchService = FileSystems.getDefault().newWatchService();
-        key = dir.register(watchService,
-                ENTRY_CREATE,
-                ENTRY_DELETE,
-                ENTRY_MODIFY);
-    }
-
-    public void stopWatching() throws Throwable {
-        watchService.close();
+    public DirectoryWatcher(String path) throws Throwable {
+        directory = new File(path);
     }
 
     public void waitForChange() throws InterruptedException {
-        while(true) {
-            Thread.sleep(1000);
-
-            List<WatchEvent<?>> event = key.pollEvents();
-
-            key.reset();
-
-            if(event.size() > 0)
-                break;
+        startWatcherThread();
+        synchronized (lock) {
+            lock.wait();
         }
+    }
+
+    private void startWatcherThread() {
+        watcherThread = new WatcherThread();
+        watcherThread.start();
+    }
+
+    private class WatcherThread extends Thread {
+        @Override
+        public void run() {
+            long lastTimeSomethingChanged = latestTimestamp();
+            do {
+                waitFor(seconds(2));
+            } while(timeElapsedBetween(lastTimeSomethingChanged, latestTimestamp()) < seconds(3));
+            synchronized (lock) {
+                lock.notifyAll();
+            }
+        }
+    }
+
+    private void waitFor(long timeInMillis) {
+        try {
+            Thread.sleep(timeInMillis);
+        } catch (InterruptedException e) {
+        }
+    }
+
+    private long latestTimestamp() {
+        long lastModified = directory.lastModified();
+        for(File file : directory.listFiles())
+            if(file.lastModified() > lastModified)
+                lastModified = file.lastModified();
+        return lastModified;
     }
 
 }

@@ -6,7 +6,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import java.util.*;
 
 class MockHeaders extends HttpHeaders {
-    private Map<String, List<Object>> headers = new HashMap<>();
+    private Map<String, List<Object>> headers = new HashMap<String, List<Object>>();
 
     @Override
     public String get(String name) {
@@ -17,7 +17,7 @@ class MockHeaders extends HttpHeaders {
 
     @Override
     public HttpHeaders set(String name, Object value) {
-        List<Object> values = new ArrayList<>();
+        List<Object> values = new ArrayList<Object>();
         values.add(value);
         headers.put(name, values);
         return this;
@@ -25,7 +25,7 @@ class MockHeaders extends HttpHeaders {
 
     @Override
     public List<String> getAll(String headerName) {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
         if(headers.containsKey(headerName))
             for(Object value : headers.get(headerName))
                 list.add(value.toString());
@@ -56,7 +56,7 @@ class MockHeaders extends HttpHeaders {
     public HttpHeaders add(String name, Object value) {
         List<Object> values = headers.get(name);
         if(values == null) {
-            values = new ArrayList<>();
+            values = new ArrayList<Object>();
             headers.put(name, values);
         }
         values.add(value);
@@ -71,7 +71,7 @@ class MockHeaders extends HttpHeaders {
     @Override
     public HttpHeaders set(String name, Iterable<?> values) {
         Iterator<?> iterator = values.iterator();
-        ArrayList<Object> list = new ArrayList<>();
+        ArrayList<Object> list = new ArrayList<Object>();
         while(iterator.hasNext())
             list.add(iterator.next());
         headers.put(name, list);
