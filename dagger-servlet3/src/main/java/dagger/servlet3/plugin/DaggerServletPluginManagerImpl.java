@@ -13,7 +13,7 @@ import static dagger.servlet3.util.ObjectFactory.createInstanceOf;
 
 public class DaggerServletPluginManagerImpl implements DaggerServletPluginManager {
 
-    private final List<DaggerServletPlugin> plugins = new ArrayList<>();
+    private final List<DaggerServletPlugin> plugins = new ArrayList<DaggerServletPlugin>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override

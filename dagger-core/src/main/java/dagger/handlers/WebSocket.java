@@ -26,7 +26,7 @@ public class WebSocket implements RequestHandler {
         this.route = route;
         this.webSocketSessionHandler = webSocketSessionHandler;
         this.webSocketOutputFactory = webSocketOutputFactory;
-        this.possibleReactions = new HashMap<>();
+        this.possibleReactions = new HashMap<String, Reaction>();
 
         possibleReactions.put(HttpMethod.WEBSOCKET_OPEN, new TriggerOnWebSocketOpen());
         possibleReactions.put(HttpMethod.WEBSOCKET_CLOSE, new TriggerOnWebSocketClose());
