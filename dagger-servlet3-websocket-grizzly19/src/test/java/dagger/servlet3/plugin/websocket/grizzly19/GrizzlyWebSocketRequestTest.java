@@ -61,7 +61,12 @@ public class GrizzlyWebSocketRequestTest {
 
     private MessageBytes messageBytes(String text) {
         MessageBytes messageBytes = MessageBytes.newInstance();
-        messageBytes.setString(text);
+
+        if(text == null)
+            return messageBytes;
+
+        byte[] bytes = text.getBytes();
+        messageBytes.setBytes(bytes, 0, bytes.length);
         return messageBytes;
     }
 

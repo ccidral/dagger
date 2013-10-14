@@ -33,7 +33,7 @@ public class GrizzlyWebSocketRequest implements Request {
     }
 
     private ServletUri parseUri() {
-        String uri = grizzlyTcpRequest.requestURI().getString();
+        String uri = grizzlyTcpRequest.requestURI().toString();
         return servletUriParser.parse(uri);
     }
 
@@ -76,9 +76,9 @@ public class GrizzlyWebSocketRequest implements Request {
     }
 
     private String stringFrom(MessageBytes messageBytes) {
-        if(messageBytes == null || messageBytes.getString() == null)
+        if(messageBytes == null || messageBytes.toString() == null)
             return null;
-        return messageBytes.getString();
+        return messageBytes.toString();
     }
 
     private synchronized Map<String, String> getCookies() {
