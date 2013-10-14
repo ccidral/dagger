@@ -54,6 +54,13 @@ public class DaggerServletRequestTest {
     }
 
     @Test
+    public void test_do_not_try_to_exclude_context_path_from_uri_when_it_does_not_start_with_the_context_path() {
+        when(httpServletRequest.getContextPath()).thenReturn("/context_path");
+        when(httpServletRequest.getRequestURI()).thenReturn("/favicon.ico");
+        assertEquals("/favicon.ico", request.getURI());
+    }
+
+    @Test
     public void test_get_method() {
         when(httpServletRequest.getMethod()).thenReturn("POST");
         assertEquals("POST", request.getMethod());
