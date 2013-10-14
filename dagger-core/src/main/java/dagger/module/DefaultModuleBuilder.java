@@ -2,7 +2,6 @@ package dagger.module;
 
 import dagger.*;
 import dagger.handlers.*;
-import dagger.lang.NotImplementedYet;
 import dagger.websocket.DefaultWebSocketOutputFactory;
 import dagger.websocket.WebSocketOutputFactory;
 import dagger.websocket.WebSocketSessionHandler;
@@ -45,29 +44,6 @@ public class DefaultModuleBuilder implements ModuleBuilder {
     public void websocket(String routeSpecification, WebSocketSessionHandler sessionHandler) {
         Route route = routeFactory.create(routeSpecification);
         module.add(new WebSocket(route, sessionHandler, webSocketOutputFactory));
-    }
-
-
-    /*
-        DEPRECATED:
-    */
-
-    @Override
-    public void wsopen(String routeSpecification, Action action) {
-        Route route = routeFactory.create(routeSpecification);
-        module.add(new WebSocketOpen(route, action));
-    }
-
-    @Override
-    public void wsmessage(String routeSpecification, Action action) {
-        Route route = routeFactory.create(routeSpecification);
-        module.add(new WebSocketMessage(route, action));
-    }
-
-    @Override
-    public void wsclose(String routeSpecification, Action action) {
-        Route route = routeFactory.create(routeSpecification);
-        module.add(new WebSocketClose(route, action));
     }
 
 }

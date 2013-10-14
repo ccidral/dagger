@@ -12,22 +12,4 @@ public interface ModuleBuilder {
 
     void websocket(String route, WebSocketSessionHandler handler);
 
-    /**
-     * Warning: WebSocket support is experimental.
-     */
-    @Deprecated
-    void wsopen(String route, Action action);
-
-    /**
-     * Warning: WebSocket support is experimental.
-     */
-    @Deprecated
-    void wsmessage(String route, Action action);
-
-    /**
-     * Warning: WebSocket support is experimental.
-     */
-    @Deprecated
-    void wsclose(String route, Action action);
-
 }
