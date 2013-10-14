@@ -4,6 +4,8 @@ import dagger.*;
 import dagger.handlers.*;
 import dagger.http.Request;
 import dagger.lang.NotImplementedYet;
+import dagger.websocket.WebSocketOutputFactory;
+import dagger.websocket.WebSocketSessionHandler;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,6 +19,7 @@ public class ModuleBuilderTest {
     private MockModule module;
     private Action action;
     private Route route;
+    private WebSocketOutputFactory webSocketOutputFactory;
 
     @Before
     public void setUp() {
@@ -25,7 +28,8 @@ public class ModuleBuilderTest {
         module = new MockModule();
         action = mock(Action.class);
         route = mock(Route.class);
-        moduleBuilder = new DefaultModuleBuilder(module, routeFactory);
+        webSocketOutputFactory = mock(WebSocketOutputFactory.class);
+        moduleBuilder = new DefaultModuleBuilder(module, routeFactory, webSocketOutputFactory);
 
         when(routeFactory.create("/foo")).thenReturn(route);
     }
@@ -61,6 +65,19 @@ public class ModuleBuilderTest {
         Post post = (Post) module.lastAddedHandler;
         assertSame("Route", route, post.getRoute());
         assertSame("Action", action, post.getAction());
+    }
+
+    @Test
+    public void testAddWebSocketHandler() {
+        WebSocketSessionHandler webSocketSessionHandler = mock(WebSocketSessionHandler.class);
+        moduleBuilder.websocket("/foo", webSocketSessionHandler);
+        assertNotNull("Added handler is not null", module.lastAddedHandler);
+        assertEquals("Handler type", WebSocket.class, module.lastAddedHandler.getClass());
+
+        WebSocket websocket = (WebSocket) module.lastAddedHandler;
+        assertSame("Route", route, websocket.getRoute());
+        assertSame("WebSocket session handler", webSocketSessionHandler, websocket.getSessionHandler());
+        assertSame("WebSocket output factory", webSocketOutputFactory, websocket.getWebSocketOutputFactory());
     }
 
     @Test

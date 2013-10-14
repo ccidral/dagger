@@ -2,15 +2,25 @@ package dagger.module;
 
 import dagger.*;
 import dagger.handlers.*;
+import dagger.lang.NotImplementedYet;
+import dagger.websocket.DefaultWebSocketOutputFactory;
+import dagger.websocket.WebSocketOutputFactory;
+import dagger.websocket.WebSocketSessionHandler;
 
 public class DefaultModuleBuilder implements ModuleBuilder {
 
     private final Module module;
     private final RouteFactory routeFactory;
+    private final WebSocketOutputFactory webSocketOutputFactory;
 
     public DefaultModuleBuilder(Module module, RouteFactory routeFactory) {
+        this(module, routeFactory, new DefaultWebSocketOutputFactory());
+    }
+
+    public DefaultModuleBuilder(Module module, RouteFactory routeFactory, WebSocketOutputFactory webSocketOutputFactory) {
         this.module = module;
         this.routeFactory = routeFactory;
+        this.webSocketOutputFactory = webSocketOutputFactory;
     }
 
     @Override
@@ -30,6 +40,17 @@ public class DefaultModuleBuilder implements ModuleBuilder {
         Route route = routeFactory.create(routeSpecification);
         module.add(new Post(route, action));
     }
+
+    @Override
+    public void websocket(String routeSpecification, WebSocketSessionHandler sessionHandler) {
+        Route route = routeFactory.create(routeSpecification);
+        module.add(new WebSocket(route, sessionHandler, webSocketOutputFactory));
+    }
+
+
+    /*
+        DEPRECATED:
+    */
 
     @Override
     public void wsopen(String routeSpecification, Action action) {

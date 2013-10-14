@@ -30,7 +30,7 @@ public class DaggerServletRequest implements Request {
     public String getURI() {
         String contextPath = httpServletRequest.getContextPath();
         String requestURI = httpServletRequest.getRequestURI();
-        if(contextPath == null || contextPath.equals("")) {
+        if(contextPath == null || contextPath.equals("") || !requestURI.startsWith(contextPath)) {
             return requestURI;
         }
 
