@@ -20,7 +20,7 @@ public class DaggerServletPluginManagerTest {
     private Module module;
 
     private void given_that_plugins_classes_are_defined_as_servlet_init_param(String commaSeparatedListOfPluginClasses) {
-        when(servletConfig.getInitParameter("dagger-servlet-plugins")).thenReturn(commaSeparatedListOfPluginClasses);
+        when(servletConfig.getInitParameter("dagger.servlet.plugin.classes")).thenReturn(commaSeparatedListOfPluginClasses);
     }
 
     @Before

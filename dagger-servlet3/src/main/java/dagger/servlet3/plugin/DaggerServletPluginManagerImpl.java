@@ -18,7 +18,7 @@ public class DaggerServletPluginManagerImpl implements DaggerServletPluginManage
 
     @Override
     public void initialize(Module module, ServletConfig servletConfig) throws DaggerServletException {
-        String commaSeparatedListOfPluginClassNames = servletConfig.getInitParameter("dagger-servlet-plugins");
+        String commaSeparatedListOfPluginClassNames = servletConfig.getInitParameter("dagger.servlet.plugin.classes");
         String[] pluginClassNames = parseListOfPluginClassNames(commaSeparatedListOfPluginClassNames);
 
         for(String pluginClassName : pluginClassNames) {
