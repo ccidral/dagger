@@ -6,6 +6,7 @@ import dagger.RequestHandler;
 import dagger.Route;
 import dagger.http.Request;
 
+@Deprecated
 public class WebSocketClose implements RequestHandler {
 
     public static final String METHOD = "WSCLOSE";
