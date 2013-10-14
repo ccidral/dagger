@@ -1,22 +1,25 @@
 package dagger.servlet3.plugin.websocket.grizzly19;
 
 import com.sun.grizzly.util.buf.MessageBytes;
+import com.sun.grizzly.util.http.Cookies;
+import com.sun.grizzly.util.http.MimeHeaders;
 import dagger.http.HttpMethod;
 import dagger.http.QueryString;
 import dagger.http.QueryStringParser;
 import dagger.http.Request;
+import dagger.lang.io.Streams;
 import dagger.servlet3.lang.ServletUri;
 import dagger.servlet3.lang.ServletUriParser;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import java.io.IOException;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GrizzlyRequestTest {
+public class GrizzlyWebSocketRequestTest {
 
     private com.sun.grizzly.tcp.Request grizzlyTcpRequest;
     private ServletUriParser servletUriParser;
@@ -28,7 +31,7 @@ public class GrizzlyRequestTest {
         grizzlyTcpRequest = mock(com.sun.grizzly.tcp.Request.class);
         servletUriParser = mock(ServletUriParser.class);
         queryStringParser = mock(QueryStringParser.class);
-        request = new GrizzlyRequest(grizzlyTcpRequest, HttpMethod.POST, servletUriParser, queryStringParser);
+        request = new GrizzlyWebSocketRequest(grizzlyTcpRequest, HttpMethod.POST, servletUriParser, queryStringParser);
     }
 
     private void given_that_grizzly_request_has_uri(String uri) {
@@ -105,6 +108,28 @@ public class GrizzlyRequestTest {
         when(grizzlyTcpRequest.getHeader("hello")).thenReturn("world");
         assertEquals("bar", request.getHeader("foo"));
         assertEquals("world", request.getHeader("hello"));
+    }
+
+    @Test
+    public void test_input_stream_is_not_null() throws IOException {
+        assertNotNull(request.getInputStream());
+    }
+
+    @Test
+    public void test_input_stream_is_always_empty_because_websocket_requests_do_not_have_body() throws IOException {
+        assertEquals("", Streams.toString(request.getInputStream()));
+    }
+
+    @Test
+    public void test_get_cookie() {
+        MimeHeaders cookieHeaders = new MimeHeaders();
+        cookieHeaders.addValue("Cookie").setString("greeting=hello");
+        cookieHeaders.addValue("Cookie").setString("foo=bar");
+
+        when(grizzlyTcpRequest.getCookies()).thenReturn(new Cookies(cookieHeaders));
+
+        assertEquals("hello", request.getCookie("greeting"));
+        assertEquals("bar", request.getCookie("foo"));
     }
 
 }
