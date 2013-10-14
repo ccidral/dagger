@@ -69,7 +69,7 @@ public class DaggerServletTest {
     }
 
     private void given_that_a_plugin_manager_is_configured() {
-        when(servletConfig.getInitParameter("dagger-servlet-plugin-manager")).thenReturn(MockPluginManager.class.getName());
+        when(servletConfig.getInitParameter("dagger.servlet.plugin.manager.class")).thenReturn(MockPluginManager.class.getName());
     }
 
     private void assertPluginManagerIsInitialized() {

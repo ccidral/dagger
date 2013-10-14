@@ -78,7 +78,7 @@ public class DaggerServlet implements Servlet {
     }
 
     private static DaggerServletPluginManager createPluginManager(ServletConfig servletConfig, Module module) throws DaggerServletException {
-        String pluginManagerClass = servletConfig.getInitParameter("dagger-servlet-plugin-manager");
+        String pluginManagerClass = servletConfig.getInitParameter("dagger.servlet.plugin.manager.class");
         if(pluginManagerClass == null)
             return new NullDaggerServletPluginManager();
 
