@@ -108,7 +108,7 @@ public class WebSocketTest {
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
 
-        verify(webSocketSessionHandler).onOpen(request, webSocketSession);
+        verify(webSocketSessionHandler).onOpen(webSocketSession);
     }
 
     @Test
@@ -120,18 +120,19 @@ public class WebSocketTest {
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
 
-        verify(webSocketSessionHandler).onMessage(request, webSocketSession, "Hello there");
+        verify(webSocketSessionHandler).onMessage("Hello there", webSocketSession);
     }
 
     @Test
     public void test_handle_websocket_close_request() throws Throwable {
         Request request = request("/foo/bar", WEBSOCKET_CLOSE);
         Response response = mock(Response.class);
+        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(request, response);
 
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
 
-        verify(webSocketSessionHandler).onClose(request);
+        verify(webSocketSessionHandler).onClose(webSocketSession);
     }
 
 }

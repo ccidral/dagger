@@ -283,7 +283,7 @@ public class NettyServerTest {
         private WebSocketSession webSocketSession;
 
         @Override
-        public void onOpen(Request request, WebSocketSession webSocketSession) {
+        public void onOpen(WebSocketSession webSocketSession) {
             this.webSocketSession = webSocketSession;
 
             synchronized (openLock) {
@@ -296,7 +296,7 @@ public class NettyServerTest {
         }
 
         @Override
-        public void onClose(Request request) {
+        public void onClose(WebSocketSession webSocketSession) {
             synchronized (closeLock) {
                 isClosed = true;
                 closeLock.notifyAll();
@@ -304,7 +304,7 @@ public class NettyServerTest {
         }
 
         @Override
-        public void onMessage(Request request, WebSocketSession session, String message) {
+        public void onMessage(String message, WebSocketSession session) {
             synchronized (messageLock) {
                 this.messageFromClient = message;
                 messageLock.notifyAll();

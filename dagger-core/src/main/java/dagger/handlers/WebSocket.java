@@ -68,14 +68,15 @@ public class WebSocket implements RequestHandler {
         @Override
         public void execute(Request request, Response response) throws Exception {
             WebSocketSession webSocketSession = webSocketSessionFactory.create(request, response);
-            webSocketSessionHandler.onOpen(request, webSocketSession);
+            webSocketSessionHandler.onOpen(webSocketSession);
         }
     }
 
     private class TriggerOnWebSocketClose implements Reaction {
         @Override
         public void execute(Request request, Response response) throws Exception {
-            webSocketSessionHandler.onClose(request);
+            WebSocketSession webSocketSession = webSocketSessionFactory.create(request, response);
+            webSocketSessionHandler.onClose(webSocketSession);
         }
     }
 
@@ -84,7 +85,7 @@ public class WebSocket implements RequestHandler {
         public void execute(Request request, Response response) throws Exception {
             WebSocketSession webSocketSession = webSocketSessionFactory.create(request, response);
             String message = Streams.toString(request.getInputStream());
-            webSocketSessionHandler.onMessage(request, webSocketSession, message);
+            webSocketSessionHandler.onMessage(message, webSocketSession);
         }
     }
 
