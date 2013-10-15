@@ -2,6 +2,7 @@ package dagger.websocket;
 
 import dagger.DaggerRuntimeException;
 import dagger.http.Response;
+import dagger.http.StatusCode;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -21,6 +22,21 @@ public class DefaultWebSocketSession implements WebSocketSession {
         try {
             writer.write(message);
             writer.flush();
+        } catch (IOException e) {
+            throw new DaggerRuntimeException(e);
+        }
+    }
+
+    @Override
+    public void close() {
+        close(StatusCode.WEBSOCKET_NORMAL_CLOSE);
+    }
+
+    @Override
+    public void close(StatusCode statusCode) {
+        try {
+            response.setStatusCode(statusCode);
+            response.getOutputStream().close();
         } catch (IOException e) {
             throw new DaggerRuntimeException(e);
         }
