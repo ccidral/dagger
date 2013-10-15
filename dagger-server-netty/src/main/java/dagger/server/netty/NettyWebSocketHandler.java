@@ -186,18 +186,27 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
         handshaker.close(channel, frame);
         try {
             handleWebSocketEvent("", HttpMethod.WEBSOCKET_CLOSE, channel);
+        } catch(WebSocketConnectionNotFoundException connectionNotFound) {
+            logger.warn("Could not close websocket because no connection was found for channel #{}", channel.id());
         } finally {
             connections.remove(channel.id());
         }
     }
 
     private void handleWebSocketEvent(String message, String method, Channel channel) throws Exception {
-        FullHttpRequest nettyHttpRequest = connections.get(channel.id());
+        FullHttpRequest nettyHttpRequest = findHttpRequestFor(channel);
         Request request = new NettyWebSocketRequest(message, method, nettyHttpRequest);
         Response response = new NettyWebSocketResponse(channel);
         RequestHandler requestHandler = module.getHandlerFor(request);
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
+    }
+
+    private FullHttpRequest findHttpRequestFor(Channel channel) throws WebSocketConnectionNotFoundException {
+        FullHttpRequest nettyHttpRequest = connections.get(channel.id());
+        if(nettyHttpRequest == null)
+            throw new WebSocketConnectionNotFoundException("WebSocket connection has been closed or does not exist. Channel id: "+channel.id());
+        return nettyHttpRequest;
     }
 
 }
