@@ -4,7 +4,7 @@ import dagger.*;
 import dagger.handlers.*;
 import dagger.http.Request;
 import dagger.lang.NotImplementedYet;
-import dagger.websocket.WebSocketOutputFactory;
+import dagger.websocket.WebSocketSessionFactory;
 import dagger.websocket.WebSocketSessionHandler;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class ModuleBuilderTest {
     private MockModule module;
     private Action action;
     private Route route;
-    private WebSocketOutputFactory webSocketOutputFactory;
+    private WebSocketSessionFactory webSocketSessionFactory;
 
     @Before
     public void setUp() {
@@ -28,8 +28,8 @@ public class ModuleBuilderTest {
         module = new MockModule();
         action = mock(Action.class);
         route = mock(Route.class);
-        webSocketOutputFactory = mock(WebSocketOutputFactory.class);
-        moduleBuilder = new DefaultModuleBuilder(module, routeFactory, webSocketOutputFactory);
+        webSocketSessionFactory = mock(WebSocketSessionFactory.class);
+        moduleBuilder = new DefaultModuleBuilder(module, routeFactory, webSocketSessionFactory);
 
         when(routeFactory.create("/foo")).thenReturn(route);
     }
@@ -77,7 +77,7 @@ public class ModuleBuilderTest {
         WebSocket websocket = (WebSocket) module.lastAddedHandler;
         assertSame("Route", route, websocket.getRoute());
         assertSame("WebSocket session handler", webSocketSessionHandler, websocket.getSessionHandler());
-        assertSame("WebSocket output factory", webSocketOutputFactory, websocket.getWebSocketOutputFactory());
+        assertSame("WebSocket session factory", webSocketSessionFactory, websocket.getWebSocketSessionFactory());
     }
 
     private class MockModule implements Module {

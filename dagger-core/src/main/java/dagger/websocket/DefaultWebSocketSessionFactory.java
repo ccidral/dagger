@@ -2,7 +2,7 @@ package dagger.websocket;
 
 import dagger.http.Response;
 
-public class DefaultWebSocketOutputFactory implements WebSocketOutputFactory {
+public class DefaultWebSocketSessionFactory implements WebSocketSessionFactory {
 
     @Override
     public WebSocketSession create(Response response) {

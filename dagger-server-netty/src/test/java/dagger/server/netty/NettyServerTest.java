@@ -12,7 +12,7 @@ import dagger.http.StatusCode;
 import dagger.module.DefaultModule;
 import dagger.routes.ExactRoute;
 import dagger.server.Server;
-import dagger.websocket.DefaultWebSocketOutputFactory;
+import dagger.websocket.DefaultWebSocketSessionFactory;
 import dagger.websocket.WebSocketSession;
 import dagger.websocket.WebSocketSessionHandler;
 import de.roderick.weberknecht.*;
@@ -266,7 +266,7 @@ public class NettyServerTest {
     }
 
     private RequestHandler websocket(String resourceName, WebSocketSessionHandler webSocketSessionHandler) {
-        return new dagger.handlers.WebSocket(new ExactRoute(resourceName), webSocketSessionHandler, new DefaultWebSocketOutputFactory());
+        return new dagger.handlers.WebSocket(new ExactRoute(resourceName), webSocketSessionHandler, new DefaultWebSocketSessionFactory());
     }
 
     private static class WebSocketServerHandler implements WebSocketSessionHandler {

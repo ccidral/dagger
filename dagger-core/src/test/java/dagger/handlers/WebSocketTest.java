@@ -7,7 +7,7 @@ import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.UnexpectedHttpMethodException;
 import dagger.websocket.WebSocketSession;
-import dagger.websocket.WebSocketOutputFactory;
+import dagger.websocket.WebSocketSessionFactory;
 import dagger.websocket.WebSocketSessionHandler;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,21 +24,21 @@ public class WebSocketTest {
     private Route route;
     private WebSocketSessionHandler webSocketSessionHandler;
     private RequestHandler requestHandler;
-    private WebSocketOutputFactory webSocketOutputFactory;
+    private WebSocketSessionFactory webSocketSessionFactory;
 
     @Before
     public void setUp() throws Exception {
         route = mock(Route.class);
         webSocketSessionHandler = mock(WebSocketSessionHandler.class);
-        webSocketOutputFactory = mock(WebSocketOutputFactory.class);
-        requestHandler = new WebSocket(route, webSocketSessionHandler, webSocketOutputFactory);
+        webSocketSessionFactory = mock(WebSocketSessionFactory.class);
+        requestHandler = new WebSocket(route, webSocketSessionHandler, webSocketSessionFactory);
 
         when(route.matches("/foo/bar")).thenReturn(true);
     }
 
     private WebSocketSession given_that_websocket_session_will_be_created_for(Response response) {
         WebSocketSession webSocketSession = mock(WebSocketSession.class);
-        when(webSocketOutputFactory.create(response)).thenReturn(webSocketSession);
+        when(webSocketSessionFactory.create(response)).thenReturn(webSocketSession);
         return webSocketSession;
     }
 

@@ -8,7 +8,7 @@ import dagger.http.Response;
 import dagger.http.UnexpectedHttpMethodException;
 import dagger.lang.io.Streams;
 import dagger.websocket.WebSocketSession;
-import dagger.websocket.WebSocketOutputFactory;
+import dagger.websocket.WebSocketSessionFactory;
 import dagger.websocket.WebSocketSessionHandler;
 import dagger.http.Request;
 
@@ -19,13 +19,13 @@ public class WebSocket implements RequestHandler {
 
     private final Route route;
     private final WebSocketSessionHandler webSocketSessionHandler;
-    private final WebSocketOutputFactory webSocketOutputFactory;
+    private final WebSocketSessionFactory webSocketSessionFactory;
     private final Map<String, Reaction> possibleReactions;
 
-    public WebSocket(Route route, WebSocketSessionHandler webSocketSessionHandler, WebSocketOutputFactory webSocketOutputFactory) {
+    public WebSocket(Route route, WebSocketSessionHandler webSocketSessionHandler, WebSocketSessionFactory webSocketSessionFactory) {
         this.route = route;
         this.webSocketSessionHandler = webSocketSessionHandler;
-        this.webSocketOutputFactory = webSocketOutputFactory;
+        this.webSocketSessionFactory = webSocketSessionFactory;
         this.possibleReactions = new HashMap<String, Reaction>();
 
         possibleReactions.put(HttpMethod.WEBSOCKET_OPEN, new TriggerOnWebSocketOpen());
@@ -41,8 +41,8 @@ public class WebSocket implements RequestHandler {
         return webSocketSessionHandler;
     }
 
-    public WebSocketOutputFactory getWebSocketOutputFactory() {
-        return webSocketOutputFactory;
+    public WebSocketSessionFactory getWebSocketSessionFactory() {
+        return webSocketSessionFactory;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class WebSocket implements RequestHandler {
     private class TriggerOnWebSocketOpen implements Reaction {
         @Override
         public void execute(Request request, Response response) throws Exception {
-            WebSocketSession webSocketSession = webSocketOutputFactory.create(response);
+            WebSocketSession webSocketSession = webSocketSessionFactory.create(response);
             webSocketSessionHandler.onOpen(request, webSocketSession);
         }
     }
@@ -82,7 +82,7 @@ public class WebSocket implements RequestHandler {
     private class TriggerOnWebSocketMessage implements Reaction {
         @Override
         public void execute(Request request, Response response) throws Exception {
-            WebSocketSession webSocketSession = webSocketOutputFactory.create(response);
+            WebSocketSession webSocketSession = webSocketSessionFactory.create(response);
             String message = Streams.toString(request.getInputStream());
             webSocketSessionHandler.onMessage(request, webSocketSession, message);
         }
