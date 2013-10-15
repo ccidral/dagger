@@ -1,5 +1,6 @@
 package dagger.websocket;
 
+import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import org.junit.Test;
@@ -10,15 +11,23 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
 
 public class WebSocketSessionTest {
 
     @Test
+    public void test_get_request() {
+        Request request = mock(Request.class);
+        WebSocketSession webSocketSession = new DefaultWebSocketSession(request, mock(Response.class));
+        assertSame(request, webSocketSession.getRequest());
+    }
+
+    @Test
     public void test_write_text_message_to_response_output_stream() {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Response response = response(outputStream);
-        WebSocketSession webSocketSession = new DefaultWebSocketSession(response);
+        WebSocketSession webSocketSession = new DefaultWebSocketSession(mock(Request.class), response);
 
         webSocketSession.write("Hello there!");
 
@@ -28,7 +37,7 @@ public class WebSocketSessionTest {
     @Test
     public void test_normal_session_close() throws Throwable {
         Response response = response(mock(OutputStream.class));
-        WebSocketSession webSocketSession = new DefaultWebSocketSession(response);
+        WebSocketSession webSocketSession = new DefaultWebSocketSession(mock(Request.class), response);
 
         webSocketSession.close();
 
@@ -38,7 +47,7 @@ public class WebSocketSessionTest {
     @Test
     public void test_close_session_with_arbitrary_status_code() throws Throwable {
         Response response = response(mock(OutputStream.class));
-        WebSocketSession webSocketSession = new DefaultWebSocketSession(response);
+        WebSocketSession webSocketSession = new DefaultWebSocketSession(mock(Request.class), response);
 
         webSocketSession.close(StatusCode.WEBSOCKET_UNEXPECTED_CONDITION);
 

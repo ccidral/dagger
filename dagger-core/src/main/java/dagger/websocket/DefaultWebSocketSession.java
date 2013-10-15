@@ -1,6 +1,7 @@
 package dagger.websocket;
 
 import dagger.DaggerRuntimeException;
+import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 
@@ -10,10 +11,17 @@ import java.io.OutputStreamWriter;
 
 public class DefaultWebSocketSession implements WebSocketSession {
 
+    private final Request request;
     private final Response response;
 
-    public DefaultWebSocketSession(Response response) {
+    public DefaultWebSocketSession(Request request, Response response) {
+        this.request = request;
         this.response = response;
+    }
+
+    @Override
+    public Request getRequest() {
+        return request;
     }
 
     @Override

@@ -36,9 +36,9 @@ public class WebSocketTest {
         when(route.matches("/foo/bar")).thenReturn(true);
     }
 
-    private WebSocketSession given_that_websocket_session_will_be_created_for(Response response) {
+    private WebSocketSession given_that_websocket_session_will_be_created_for(Request request, Response response) {
         WebSocketSession webSocketSession = mock(WebSocketSession.class);
-        when(webSocketSessionFactory.create(response)).thenReturn(webSocketSession);
+        when(webSocketSessionFactory.create(request, response)).thenReturn(webSocketSession);
         return webSocketSession;
     }
 
@@ -103,7 +103,7 @@ public class WebSocketTest {
     public void test_handle_websocket_open_request() throws Throwable {
         Request request = request("/foo/bar", WEBSOCKET_OPEN);
         Response response = mock(Response.class);
-        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(response);
+        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(request, response);
 
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
@@ -115,7 +115,7 @@ public class WebSocketTest {
     public void test_handle_websocket_message() throws Throwable {
         Request request = request("/foo/bar", WEBSOCKET_MESSAGE, "Hello there");
         Response response = mock(Response.class);
-        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(response);
+        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(request, response);
 
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
