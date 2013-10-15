@@ -7,11 +7,11 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-public class DefaultWebSocketOutput implements WebSocketOutput {
+public class DefaultWebSocketSession implements WebSocketSession {
 
     private final Response response;
 
-    public DefaultWebSocketOutput(Response response) {
+    public DefaultWebSocketSession(Response response) {
         this.response = response;
     }
 

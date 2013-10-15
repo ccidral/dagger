@@ -13,7 +13,7 @@ import dagger.module.DefaultModule;
 import dagger.routes.ExactRoute;
 import dagger.server.Server;
 import dagger.websocket.DefaultWebSocketOutputFactory;
-import dagger.websocket.WebSocketOutput;
+import dagger.websocket.WebSocketSession;
 import dagger.websocket.WebSocketSessionHandler;
 import de.roderick.weberknecht.*;
 import de.roderick.weberknecht.WebSocket;
@@ -280,11 +280,12 @@ public class NettyServerTest {
 
         private String messageFromClient;
         private String messageToSendToClientOnOpen;
-        private WebSocketOutput output;
+        private WebSocketSession webSocketSession
+            ;
 
         @Override
-        public void onOpen(Request request, WebSocketOutput output) {
-            this.output = output;
+        public void onOpen(Request request, WebSocketSession webSocketSession) {
+            this.webSocketSession = webSocketSession;
 
             synchronized (openLock) {
                 isOpen = true;
@@ -292,7 +293,7 @@ public class NettyServerTest {
             }
 
             if(messageToSendToClientOnOpen != null)
-                output.write(messageToSendToClientOnOpen);
+                webSocketSession.write(messageToSendToClientOnOpen);
         }
 
         @Override
@@ -304,7 +305,7 @@ public class NettyServerTest {
         }
 
         @Override
-        public void onMessage(Request request, WebSocketOutput output, String message) {
+        public void onMessage(Request request, WebSocketSession session, String message) {
             synchronized (messageLock) {
                 this.messageFromClient = message;
                 messageLock.notifyAll();
@@ -316,7 +317,7 @@ public class NettyServerTest {
         }
 
         public void sendMessage(String message) {
-            output.write(message);
+            webSocketSession.write(message);
         }
 
         public void waitToOpen() throws InterruptedException {

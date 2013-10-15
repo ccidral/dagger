@@ -4,6 +4,6 @@ import dagger.http.Response;
 
 public interface WebSocketOutputFactory {
 
-    WebSocketOutput create(Response response);
+    WebSocketSession create(Response response);
 
 }

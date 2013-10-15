@@ -7,7 +7,7 @@ import dagger.http.HttpMethod;
 import dagger.http.Response;
 import dagger.http.UnexpectedHttpMethodException;
 import dagger.lang.io.Streams;
-import dagger.websocket.WebSocketOutput;
+import dagger.websocket.WebSocketSession;
 import dagger.websocket.WebSocketOutputFactory;
 import dagger.websocket.WebSocketSessionHandler;
 import dagger.http.Request;
@@ -67,8 +67,8 @@ public class WebSocket implements RequestHandler {
     private class TriggerOnWebSocketOpen implements Reaction {
         @Override
         public void execute(Request request, Response response) throws Exception {
-            WebSocketOutput webSocketOutput = webSocketOutputFactory.create(response);
-            webSocketSessionHandler.onOpen(request, webSocketOutput);
+            WebSocketSession webSocketSession = webSocketOutputFactory.create(response);
+            webSocketSessionHandler.onOpen(request, webSocketSession);
         }
     }
 
@@ -82,9 +82,9 @@ public class WebSocket implements RequestHandler {
     private class TriggerOnWebSocketMessage implements Reaction {
         @Override
         public void execute(Request request, Response response) throws Exception {
-            WebSocketOutput webSocketOutput = webSocketOutputFactory.create(response);
+            WebSocketSession webSocketSession = webSocketOutputFactory.create(response);
             String message = Streams.toString(request.getInputStream());
-            webSocketSessionHandler.onMessage(request, webSocketOutput, message);
+            webSocketSessionHandler.onMessage(request, webSocketSession, message);
         }
     }
 

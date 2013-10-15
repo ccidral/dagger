@@ -1,6 +1,6 @@
 package dagger.websocket;
 
-public interface WebSocketOutput {
+public interface WebSocketSession {
 
     void write(String message);
 

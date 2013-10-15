@@ -6,7 +6,7 @@ import dagger.Route;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.UnexpectedHttpMethodException;
-import dagger.websocket.WebSocketOutput;
+import dagger.websocket.WebSocketSession;
 import dagger.websocket.WebSocketOutputFactory;
 import dagger.websocket.WebSocketSessionHandler;
 import org.junit.Before;
@@ -36,10 +36,10 @@ public class WebSocketTest {
         when(route.matches("/foo/bar")).thenReturn(true);
     }
 
-    private WebSocketOutput given_that_websocket_output_will_be_created_for(Response response) {
-        WebSocketOutput webSocketOutput = mock(WebSocketOutput.class);
-        when(webSocketOutputFactory.create(response)).thenReturn(webSocketOutput);
-        return webSocketOutput;
+    private WebSocketSession given_that_websocket_session_will_be_created_for(Response response) {
+        WebSocketSession webSocketSession = mock(WebSocketSession.class);
+        when(webSocketOutputFactory.create(response)).thenReturn(webSocketSession);
+        return webSocketSession;
     }
 
     private Request request(String uri, String method) {
@@ -103,24 +103,24 @@ public class WebSocketTest {
     public void test_handle_websocket_open_request() throws Throwable {
         Request request = request("/foo/bar", WEBSOCKET_OPEN);
         Response response = mock(Response.class);
-        WebSocketOutput webSocketOutput = given_that_websocket_output_will_be_created_for(response);
+        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(response);
 
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
 
-        verify(webSocketSessionHandler).onOpen(request, webSocketOutput);
+        verify(webSocketSessionHandler).onOpen(request, webSocketSession);
     }
 
     @Test
     public void test_handle_websocket_message() throws Throwable {
         Request request = request("/foo/bar", WEBSOCKET_MESSAGE, "Hello there");
         Response response = mock(Response.class);
-        WebSocketOutput webSocketOutput = given_that_websocket_output_will_be_created_for(response);
+        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(response);
 
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
 
-        verify(webSocketSessionHandler).onMessage(request, webSocketOutput, "Hello there");
+        verify(webSocketSessionHandler).onMessage(request, webSocketSession, "Hello there");
     }
 
     @Test
