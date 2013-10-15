@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 public class GrizzlyWebSocketResponse implements Response {
 
     private final WebSocket webSocket;
+    private StatusCode statusCode = StatusCode.WEBSOCKET_NORMAL_CLOSE;
 
     public GrizzlyWebSocketResponse(WebSocket webSocket) {
         this.webSocket = webSocket;
@@ -25,12 +26,14 @@ public class GrizzlyWebSocketResponse implements Response {
 
     @Override
     public StatusCode getStatusCode() {
-        throw new UnsupportedOperationException();
+        return statusCode;
     }
 
     @Override
     public void setStatusCode(StatusCode statusCode) {
-        throw new UnsupportedOperationException();
+        if(statusCode == null)
+            throw new IllegalArgumentException("Parameter 'statusCode' must not be null");
+        this.statusCode = statusCode;
     }
 
     @Override
@@ -49,6 +52,11 @@ public class GrizzlyWebSocketResponse implements Response {
             String message = toString(Charset.defaultCharset().name());
             webSocket.send(message);
             reset();
+        }
+
+        @Override
+        public void close() throws IOException {
+            webSocket.close(statusCode.getNumber());
         }
     }
 
