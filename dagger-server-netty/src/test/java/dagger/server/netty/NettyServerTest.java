@@ -280,8 +280,7 @@ public class NettyServerTest {
 
         private String messageFromClient;
         private String messageToSendToClientOnOpen;
-        private WebSocketSession webSocketSession
-            ;
+        private WebSocketSession webSocketSession;
 
         @Override
         public void onOpen(Request request, WebSocketSession webSocketSession) {
