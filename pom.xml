@@ -106,12 +106,18 @@
                 <version>1.0-alpha21.1</version>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+            </extension>
+        </extensions>
     </build>
-    
+
     <distributionManagement>
         <repository>
-            <id>local-repository</id>
-            <url>file:///tmp/maven/repository</url>
+            <id>rtsbrasil-ssh</id>
+            <url>scpexe://maven@maven.rtsbrasil.net/var/www/maven.rtsbrasil.net</url>
         </repository>
     </distributionManagement>
 
