@@ -6,8 +6,8 @@ import dagger.Route;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.UnexpectedHttpMethodException;
-import dagger.websocket.WebSocketOutput;
-import dagger.websocket.WebSocketOutputFactory;
+import dagger.websocket.WebSocketSession;
+import dagger.websocket.WebSocketSessionFactory;
 import dagger.websocket.WebSocketSessionHandler;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,22 +24,22 @@ public class WebSocketTest {
     private Route route;
     private WebSocketSessionHandler webSocketSessionHandler;
     private RequestHandler requestHandler;
-    private WebSocketOutputFactory webSocketOutputFactory;
+    private WebSocketSessionFactory webSocketSessionFactory;
 
     @Before
     public void setUp() throws Exception {
         route = mock(Route.class);
         webSocketSessionHandler = mock(WebSocketSessionHandler.class);
-        webSocketOutputFactory = mock(WebSocketOutputFactory.class);
-        requestHandler = new WebSocket(route, webSocketSessionHandler, webSocketOutputFactory);
+        webSocketSessionFactory = mock(WebSocketSessionFactory.class);
+        requestHandler = new WebSocket(route, webSocketSessionHandler, webSocketSessionFactory);
 
         when(route.matches("/foo/bar")).thenReturn(true);
     }
 
-    private WebSocketOutput given_that_websocket_output_will_be_created_for(Response response) {
-        WebSocketOutput webSocketOutput = mock(WebSocketOutput.class);
-        when(webSocketOutputFactory.create(response)).thenReturn(webSocketOutput);
-        return webSocketOutput;
+    private WebSocketSession given_that_websocket_session_will_be_created_for(Request request, Response response) {
+        WebSocketSession webSocketSession = mock(WebSocketSession.class);
+        when(webSocketSessionFactory.create(request, response)).thenReturn(webSocketSession);
+        return webSocketSession;
     }
 
     private Request request(String uri, String method) {
@@ -103,35 +103,36 @@ public class WebSocketTest {
     public void test_handle_websocket_open_request() throws Throwable {
         Request request = request("/foo/bar", WEBSOCKET_OPEN);
         Response response = mock(Response.class);
-        WebSocketOutput webSocketOutput = given_that_websocket_output_will_be_created_for(response);
+        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(request, response);
 
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
 
-        verify(webSocketSessionHandler).onOpen(request, webSocketOutput);
+        verify(webSocketSessionHandler).onOpen(webSocketSession);
     }
 
     @Test
     public void test_handle_websocket_message() throws Throwable {
         Request request = request("/foo/bar", WEBSOCKET_MESSAGE, "Hello there");
         Response response = mock(Response.class);
-        WebSocketOutput webSocketOutput = given_that_websocket_output_will_be_created_for(response);
+        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(request, response);
 
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
 
-        verify(webSocketSessionHandler).onMessage(request, webSocketOutput, "Hello there");
+        verify(webSocketSessionHandler).onMessage("Hello there", webSocketSession);
     }
 
     @Test
     public void test_handle_websocket_close_request() throws Throwable {
         Request request = request("/foo/bar", WEBSOCKET_CLOSE);
         Response response = mock(Response.class);
+        WebSocketSession webSocketSession = given_that_websocket_session_will_be_created_for(request, response);
 
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
 
-        verify(webSocketSessionHandler).onClose(request);
+        verify(webSocketSessionHandler).onClose(webSocketSession);
     }
 
 }

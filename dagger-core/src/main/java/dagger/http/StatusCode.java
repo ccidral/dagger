@@ -7,7 +7,9 @@ public enum StatusCode {
     SEE_OTHER(303),
     NOT_MODIFIED(304),
     NOT_FOUND(404),
-    INTERNAL_SERVER_ERROR(500);
+    INTERNAL_SERVER_ERROR(500),
+    WEBSOCKET_NORMAL_CLOSE(1000),
+    WEBSOCKET_UNEXPECTED_CONDITION(1011);
 
     private final int number;
 

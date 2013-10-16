@@ -2,24 +2,24 @@ package dagger.module;
 
 import dagger.*;
 import dagger.handlers.*;
-import dagger.websocket.DefaultWebSocketOutputFactory;
-import dagger.websocket.WebSocketOutputFactory;
+import dagger.websocket.DefaultWebSocketSessionFactory;
+import dagger.websocket.WebSocketSessionFactory;
 import dagger.websocket.WebSocketSessionHandler;
 
 public class DefaultModuleBuilder implements ModuleBuilder {
 
     private final Module module;
     private final RouteFactory routeFactory;
-    private final WebSocketOutputFactory webSocketOutputFactory;
+    private final WebSocketSessionFactory webSocketSessionFactory;
 
     public DefaultModuleBuilder(Module module, RouteFactory routeFactory) {
-        this(module, routeFactory, new DefaultWebSocketOutputFactory());
+        this(module, routeFactory, new DefaultWebSocketSessionFactory());
     }
 
-    public DefaultModuleBuilder(Module module, RouteFactory routeFactory, WebSocketOutputFactory webSocketOutputFactory) {
+    public DefaultModuleBuilder(Module module, RouteFactory routeFactory, WebSocketSessionFactory webSocketSessionFactory) {
         this.module = module;
         this.routeFactory = routeFactory;
-        this.webSocketOutputFactory = webSocketOutputFactory;
+        this.webSocketSessionFactory = webSocketSessionFactory;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class DefaultModuleBuilder implements ModuleBuilder {
     @Override
     public void websocket(String routeSpecification, WebSocketSessionHandler sessionHandler) {
         Route route = routeFactory.create(routeSpecification);
-        module.add(new WebSocket(route, sessionHandler, webSocketOutputFactory));
+        module.add(new WebSocket(route, sessionHandler, webSocketSessionFactory));
     }
 
 }
