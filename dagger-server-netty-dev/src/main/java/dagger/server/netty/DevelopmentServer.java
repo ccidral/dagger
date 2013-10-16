@@ -19,8 +19,8 @@ public class DevelopmentServer {
         String applicationJarsDirectory = args[0];
         String moduleFactoryClassName = args[1];
 
-        DevelopmentServer developmentServer = new DevelopmentServer(applicationJarsDirectory, moduleFactoryClassName);
-        developmentServer.run();
+        new DevelopmentServer(applicationJarsDirectory, moduleFactoryClassName)
+            .run();
     }
 
     public DevelopmentServer(String applicationJarsDirectory, String moduleFactoryClassName) {

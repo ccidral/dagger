@@ -2,15 +2,24 @@ package dagger.module;
 
 import dagger.*;
 import dagger.handlers.*;
+import dagger.websocket.DefaultWebSocketSessionFactory;
+import dagger.websocket.WebSocketSessionFactory;
+import dagger.websocket.WebSocketSessionHandler;
 
 public class DefaultModuleBuilder implements ModuleBuilder {
 
     private final Module module;
     private final RouteFactory routeFactory;
+    private final WebSocketSessionFactory webSocketSessionFactory;
 
     public DefaultModuleBuilder(Module module, RouteFactory routeFactory) {
+        this(module, routeFactory, new DefaultWebSocketSessionFactory());
+    }
+
+    public DefaultModuleBuilder(Module module, RouteFactory routeFactory, WebSocketSessionFactory webSocketSessionFactory) {
         this.module = module;
         this.routeFactory = routeFactory;
+        this.webSocketSessionFactory = webSocketSessionFactory;
     }
 
     @Override
@@ -32,21 +41,9 @@ public class DefaultModuleBuilder implements ModuleBuilder {
     }
 
     @Override
-    public void wsopen(String routeSpecification, Action action) {
+    public void websocket(String routeSpecification, WebSocketSessionHandler sessionHandler) {
         Route route = routeFactory.create(routeSpecification);
-        module.add(new WebSocketOpen(route, action));
-    }
-
-    @Override
-    public void wsmessage(String routeSpecification, Action action) {
-        Route route = routeFactory.create(routeSpecification);
-        module.add(new WebSocketMessage(route, action));
-    }
-
-    @Override
-    public void wsclose(String routeSpecification, Action action) {
-        Route route = routeFactory.create(routeSpecification);
-        module.add(new WebSocketClose(route, action));
+        module.add(new WebSocket(route, sessionHandler, webSocketSessionFactory));
     }
 
 }

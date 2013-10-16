@@ -1,20 +1,18 @@
 package dagger.server.netty;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+
+import static dagger.server.netty.Millis.seconds;
+import static dagger.server.netty.Millis.timeElapsedBetween;
 
 public class DirectoryWatcher {
 
     private final File directory;
-    private long directoryTimestamp;
-    private final Map<String, Long> fileTimestamps;
     private final Object lock = new Object();
     private WatcherThread watcherThread;
 
     public DirectoryWatcher(String path) throws Throwable {
         directory = new File(path);
-        fileTimestamps = new HashMap<String, Long>();
     }
 
     public void waitForChange() throws InterruptedException {
@@ -30,53 +28,35 @@ public class DirectoryWatcher {
     }
 
     private class WatcherThread extends Thread {
+        public WatcherThread() {
+            super(WatcherThread.class.getSimpleName());
+        }
+
         @Override
         public void run() {
-            updateTimestamps();
-            while(!hasDirectoryChanged()) {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                }
-            }
+            long lastTimeSomethingChanged = latestTimestamp();
+            do {
+                waitFor(seconds(2));
+            } while(timeElapsedBetween(lastTimeSomethingChanged, latestTimestamp()) < seconds(3));
             synchronized (lock) {
                 lock.notifyAll();
             }
         }
     }
 
-    private void updateTimestamps() {
-        directoryTimestamp = directory.lastModified();
-        updateFileTimestamps(directory.listFiles());
-    }
-
-    private void updateFileTimestamps(File[] files) {
-        fileTimestamps.clear();
-        for(File file : files)
-            fileTimestamps.put(file.getName(), file.lastModified());
-    }
-
-    private boolean hasDirectoryChanged() {
-        return
-            hasDirectoryTimestampChanged() ||
-            hasAnyFileChanged(directory.listFiles());
-    }
-
-    private boolean hasDirectoryTimestampChanged() {
-        return directoryTimestamp != directory.lastModified();
-    }
-
-    private boolean hasAnyFileChanged(File[] files) {
-        if(files.length != fileTimestamps.size())
-            return true;
-
-        for(File file : files) {
-            long previousTimestamp = fileTimestamps.get(file.getName());
-            if(previousTimestamp != file.lastModified())
-                return true;
+    private void waitFor(long timeInMillis) {
+        try {
+            Thread.sleep(timeInMillis);
+        } catch (InterruptedException e) {
         }
+    }
 
-        return false;
+    private long latestTimestamp() {
+        long lastModified = directory.lastModified();
+        for(File file : directory.listFiles())
+            if(file.lastModified() > lastModified)
+                lastModified = file.lastModified();
+        return lastModified;
     }
 
 }

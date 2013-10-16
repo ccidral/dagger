@@ -1,5 +1,7 @@
 package dagger;
 
+import dagger.websocket.WebSocketSessionHandler;
+
 public interface ModuleBuilder {
 
     void get(String route, Action action);
@@ -8,19 +10,6 @@ public interface ModuleBuilder {
 
     void post(String route, Action action);
 
-    /**
-     * Warning: WebSocket support is experimental.
-     */
-    void wsopen(String route, Action action);
-
-    /**
-     * Warning: WebSocket support is experimental.
-     */
-    void wsmessage(String route, Action action);
-
-    /**
-     * Warning: WebSocket support is experimental.
-     */
-    void wsclose(String route, Action action);
+    void websocket(String route, WebSocketSessionHandler handler);
 
 }

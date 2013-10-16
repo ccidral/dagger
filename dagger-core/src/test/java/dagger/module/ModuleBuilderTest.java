@@ -4,6 +4,8 @@ import dagger.*;
 import dagger.handlers.*;
 import dagger.http.Request;
 import dagger.lang.NotImplementedYet;
+import dagger.websocket.WebSocketSessionFactory;
+import dagger.websocket.WebSocketSessionHandler;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,6 +19,7 @@ public class ModuleBuilderTest {
     private MockModule module;
     private Action action;
     private Route route;
+    private WebSocketSessionFactory webSocketSessionFactory;
 
     @Before
     public void setUp() {
@@ -25,7 +28,8 @@ public class ModuleBuilderTest {
         module = new MockModule();
         action = mock(Action.class);
         route = mock(Route.class);
-        moduleBuilder = new DefaultModuleBuilder(module, routeFactory);
+        webSocketSessionFactory = mock(WebSocketSessionFactory.class);
+        moduleBuilder = new DefaultModuleBuilder(module, routeFactory, webSocketSessionFactory);
 
         when(routeFactory.create("/foo")).thenReturn(route);
     }
@@ -64,36 +68,16 @@ public class ModuleBuilderTest {
     }
 
     @Test
-    public void testAddWsOpenHandler() {
-        moduleBuilder.wsopen("/foo", action);
+    public void testAddWebSocketHandler() {
+        WebSocketSessionHandler webSocketSessionHandler = mock(WebSocketSessionHandler.class);
+        moduleBuilder.websocket("/foo", webSocketSessionHandler);
         assertNotNull("Added handler is not null", module.lastAddedHandler);
-        assertEquals("Handler type", WebSocketOpen.class, module.lastAddedHandler.getClass());
+        assertEquals("Handler type", WebSocket.class, module.lastAddedHandler.getClass());
 
-        WebSocketOpen wsOpen = (WebSocketOpen) module.lastAddedHandler;
-        assertSame("Route", route, wsOpen.getRoute());
-        assertSame("Action", action, wsOpen.getAction());
-    }
-
-    @Test
-    public void testAddWsMessageHandler() {
-        moduleBuilder.wsmessage("/foo", action);
-        assertNotNull("Added handler is not null", module.lastAddedHandler);
-        assertEquals("Handler type", WebSocketMessage.class, module.lastAddedHandler.getClass());
-
-        WebSocketMessage wsMessage = (WebSocketMessage) module.lastAddedHandler;
-        assertSame("Route", route, wsMessage.getRoute());
-        assertSame("Action", action, wsMessage.getAction());
-    }
-
-    @Test
-    public void testAddWsCloseHandler() {
-        moduleBuilder.wsclose("/foo", action);
-        assertNotNull("Added handler is not null", module.lastAddedHandler);
-        assertEquals("Handler type", WebSocketClose.class, module.lastAddedHandler.getClass());
-
-        WebSocketClose wsClose = (WebSocketClose) module.lastAddedHandler;
-        assertSame("Route", route, wsClose.getRoute());
-        assertSame("Action", action, wsClose.getAction());
+        WebSocket websocket = (WebSocket) module.lastAddedHandler;
+        assertSame("Route", route, websocket.getRoute());
+        assertSame("WebSocket session handler", webSocketSessionHandler, websocket.getSessionHandler());
+        assertSame("WebSocket session factory", webSocketSessionFactory, websocket.getWebSocketSessionFactory());
     }
 
     private class MockModule implements Module {

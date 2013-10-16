@@ -4,9 +4,7 @@ import dagger.Module;
 import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.handlers.ResourceNotFound;
-import dagger.handlers.WebSocketClose;
-import dagger.handlers.WebSocketMessage;
-import dagger.handlers.WebSocketOpen;
+import dagger.http.HttpMethod;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
@@ -76,7 +74,7 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
 
 
         // Find a request handler...
-        Request request = new NettyWebSocketRequest("", WebSocketOpen.METHOD, httpRequest);
+        Request request = new NettyWebSocketRequest("", HttpMethod.WEBSOCKET_OPEN, httpRequest);
         RequestHandler requestHandler = module.getHandlerFor(request);
 
 
@@ -174,7 +172,7 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
     }
 
     private void handleWebSocketMessage(ChannelHandlerContext context, TextWebSocketFrame frame) throws Exception {
-        handleWebSocketEvent(frame.text(), WebSocketMessage.METHOD, context.channel());
+        handleWebSocketEvent(frame.text(), HttpMethod.WEBSOCKET_MESSAGE, context.channel());
     }
 
     private void pong(ChannelHandlerContext context, WebSocketFrame frame) {
@@ -187,19 +185,28 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
         frame.retain();
         handshaker.close(channel, frame);
         try {
-            handleWebSocketEvent("", WebSocketClose.METHOD, channel);
+            handleWebSocketEvent("", HttpMethod.WEBSOCKET_CLOSE, channel);
+        } catch(WebSocketConnectionNotFoundException connectionNotFound) {
+            logger.warn("Could not close websocket because no connection was found for channel #{}", channel.id());
         } finally {
             connections.remove(channel.id());
         }
     }
 
     private void handleWebSocketEvent(String message, String method, Channel channel) throws Exception {
-        FullHttpRequest nettyHttpRequest = connections.get(channel.id());
+        FullHttpRequest nettyHttpRequest = findHttpRequestFor(channel);
         Request request = new NettyWebSocketRequest(message, method, nettyHttpRequest);
         Response response = new NettyWebSocketResponse(channel);
         RequestHandler requestHandler = module.getHandlerFor(request);
         Reaction reaction = requestHandler.handle(request);
         reaction.execute(request, response);
+    }
+
+    private FullHttpRequest findHttpRequestFor(Channel channel) throws WebSocketConnectionNotFoundException {
+        FullHttpRequest nettyHttpRequest = connections.get(channel.id());
+        if(nettyHttpRequest == null)
+            throw new WebSocketConnectionNotFoundException("WebSocket connection has been closed or does not exist. Channel id: "+channel.id());
+        return nettyHttpRequest;
     }
 
 }

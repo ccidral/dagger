@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>dagger</groupId>
+        <artifactId>dagger</artifactId>
+        <version>0.3</version>
+    </parent>
+
+    <groupId>dagger</groupId>
+    <artifactId>dagger-servlet3-websocket-grizzly19</artifactId>
+    <packaging>jar</packaging>
+    <name>Dagger WebSocket Support With Grizzly 1.9.56</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>dagger</groupId>
+            <artifactId>dagger-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dagger</groupId>
+            <artifactId>dagger-servlet3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-websockets</artifactId>
+            <version>1.9.56</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>
