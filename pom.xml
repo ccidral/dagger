@@ -27,6 +27,16 @@
         <developerConnection>scm:git:git@github.com:ccidral/dagger.git</developerConnection>
     </scm>
 
+    <developers>
+        <developer>
+            <name>Célio Cidral Jr</name>
+            <url>https://github.com/ccidral</url>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
