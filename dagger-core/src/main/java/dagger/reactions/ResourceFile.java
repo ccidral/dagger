@@ -22,13 +22,13 @@ import java.util.zip.ZipFile;
 
 import static dagger.http.HttpHeaderNames.IF_MODIFIED_SINCE;
 
-public class StaticFile implements Reaction {
+public class ResourceFile implements Reaction {
 
     private final String path;
     private final MimeTypeGuesser mimeTypeGuesser;
     private final Logger logger;
 
-    public StaticFile(String path, MimeTypeGuesser mimeTypeGuesser) {
+    public ResourceFile(String path, MimeTypeGuesser mimeTypeGuesser) {
         if(!path.startsWith("/"))
             throw new IllegalArgumentException("Path must be absolute (must start with slash): " + path);
 

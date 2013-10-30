@@ -32,7 +32,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class StaticFileTest {
+public class ResourceFileTest {
 
     private static final String FILE_PATH = "/foo/bar/static-file-test.html";
     private static final String RESOURCE_NAME = "/view/static" + FILE_PATH;
@@ -52,7 +52,7 @@ public class StaticFileTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testFilePathMustStartWithSlash() {
-        new StaticFile("relative/file/path/not.allowed", mimeTypeGuesser);
+        new ResourceFile("relative/file/path/not.allowed", mimeTypeGuesser);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class StaticFileTest {
         URL fileUrl = getClass().getResource(RESOURCE_NAME);
         when(mimeTypeGuesser.guessMimeType(fileUrl)).thenReturn(CONTENT_TYPE);
 
-        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        Reaction reaction = new ResourceFile(FILE_PATH, mimeTypeGuesser);
 
         reaction.execute(request, response);
         assertOk();
@@ -83,7 +83,7 @@ public class StaticFileTest {
         Date modificationDate = getFileModificationDate();
         String expectedLastModifiedValue = Formats.timestamp().format(modificationDate);
 
-        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        Reaction reaction = new ResourceFile(FILE_PATH, mimeTypeGuesser);
         reaction.execute(request, response);
 
         assertEquals(expectedLastModifiedValue, response.getHeader("Last-Modified"));
@@ -106,14 +106,14 @@ public class StaticFileTest {
 
     @Test
     public void testFileNotFound() throws Exception {
-        Reaction reaction = new StaticFile("/bogus.png", mimeTypeGuesser);
+        Reaction reaction = new ResourceFile("/bogus.png", mimeTypeGuesser);
         reaction.execute(request, response);
         assertNotFound();
     }
 
     @Test
     public void testDoNotMistakeDirectoryForFile() throws Exception {
-        Reaction reaction = new StaticFile("/", mimeTypeGuesser);
+        Reaction reaction = new ResourceFile("/", mimeTypeGuesser);
         reaction.execute(request, response);
         assertNotFound();
     }
@@ -125,7 +125,7 @@ public class StaticFileTest {
 
         when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.timestamp().format(ifModifiedSince));
 
-        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        Reaction reaction = new ResourceFile(FILE_PATH, mimeTypeGuesser);
         reaction.execute(request, response);
 
         assertEquals(StatusCode.NOT_MODIFIED, response.getStatusCode());
@@ -138,7 +138,7 @@ public class StaticFileTest {
 
         when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.timestamp().format(ifModifiedSince));
 
-        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        Reaction reaction = new ResourceFile(FILE_PATH, mimeTypeGuesser);
         reaction.execute(request, response);
 
         assertEquals(StatusCode.NOT_MODIFIED, response.getStatusCode());
@@ -151,7 +151,7 @@ public class StaticFileTest {
 
         when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn(Formats.timestamp().format(ifModifiedSince));
 
-        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        Reaction reaction = new ResourceFile(FILE_PATH, mimeTypeGuesser);
         reaction.execute(request, response);
 
         assertEquals(StatusCode.OK, response.getStatusCode());
@@ -161,7 +161,7 @@ public class StaticFileTest {
     public void testIgnoreIncorrectFormatOfIfModifiedSinceHeader() throws Exception {
         when(request.getHeader(IF_MODIFIED_SINCE)).thenReturn("bogus date");
 
-        Reaction reaction = new StaticFile(FILE_PATH, mimeTypeGuesser);
+        Reaction reaction = new ResourceFile(FILE_PATH, mimeTypeGuesser);
         reaction.execute(request, response);
 
         assertEquals(StatusCode.OK, response.getStatusCode());
@@ -189,7 +189,7 @@ public class StaticFileTest {
     private File createJar() throws IOException {
         JavaArchive archive =
             ShrinkWrap.create(JavaArchive.class, "archive.jar")
-                .addClasses(StaticFile.class)
+                .addClasses(ResourceFile.class)
                 .addAsResource(getClass().getResource(RESOURCE_NAME), RESOURCE_NAME);
 
         File jarFile = File.createTempFile("test", ".jar");
@@ -198,7 +198,7 @@ public class StaticFileTest {
     }
 
     private Reaction createReactionInstanceFrom(ClassLoader classLoader) throws Exception {
-        Class<?> clazz = classLoader.loadClass(StaticFile.class.getName());
+        Class<?> clazz = classLoader.loadClass(ResourceFile.class.getName());
         Constructor<?> constructor = clazz.getConstructor(String.class, MimeTypeGuesser.class);
         return (Reaction) constructor.newInstance(FILE_PATH, mimeTypeGuesser);
     }
@@ -206,7 +206,7 @@ public class StaticFileTest {
     private ClassLoader createClassLoaderFor(File jarFile) throws MalformedURLException {
         DelegateClassLoader parentClassLoader = new DelegateClassLoader();
 
-        parentClassLoader.delegateClassToChildrenClassLoaders(StaticFile.class.getName());
+        parentClassLoader.delegateClassToChildrenClassLoaders(ResourceFile.class.getName());
         parentClassLoader.delegateResourceToChildrenClassLoaders(withoutTrailingSlash(RESOURCE_NAME));
 
         return new URLClassLoader(new URL[] { jarFile.toURI().toURL() }, parentClassLoader);

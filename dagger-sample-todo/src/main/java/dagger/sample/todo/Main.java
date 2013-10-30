@@ -8,7 +8,7 @@ import dagger.handlers.Get;
 import dagger.http.Request;
 import dagger.lang.mime.DefaultMimeTypeGuesser;
 import dagger.lang.mime.MimeTypeGuesser;
-import dagger.reactions.StaticFile;
+import dagger.reactions.ResourceFile;
 import dagger.routes.AnyRoute;
 import dagger.server.Server;
 import dagger.server.netty.NettyServer;
@@ -26,7 +26,7 @@ public class Main {
         module.add(new Get(new AnyRoute(), new Action() {
             public Reaction execute(Request request) {
                 logger.info("get "+request.getURI());
-                return new StaticFile(request.getURI(), mimeTypeGuesser);
+                return new ResourceFile(request.getURI(), mimeTypeGuesser);
             }
         }));
 

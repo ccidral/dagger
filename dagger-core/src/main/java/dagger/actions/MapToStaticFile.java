@@ -4,7 +4,7 @@ import dagger.Action;
 import dagger.Reaction;
 import dagger.http.Request;
 import dagger.lang.mime.MimeTypeGuesser;
-import dagger.reactions.StaticFile;
+import dagger.reactions.ResourceFile;
 
 public class MapToStaticFile implements Action {
 
@@ -23,7 +23,7 @@ public class MapToStaticFile implements Action {
     @Override
     public Reaction execute(Request request) throws Exception {
         String uri = this.staticFilePath == null ? request.getURI() : this.staticFilePath;
-        return new StaticFile(uri, mimeTypeGuesser);
+        return new ResourceFile(uri, mimeTypeGuesser);
     }
 
 }
