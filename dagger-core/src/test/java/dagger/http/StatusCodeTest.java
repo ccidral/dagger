@@ -8,8 +8,8 @@ public class StatusCodeTest {
 
     @Test
     public void testGetStatusCodeByNumber() {
-        assertEquals(StatusCode.OK, StatusCode.get(StatusCode.OK.getNumber()));
-        assertEquals(StatusCode.NOT_FOUND, StatusCode.get(StatusCode.NOT_FOUND.getNumber()));
+        assertEquals(StatusCode.OK, StatusCode.get(StatusCode.OK.getCode()));
+        assertEquals(StatusCode.NOT_FOUND, StatusCode.get(StatusCode.NOT_FOUND.getCode()));
     }
 
     @Test(expected = IllegalArgumentException.class)

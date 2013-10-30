@@ -96,7 +96,7 @@ public class NettyWebSocketHandler extends ChannelInboundMessageHandlerAdapter<O
 
         // Execution resulted in failure, which means that we cannot make websocket connection.
         if(!StatusCode.OK.equals(response.getStatusCode())) {
-            HttpResponseStatus status = HttpResponseStatus.valueOf(response.getStatusCode().getNumber());
+            HttpResponseStatus status = HttpResponseStatus.valueOf(response.getStatusCode().getCode());
             sendHttpResponse(context, httpRequest, new DefaultFullHttpResponse(HTTP_1_1, status));
             return;
         }

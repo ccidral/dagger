@@ -56,7 +56,7 @@ public class GrizzlyWebSocketResponse implements Response {
 
         @Override
         public void close() throws IOException {
-            webSocket.close(statusCode.getNumber());
+            webSocket.close(statusCode.getCode());
         }
     }
 

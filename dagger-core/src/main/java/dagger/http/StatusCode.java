@@ -106,19 +106,19 @@ public enum StatusCode {
     WEBSOCKET_UNEXPECTED_CONDITION(1011);
 
 
-    private final int number;
+    private final int code;
 
-    StatusCode(int number) {
-        this.number = number;
+    StatusCode(int code) {
+        this.code = code;
     }
 
-    public int getNumber() {
-        return number;
+    public int getCode() {
+        return code;
     }
 
     public static StatusCode get(int number) {
         for(StatusCode statusCode : StatusCode.values())
-            if(statusCode.getNumber() == number)
+            if(statusCode.getCode() == number)
                 return statusCode;
 
         throw new IllegalArgumentException("Unknown status code: " + number);

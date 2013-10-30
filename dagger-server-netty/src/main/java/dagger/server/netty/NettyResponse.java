@@ -36,7 +36,7 @@ public class NettyResponse implements Response {
 
     @Override
     public void setStatusCode(StatusCode statusCode) {
-        response.setStatus(HttpResponseStatus.valueOf(statusCode.getNumber()));
+        response.setStatus(HttpResponseStatus.valueOf(statusCode.getCode()));
     }
 
     @Override

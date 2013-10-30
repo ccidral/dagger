@@ -58,7 +58,7 @@ public class NettyResponseTest {
         response.setStatusCode(StatusCode.OK);
 
         assertNotNull(mockNettyHttpResponse.getStatus());
-        assertEquals(StatusCode.OK.getNumber(), mockNettyHttpResponse.getStatus().code());
+        assertEquals(StatusCode.OK.getCode(), mockNettyHttpResponse.getStatus().code());
     }
 
     @Test

@@ -33,7 +33,7 @@ public class DaggerServletResponse implements Response {
 
     @Override
     public void setStatusCode(StatusCode statusCode) {
-        httpServletResponse.setStatus(statusCode.getNumber());
+        httpServletResponse.setStatus(statusCode.getCode());
     }
 
     @Override
