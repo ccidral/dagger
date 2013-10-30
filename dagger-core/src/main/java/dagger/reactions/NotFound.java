@@ -13,7 +13,7 @@ public class NotFound implements Reaction {
     public void execute(Request request, Response response) throws Exception {
         response.setStatusCode(StatusCode.NOT_FOUND);
         try {
-            response.getOutputStream().write("404 - Not found".getBytes());
+            response.getOutputStream().write("Not found".getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
