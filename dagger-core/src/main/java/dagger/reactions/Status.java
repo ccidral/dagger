@@ -12,8 +12,9 @@ import java.io.Writer;
 public class Status implements Reaction {
 
     public static final Reaction BAD_REQUEST = new Status(StatusCode.BAD_REQUEST, "Bad request");
-    public static final Reaction NOT_FOUND = new Status(StatusCode.NOT_FOUND, "Not found");
     public static final Reaction INTERNAL_SERVER_ERROR = new Status(StatusCode.INTERNAL_SERVER_ERROR, "Internal server error");
+    public static final Reaction NO_CONTENT = new Status(StatusCode.NO_CONTENT, "No content");
+    public static final Reaction NOT_FOUND = new Status(StatusCode.NOT_FOUND, "Not found");
 
     private final StatusCode statusCode;
     private final String message;
