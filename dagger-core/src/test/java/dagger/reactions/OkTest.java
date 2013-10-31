@@ -1,7 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.mime.MimeType;
@@ -52,7 +52,7 @@ public class OkTest {
     public void test_default_content_type_is_text_plain() throws Exception {
         Reaction reaction = new Ok("Any text");
         reaction.execute(null, response);
-        verify(response).setHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.TEXT_PLAIN);
+        verify(response).setHeader(HttpHeader.CONTENT_TYPE, MimeType.TEXT_PLAIN);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class OkTest {
         Reaction reaction = new Ok("{}", "application/json");
         reaction.execute(null, response);
         assertEquals("{}", textWrittenTo(response));
-        verify(response).setHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.APPLICATION_JSON);
+        verify(response).setHeader(HttpHeader.CONTENT_TYPE, MimeType.APPLICATION_JSON);
     }
 
     @Test

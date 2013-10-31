@@ -37,7 +37,7 @@ public class NettyResponseTest {
     @Test
     public void testDateHeaderIsCreatedInTheConstructor() {
         String expectedDate = Formats.timestamp().format(CURRENT_TIME);
-        assertEquals(expectedDate, mockNettyHttpResponse.headers().get(HttpHeaderNames.DATE));
+        assertEquals(expectedDate, mockNettyHttpResponse.headers().get(HttpHeader.DATE));
     }
 
     @Test

@@ -1,7 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
@@ -31,7 +31,7 @@ public class Text implements Reaction {
     @Override
     public void execute(Request request, Response response) throws Exception {
         response.setStatusCode(StatusCode.OK);
-        response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
+        response.setHeader(HttpHeader.CONTENT_TYPE, contentType);
         writeTextTo(response);
     }
 

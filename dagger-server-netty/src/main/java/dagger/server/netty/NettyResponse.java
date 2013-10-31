@@ -1,7 +1,7 @@
 package dagger.server.netty;
 
 import dagger.http.Formats;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.http.cookie.Cookie;
@@ -26,7 +26,7 @@ public class NettyResponse implements Response {
         this.response = response;
         this.buffer = response.data();
 
-        setHeader(HttpHeaderNames.DATE, Formats.timestamp().format(clock.now()));
+        setHeader(HttpHeader.DATE, Formats.timestamp().format(clock.now()));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import org.junit.Before;
@@ -44,7 +44,7 @@ public class BinaryTest {
         InputStream inputStream = new ByteArrayInputStream(new byte[]{1, 2, 3});
         Reaction reaction = new Binary(inputStream, "image/png");
         reaction.execute(null, response);
-        verify(response).setHeader(HttpHeaderNames.CONTENT_TYPE, "image/png");
+        verify(response).setHeader(HttpHeader.CONTENT_TYPE, "image/png");
     }
 
     @Test

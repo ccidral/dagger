@@ -5,7 +5,7 @@ import dagger.Module;
 import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.handlers.*;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
@@ -68,7 +68,7 @@ public class NettyServerTest {
                             throw new RuntimeException(e);
                         }
                         response.setStatusCode(StatusCode.OK);
-                        response.setHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.TEXT_PLAIN);
+                        response.setHeader(HttpHeader.CONTENT_TYPE, MimeType.TEXT_PLAIN);
                     }
                 };
             }
@@ -96,7 +96,7 @@ public class NettyServerTest {
                             throw new RuntimeException(e);
                         }
                         response.setStatusCode(StatusCode.OK);
-                        response.setHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.TEXT_PLAIN);
+                        response.setHeader(HttpHeader.CONTENT_TYPE, MimeType.TEXT_PLAIN);
                     }
                 };
             }

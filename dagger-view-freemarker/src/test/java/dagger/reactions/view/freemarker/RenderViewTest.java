@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 
-import static dagger.http.HttpHeaderNames.CONTENT_TYPE;
+import static dagger.http.HttpHeader.CONTENT_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 

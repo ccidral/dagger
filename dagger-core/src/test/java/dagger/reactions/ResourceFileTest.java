@@ -2,7 +2,7 @@ package dagger.reactions;
 
 import dagger.Reaction;
 import dagger.http.Formats;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Request;
 import dagger.http.StatusCode;
 import dagger.lang.DelegateClassLoader;
@@ -26,8 +26,8 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static dagger.http.HttpHeaderNames.IF_MODIFIED_SINCE;
-import static dagger.http.HttpHeaderNames.LAST_MODIFIED;
+import static dagger.http.HttpHeader.IF_MODIFIED_SINCE;
+import static dagger.http.HttpHeader.LAST_MODIFIED;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -174,14 +174,14 @@ public class ResourceFileTest {
 
     private void assertOk() {
         assertEquals(StatusCode.OK, response.getStatusCode());
-        assertEquals(MimeType.TEXT_HTML, response.getHeader(HttpHeaderNames.CONTENT_TYPE));
+        assertEquals(MimeType.TEXT_HTML, response.getHeader(HttpHeader.CONTENT_TYPE));
         assertEquals(FILE_CONTENTS, response.getOutputAsString());
         assertTrue("Output stream should be closed", response.isOutputStreamClosed());
     }
 
     private void assertNotFound() {
         assertEquals(StatusCode.NOT_FOUND, response.getStatusCode());
-        assertEquals(MimeType.TEXT_PLAIN, response.getHeader(HttpHeaderNames.CONTENT_TYPE));
+        assertEquals(MimeType.TEXT_PLAIN, response.getHeader(HttpHeader.CONTENT_TYPE));
         assertEquals("Not found.", response.getOutputAsString());
         assertTrue("Output stream should be closed", response.isOutputStreamClosed());
     }

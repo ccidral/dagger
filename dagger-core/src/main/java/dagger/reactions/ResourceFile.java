@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static dagger.http.HttpHeaderNames.IF_MODIFIED_SINCE;
+import static dagger.http.HttpHeader.IF_MODIFIED_SINCE;
 
 public class ResourceFile implements Reaction {
 
@@ -76,7 +76,7 @@ public class ResourceFile implements Reaction {
 
     private void writeNotFound(Response response) throws IOException {
         response.setStatusCode(StatusCode.NOT_FOUND);
-        response.setHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.TEXT_PLAIN);
+        response.setHeader(HttpHeader.CONTENT_TYPE, MimeType.TEXT_PLAIN);
         write("Not found.", response);
     }
 
@@ -84,8 +84,8 @@ public class ResourceFile implements Reaction {
         String contentType = mimeTypeGuesser.guessMimeType(fileUrl);
         Date modificationDate = getFileModificationDate(fileUrl);
         response.setStatusCode(StatusCode.OK);
-        response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
-        response.setHeader(HttpHeaderNames.LAST_MODIFIED, Formats.timestamp().format(modificationDate));
+        response.setHeader(HttpHeader.CONTENT_TYPE, contentType);
+        response.setHeader(HttpHeader.LAST_MODIFIED, Formats.timestamp().format(modificationDate));
         write(fileUrl, response);
     }
 

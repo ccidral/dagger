@@ -1,7 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.mime.MimeType;
@@ -43,7 +43,7 @@ public class TextTest {
     public void test_set_content_type_header() throws Throwable {
         Reaction reaction = new Text("", MimeType.TEXT_HTML);
         reaction.execute(null, response);
-        verify(response).setHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.TEXT_HTML);
+        verify(response).setHeader(HttpHeader.CONTENT_TYPE, MimeType.TEXT_HTML);
     }
 
     @Test

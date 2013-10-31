@@ -1,6 +1,6 @@
 package dagger.http;
 
-public class HttpHeaderNames {
+public class HttpHeader {
 
     public static final String CACHE_CONTROL = "Cache-Control";
     public static final String CONTENT_TYPE = "Content-Type";
