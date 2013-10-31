@@ -3,7 +3,7 @@ package dagger.handlers;
 import dagger.Reaction;
 import dagger.http.Request;
 import dagger.RequestHandler;
-import dagger.reactions.NotFound;
+import dagger.reactions.Status;
 
 public class ResourceNotFound implements RequestHandler {
 
@@ -12,7 +12,7 @@ public class ResourceNotFound implements RequestHandler {
     }
 
     public Reaction handle(Request request) {
-        return new NotFound();
+        return Status.NOT_FOUND;
     }
 
 }
