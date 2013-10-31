@@ -7,6 +7,7 @@ import dagger.http.StatusCode;
 
 import java.io.IOException;
 
+@Deprecated
 public class NotFound implements Reaction {
 
     @Override

@@ -5,6 +5,7 @@ import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 
+@Deprecated
 public class InternalServerError implements Reaction {
 
     @Override
