@@ -4,6 +4,7 @@ import dagger.Reaction;
 import dagger.http.*;
 import dagger.lang.io.Files;
 import dagger.lang.mime.MimeTypeGuesser;
+import dagger.mime.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class ResourceFile implements Reaction {
 
     private void writeNotFound(Response response) throws IOException {
         response.setStatusCode(StatusCode.NOT_FOUND);
-        response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+        response.setHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.TEXT_PLAIN);
         write("Not found.", response);
     }
 

@@ -4,6 +4,7 @@ import dagger.Reaction;
 import dagger.http.HttpHeaderNames;
 import dagger.http.Response;
 import dagger.http.StatusCode;
+import dagger.mime.MimeType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public class OkTest {
     public void test_default_content_type_is_text_plain() throws Exception {
         Reaction reaction = new Ok("Any text");
         reaction.execute(null, response);
-        verify(response).setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+        verify(response).setHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.TEXT_PLAIN);
     }
 
     @Test
@@ -59,13 +60,13 @@ public class OkTest {
         Reaction reaction = new Ok("{}", "application/json");
         reaction.execute(null, response);
         assertEquals("{}", textWrittenTo(response));
-        verify(response).setHeader(HttpHeaderNames.CONTENT_TYPE, "application/json");
+        verify(response).setHeader(HttpHeaderNames.CONTENT_TYPE, MimeType.APPLICATION_JSON);
     }
 
     @Test
     public void test_write_byte_array_to_response() throws Exception {
         byte[] theByteArray = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
-        Reaction reaction = new Ok(theByteArray, "image/png");
+        Reaction reaction = new Ok(theByteArray, MimeType.IMAGE_PNG);
         reaction.execute(null, response);
         assertArrayEquals(theByteArray, bytesWrittenTo(response));
     }

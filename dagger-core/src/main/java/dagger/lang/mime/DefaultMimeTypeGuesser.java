@@ -1,5 +1,7 @@
 package dagger.lang.mime;
 
+import dagger.mime.MimeType;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,7 +68,7 @@ public class DefaultMimeTypeGuesser implements MimeTypeGuesser {
         if(fileExtension != null && map.containsKey(fileExtension))
             return map.get(fileExtension);
 
-        return "application/octet-stream";
+        return MimeType.APPLICATION_OCTET_STREAM;
     }
 
     private String getFileExtension(URL url) {

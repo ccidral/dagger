@@ -5,6 +5,7 @@ import dagger.http.HttpHeaderNames;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
+import dagger.mime.MimeType;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public class Ok implements Reaction {
     }
 
     public Ok(String content) {
-        this(content, "text/plain");
+        this(content, MimeType.TEXT_PLAIN);
     }
 
     public Ok(String content, String contentType) {

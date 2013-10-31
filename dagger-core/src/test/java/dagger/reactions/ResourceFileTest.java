@@ -7,6 +7,7 @@ import dagger.http.Request;
 import dagger.http.StatusCode;
 import dagger.lang.DelegateClassLoader;
 import dagger.lang.mime.MimeTypeGuesser;
+import dagger.mime.MimeType;
 import dagger.mock.MockResponse;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -37,7 +38,6 @@ public class ResourceFileTest {
     private static final String FILE_PATH = "/foo/bar/static-file-test.html";
     private static final String RESOURCE_NAME = "/view/static" + FILE_PATH;
     public static final String FILE_CONTENTS = "<html>lorem ipsum</html>";
-    public static final String CONTENT_TYPE = "text/html";
 
     private Request request;
     private MockResponse response;
@@ -58,7 +58,7 @@ public class ResourceFileTest {
     @Test
     public void testExistingFile() throws Exception {
         URL fileUrl = getClass().getResource(RESOURCE_NAME);
-        when(mimeTypeGuesser.guessMimeType(fileUrl)).thenReturn(CONTENT_TYPE);
+        when(mimeTypeGuesser.guessMimeType(fileUrl)).thenReturn(MimeType.TEXT_HTML);
 
         Reaction reaction = new ResourceFile(FILE_PATH, mimeTypeGuesser);
 
@@ -71,7 +71,7 @@ public class ResourceFileTest {
         ClassLoader classLoader = createClassLoaderFor(createJar());
         URL fileUrl = classLoader.getResource(withoutTrailingSlash(RESOURCE_NAME));
 
-        when(mimeTypeGuesser.guessMimeType(fileUrl)).thenReturn(CONTENT_TYPE);
+        when(mimeTypeGuesser.guessMimeType(fileUrl)).thenReturn(MimeType.TEXT_HTML);
 
         Reaction reaction = createReactionInstanceFrom(classLoader);
         reaction.execute(request, response);
@@ -174,14 +174,14 @@ public class ResourceFileTest {
 
     private void assertOk() {
         assertEquals(StatusCode.OK, response.getStatusCode());
-        assertEquals(CONTENT_TYPE, response.getHeader(HttpHeaderNames.CONTENT_TYPE));
+        assertEquals(MimeType.TEXT_HTML, response.getHeader(HttpHeaderNames.CONTENT_TYPE));
         assertEquals(FILE_CONTENTS, response.getOutputAsString());
         assertTrue("Output stream should be closed", response.isOutputStreamClosed());
     }
 
     private void assertNotFound() {
         assertEquals(StatusCode.NOT_FOUND, response.getStatusCode());
-        assertEquals("text/plain", response.getHeader(HttpHeaderNames.CONTENT_TYPE));
+        assertEquals(MimeType.TEXT_PLAIN, response.getHeader(HttpHeaderNames.CONTENT_TYPE));
         assertEquals("Not found.", response.getOutputAsString());
         assertTrue("Output stream should be closed", response.isOutputStreamClosed());
     }
