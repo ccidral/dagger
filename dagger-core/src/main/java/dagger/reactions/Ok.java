@@ -16,12 +16,16 @@ public class Ok implements Reaction {
     private final String contentType;
     private final Map<String, String> headers = new HashMap<String, String>();
 
+    public Ok() {
+        this(null);
+    }
+
     public Ok(String content) {
         this(content, "text/plain");
     }
 
     public Ok(String content, String contentType) {
-        this(content.getBytes(), contentType);
+        this(content != null ? content.getBytes() : null, contentType);
     }
 
     public Ok(byte[] bytes, String contentType) {
@@ -37,6 +41,11 @@ public class Ok implements Reaction {
         response.setStatusCode(StatusCode.OK);
         response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
 
+        if(content != null)
+            writeContentTo(response);
+    }
+
+    private void writeContentTo(Response response) {
         try {
             response.getOutputStream().write(content);
         } catch (IOException e) {
