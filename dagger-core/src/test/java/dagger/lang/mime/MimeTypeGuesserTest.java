@@ -13,12 +13,12 @@ public class MimeTypeGuesserTest {
     private MimeTypeGuesser guesser;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         guesser = new DefaultMimeTypeGuesser();
     }
 
     @Test
-    public void testSomeCommonWebFileExtensions() {
+    public void testSomeCommonWebFileExtensions() throws Throwable {
         assertEquals(MimeType.TEXT_HTML, guesser.guessMimeType(url("test.htm")));
         assertEquals(MimeType.TEXT_HTML, guesser.guessMimeType(url("test.html")));
         assertEquals(MimeType.TEXT_CSS, guesser.guessMimeType(url("test.css")));
@@ -30,17 +30,17 @@ public class MimeTypeGuesserTest {
     }
 
     @Test
-    public void testExtensionlessFilesAreOctetStream() {
+    public void testExtensionlessFilesAreOctetStream() throws Throwable {
         assertEquals(MimeType.APPLICATION_OCTET_STREAM, guesser.guessMimeType(url("test")));
     }
 
     @Test
-    public void testUnknownFileExtensionsAreOctetStream() {
+    public void testUnknownFileExtensionsAreOctetStream() throws Throwable {
         assertEquals(MimeType.APPLICATION_OCTET_STREAM, guesser.guessMimeType(url("test.unknownbizarre")));
     }
 
-    private URL url(String fileName) {
-        return getClass().getResource("/mime/" + fileName);
+    private URL url(String fileName) throws Throwable {
+        return new URL("file:///" + fileName);
     }
 
 }
