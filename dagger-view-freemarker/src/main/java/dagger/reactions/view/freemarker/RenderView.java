@@ -1,7 +1,7 @@
 package dagger.reactions.view.freemarker;
 
 import dagger.Reaction;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Request;
 import dagger.http.Response;
 import freemarker.cache.URLTemplateLoader;
@@ -42,7 +42,7 @@ public class RenderView implements Reaction {
 
     @Override
     public void execute(Request request, Response response) throws Exception {
-        response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
+        response.setHeader(HttpHeader.CONTENT_TYPE, contentType);
         renderView(request, response);
     }
 

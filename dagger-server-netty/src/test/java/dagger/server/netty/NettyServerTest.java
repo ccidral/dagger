@@ -5,10 +5,11 @@ import dagger.Module;
 import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.handlers.*;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
+import dagger.mime.MimeType;
 import dagger.module.DefaultModule;
 import dagger.routes.ExactRoute;
 import dagger.server.Server;
@@ -67,7 +68,7 @@ public class NettyServerTest {
                             throw new RuntimeException(e);
                         }
                         response.setStatusCode(StatusCode.OK);
-                        response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+                        response.setHeader(HttpHeader.CONTENT_TYPE, MimeType.TEXT_PLAIN);
                     }
                 };
             }
@@ -77,7 +78,7 @@ public class NettyServerTest {
 
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertEquals("Hello world", IOUtils.toString(response.getEntity().getContent()));
-        assertEquals("text/plain", response.getEntity().getContentType().getValue());
+        assertEquals(MimeType.TEXT_PLAIN, response.getEntity().getContentType().getValue());
     }
 
     @Test(timeout = 2000)
@@ -95,7 +96,7 @@ public class NettyServerTest {
                             throw new RuntimeException(e);
                         }
                         response.setStatusCode(StatusCode.OK);
-                        response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+                        response.setHeader(HttpHeader.CONTENT_TYPE, MimeType.TEXT_PLAIN);
                     }
                 };
             }
@@ -105,7 +106,7 @@ public class NettyServerTest {
 
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertEquals("Hello John", IOUtils.toString(response.getEntity().getContent()));
-        assertEquals("text/plain", response.getEntity().getContentType().getValue());
+        assertEquals(MimeType.TEXT_PLAIN, response.getEntity().getContentType().getValue());
     }
 
     @Test(timeout = 2000)

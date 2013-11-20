@@ -1,7 +1,7 @@
 package dagger.reactions;
 
 import dagger.Reaction;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.StatusCode;
 import dagger.mock.MockResponse;
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class RedirectionTest {
         reaction.execute(null, response);
 
         assertEquals("HTTP status code", StatusCode.SEE_OTHER, response.getStatusCode());
-        assertEquals("HTTP header 'Location'", ANOTHER_LOCATION, response.getHeader(HttpHeaderNames.LOCATION));
+        assertEquals("HTTP header 'Location'", ANOTHER_LOCATION, response.getHeader(HttpHeader.LOCATION));
     }
 
     @Test

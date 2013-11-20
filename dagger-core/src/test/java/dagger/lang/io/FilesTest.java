@@ -1,6 +1,6 @@
 package dagger.lang.io;
 
-import dagger.reactions.StaticFile;
+import dagger.reactions.ResourceFile;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -41,7 +41,7 @@ public class FilesTest {
     private File createJar() throws IOException {
         JavaArchive archive =
             ShrinkWrap.create(JavaArchive.class, "archive.jar")
-                .addClasses(StaticFile.class)
+                .addClasses(ResourceFile.class)
                 .addAsDirectory("/directory-inside-jar/")
                 .addAsResource(getClass().getResource("/some-directory/some-file.txt"), "/directory-inside-jar/file-inside-jar.txt");
 

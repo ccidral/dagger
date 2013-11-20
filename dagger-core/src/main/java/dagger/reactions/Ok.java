@@ -1,10 +1,11 @@
 package dagger.reactions;
 
 import dagger.Reaction;
-import dagger.http.HttpHeaderNames;
+import dagger.http.HttpHeader;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
+import dagger.mime.MimeType;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,12 +17,16 @@ public class Ok implements Reaction {
     private final String contentType;
     private final Map<String, String> headers = new HashMap<String, String>();
 
+    public Ok() {
+        this(null);
+    }
+
     public Ok(String content) {
-        this(content, "text/plain");
+        this(content, MimeType.TEXT_PLAIN);
     }
 
     public Ok(String content, String contentType) {
-        this(content.getBytes(), contentType);
+        this(content != null ? content.getBytes() : null, contentType);
     }
 
     public Ok(byte[] bytes, String contentType) {
@@ -35,8 +40,13 @@ public class Ok implements Reaction {
             response.setHeader(headerName, headers.get(headerName));
 
         response.setStatusCode(StatusCode.OK);
-        response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
+        response.setHeader(HttpHeader.CONTENT_TYPE, contentType);
 
+        if(content != null)
+            writeContentTo(response);
+    }
+
+    private void writeContentTo(Response response) {
         try {
             response.getOutputStream().write(content);
         } catch (IOException e) {

@@ -78,7 +78,7 @@ public class GrizzlyWebSocketResponseTest {
     public void test_closing_the_output_stream_should_close_the_websocket() throws Throwable {
         OutputStream outputStream = response.getOutputStream();
         outputStream.close();
-        verify(webSocket).close(StatusCode.WEBSOCKET_NORMAL_CLOSE.getNumber());
+        verify(webSocket).close(StatusCode.WEBSOCKET_NORMAL_CLOSE.getCode());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class GrizzlyWebSocketResponseTest {
         response.setStatusCode(StatusCode.WEBSOCKET_UNEXPECTED_CONDITION);
         OutputStream outputStream = response.getOutputStream();
         outputStream.close();
-        verify(webSocket).close(StatusCode.WEBSOCKET_UNEXPECTED_CONDITION.getNumber());
+        verify(webSocket).close(StatusCode.WEBSOCKET_UNEXPECTED_CONDITION.getCode());
     }
 
 }

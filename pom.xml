@@ -5,7 +5,7 @@
 
     <groupId>dagger</groupId>
     <artifactId>dagger</artifactId>
-    <version>0.3</version>
+    <version>0.4</version>
     <packaging>pom</packaging>
     <name>Dagger</name>
     <url>http://github.com/ccidral/dagger</url>
@@ -14,11 +14,28 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
     <scm>
         <url>scm:git:git@github.com:ccidral/dagger.git</url>
         <connection>scm:git:git@github.com:ccidral/dagger.git</connection>
         <developerConnection>scm:git:git@github.com:ccidral/dagger.git</developerConnection>
     </scm>
+
+    <developers>
+        <developer>
+            <name>Célio Cidral Jr</name>
+            <url>https://github.com/ccidral</url>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>
@@ -106,12 +123,18 @@
                 <version>1.0-alpha21.1</version>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+            </extension>
+        </extensions>
     </build>
-    
+
     <distributionManagement>
         <repository>
-            <id>local-repository</id>
-            <url>file:///tmp/maven/repository</url>
+            <id>rtsbrasil-ssh</id>
+            <url>scpexe://maven@maven.rtsbrasil.net/var/www/maven.rtsbrasil.net</url>
         </repository>
     </distributionManagement>
 

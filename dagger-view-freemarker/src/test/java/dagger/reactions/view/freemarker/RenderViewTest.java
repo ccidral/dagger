@@ -3,11 +3,12 @@ package dagger.reactions.view.freemarker;
 import dagger.Reaction;
 import dagger.http.Request;
 import dagger.http.Response;
+import dagger.mime.MimeType;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 
-import static dagger.http.HttpHeaderNames.CONTENT_TYPE;
+import static dagger.http.HttpHeader.CONTENT_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -59,7 +60,7 @@ public class RenderViewTest {
         Request request = createRequest(contextPath, "/foo/bar");
         Response response = createResponse();
 
-        Reaction reaction = new RenderView("test-uri-function", "text/plain", model);
+        Reaction reaction = new RenderView("test-uri-function", MimeType.TEXT_PLAIN, model);
         reaction.execute(request, response);
 
         assertEquals("The URI is /bananas/are/cheap", renderedContent(response));

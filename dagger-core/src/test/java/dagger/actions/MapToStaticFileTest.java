@@ -4,7 +4,7 @@ import dagger.Action;
 import dagger.Reaction;
 import dagger.http.Request;
 import dagger.lang.mime.MimeTypeGuesser;
-import dagger.reactions.StaticFile;
+import dagger.reactions.ResourceFile;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,9 +31,9 @@ public class MapToStaticFileTest {
 
         assertIsStaticFile(reaction);
 
-        StaticFile staticFile = (StaticFile)reaction;
-        assertEquals("/hello/file.txt", staticFile.getPath());
-        assertSame(mimeTypeGuesser, staticFile.getMimeTypeGuesser());
+        ResourceFile resourceFile = (ResourceFile)reaction;
+        assertEquals("/hello/file.txt", resourceFile.getPath());
+        assertSame(mimeTypeGuesser, resourceFile.getMimeTypeGuesser());
     }
 
     @Test
@@ -44,14 +44,14 @@ public class MapToStaticFileTest {
 
         assertIsStaticFile(reaction);
 
-        StaticFile staticFile = (StaticFile)reaction;
-        assertEquals("/foo/bar.html", staticFile.getPath());
-        assertSame(mimeTypeGuesser, staticFile.getMimeTypeGuesser());
+        ResourceFile resourceFile = (ResourceFile)reaction;
+        assertEquals("/foo/bar.html", resourceFile.getPath());
+        assertSame(mimeTypeGuesser, resourceFile.getMimeTypeGuesser());
     }
 
     private static void assertIsStaticFile(Reaction reaction) {
         assertNotNull(reaction);
-        assertEquals(StaticFile.class, reaction.getClass());
+        assertEquals(ResourceFile.class, reaction.getClass());
     }
 
     private static Request request(String uri) {

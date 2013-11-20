@@ -4,6 +4,7 @@ import dagger.Reaction;
 import dagger.http.*;
 import dagger.lang.io.Files;
 import dagger.lang.mime.MimeTypeGuesser;
+import dagger.mime.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,15 +21,15 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static dagger.http.HttpHeaderNames.IF_MODIFIED_SINCE;
+import static dagger.http.HttpHeader.IF_MODIFIED_SINCE;
 
-public class StaticFile implements Reaction {
+public class ResourceFile implements Reaction {
 
     private final String path;
     private final MimeTypeGuesser mimeTypeGuesser;
     private final Logger logger;
 
-    public StaticFile(String path, MimeTypeGuesser mimeTypeGuesser) {
+    public ResourceFile(String path, MimeTypeGuesser mimeTypeGuesser) {
         if(!path.startsWith("/"))
             throw new IllegalArgumentException("Path must be absolute (must start with slash): " + path);
 
@@ -75,7 +76,7 @@ public class StaticFile implements Reaction {
 
     private void writeNotFound(Response response) throws IOException {
         response.setStatusCode(StatusCode.NOT_FOUND);
-        response.setHeader(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+        response.setHeader(HttpHeader.CONTENT_TYPE, MimeType.TEXT_PLAIN);
         write("Not found.", response);
     }
 
@@ -83,8 +84,8 @@ public class StaticFile implements Reaction {
         String contentType = mimeTypeGuesser.guessMimeType(fileUrl);
         Date modificationDate = getFileModificationDate(fileUrl);
         response.setStatusCode(StatusCode.OK);
-        response.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType);
-        response.setHeader(HttpHeaderNames.LAST_MODIFIED, Formats.timestamp().format(modificationDate));
+        response.setHeader(HttpHeader.CONTENT_TYPE, contentType);
+        response.setHeader(HttpHeader.LAST_MODIFIED, Formats.timestamp().format(modificationDate));
         write(fileUrl, response);
     }
 

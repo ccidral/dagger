@@ -2,28 +2,123 @@ package dagger.http;
 
 public enum StatusCode {
 
+
+    // Informational
+
+    CONTINUE(100),
+    SWITCHING_PROTOCOLS(101),
+    PROCESSING(102),
+
+
+    // Success
+
     OK(200),
+    CREATED(201),
+    ACCEPTED(202),
+    NON_AUTHORITATIVE_INFORMATION(203),
     NO_CONTENT(204),
+    RESET_CONTENT(205),
+    PARTIAL_CONTENT(206),
+    MULTI_STATUS(207),
+    ALREADY_REPORTED(208),
+    IM_USED(226),
+
+
+    // Redirection
+
+    MULTIPLE_CHOICES(300),
+    MOVED_PERMANENTLY(301),
+    FOUND(302),
     SEE_OTHER(303),
     NOT_MODIFIED(304),
+    USE_PROXY(305),
+    SWITCH_PROXY(306),
+    TEMPORARY_REDIRECT(307),
+    PERMANENT_REDIRECT(308),
+
+
+    // Client error
+
+    BAD_REQUEST(400),
+    UNAUTHORIZED(401),
+    PAYMENT_REQUIRED(402),
+    FORBIDDEN(403),
     NOT_FOUND(404),
+    METHOD_NOT_ALLOWED(405),
+    NOT_ACCEPTABLE(406),
+    PROXY_AUTHENTICATION_REQUIRED(407),
+    REQUEST_TIMEOUT(408),
+    CONFLICT(409),
+    GONE(410),
+    LENGTH_REQUIRED(411),
+    PRECONDITION_FAILED(412),
+    REQUEST_ENTITY_TOO_LARGE(413),
+    REQUEST_URI_TOO_LONG(414),
+    UNSUPPORTED_MEDIA_TYPE(415),
+    REQUESTED_RANGE_NOT_SATISFIABLE(416),
+    EXPECTATION_FAILED(417),
+    I_M_A_TEAPOT(418),
+    AUTHENTICATION_TIMEOUT(419),
+    UNPROCESSABLE_ENTITY(422),
+    LOCKED(423),
+    FAILED_DEPENDENCY(424),
+    METHOD_FAILURE(424),
+    UNORDERED_COLLECTION(425),
+    UPGRADE_REQUIRED(426),
+    PRECONDITION_REQUIRED(428),
+    TOO_MANY_REQUESTS(429),
+    REQUEST_HEADER_FIELDS_TOO_LARGE(431),
+    NO_RESPONSE(444),
+    RETRY_WITH(449),
+    BLOCKED_BY_WINDOWS_PARENTAL_CONTROLS(450),
+    UNAVAILABLE_FOR_LEGAL_REASONS(451),
+    REDIRECT(451),
+    REQUEST_HEADER_TOO_LARGE(494),
+    CERT_ERROR(495),
+    NO_CERT(496),
+    HTTP_TO_HTTPS(497),
+    CLIENT_CLOSED_REQUEST(499),
+
+
+    // Server error
+
     INTERNAL_SERVER_ERROR(500),
+    NOT_IMPLEMENTED(501),
+    BAD_GATEWAY(502),
+    SERVICE_UNAVAILABLE(503),
+    GATEWAY_TIMEOUT(504),
+    HTTP_VERSION_NOT_SUPPORTED(505),
+    VARIANT_ALSO_NEGOTIATES(506),
+    INSUFFICIENT_STORAGE(507),
+    LOOP_DETECTED(508),
+    BANDWIDTH_LIMIT_EXCEEDED(509),
+    NOT_EXTENDED(510),
+    NETWORK_AUTHENTICATION_REQUIRED(511),
+    CONNECTION_TIMED_OUT(522),
+    A_TIMEOUT_OCCURRED(524),
+    NETWORK_READ_TIMEOUT_ERROR(598),
+    NETWORK_CONNECT_TIMEOUT_ERROR(599),
+
+
+    // Web sockets
+
     WEBSOCKET_NORMAL_CLOSE(1000),
     WEBSOCKET_UNEXPECTED_CONDITION(1011);
 
-    private final int number;
 
-    StatusCode(int number) {
-        this.number = number;
+    private final int code;
+
+    StatusCode(int code) {
+        this.code = code;
     }
 
-    public int getNumber() {
-        return number;
+    public int getCode() {
+        return code;
     }
 
     public static StatusCode get(int number) {
         for(StatusCode statusCode : StatusCode.values())
-            if(statusCode.getNumber() == number)
+            if(statusCode.getCode() == number)
                 return statusCode;
 
         throw new IllegalArgumentException("Unknown status code: " + number);
