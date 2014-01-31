@@ -2,6 +2,7 @@ package dagger.module;
 
 import dagger.*;
 import dagger.handlers.*;
+import dagger.http.HttpMethod;
 import dagger.websocket.DefaultWebSocketSessionFactory;
 import dagger.websocket.WebSocketSessionFactory;
 import dagger.websocket.WebSocketSessionHandler;
@@ -25,19 +26,25 @@ public class DefaultModuleBuilder implements ModuleBuilder {
     @Override
     public void get(String routeSpecification, Action action) {
         Route route = routeFactory.create(routeSpecification);
-        module.add(new Get(route, action));
+        module.add(new HttpMethodRequestHandler(HttpMethod.GET, route, action));
     }
 
     @Override
     public void put(String routeSpecification, Action action) {
         Route route = routeFactory.create(routeSpecification);
-        module.add(new Put(route, action));
+        module.add(new HttpMethodRequestHandler(HttpMethod.PUT, route, action));
     }
 
     @Override
     public void post(String routeSpecification, Action action) {
         Route route = routeFactory.create(routeSpecification);
-        module.add(new Post(route, action));
+        module.add(new HttpMethodRequestHandler(HttpMethod.POST, route, action));
+    }
+
+    @Override
+    public void delete(String routeSpecification, Action action) {
+        Route route = routeFactory.create(routeSpecification);
+        module.add(new HttpMethodRequestHandler(HttpMethod.DELETE, route, action));
     }
 
     @Override

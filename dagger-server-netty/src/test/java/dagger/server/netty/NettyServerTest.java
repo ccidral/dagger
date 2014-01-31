@@ -4,11 +4,8 @@ import dagger.Action;
 import dagger.Module;
 import dagger.Reaction;
 import dagger.RequestHandler;
-import dagger.handlers.*;
-import dagger.http.HttpHeader;
-import dagger.http.Request;
-import dagger.http.Response;
-import dagger.http.StatusCode;
+import dagger.handlers.HttpMethodRequestHandler;
+import dagger.http.*;
 import dagger.mime.MimeType;
 import dagger.module.DefaultModule;
 import dagger.routes.ExactRoute;
@@ -17,8 +14,6 @@ import dagger.websocket.DefaultWebSocketSessionFactory;
 import dagger.websocket.WebSocketSession;
 import dagger.websocket.WebSocketSessionHandler;
 import de.roderick.weberknecht.*;
-import de.roderick.weberknecht.WebSocket;
-import de.roderick.weberknecht.WebSocketMessage;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -259,11 +254,11 @@ public class NettyServerTest {
     }
 
     private RequestHandler get(String resourceName, Action action) {
-        return new Get(new ExactRoute(resourceName), action);
+        return new HttpMethodRequestHandler(HttpMethod.GET, new ExactRoute(resourceName), action);
     }
 
     private RequestHandler post(String resourceName, Action action) {
-        return new Post(new ExactRoute(resourceName), action);
+        return new HttpMethodRequestHandler(HttpMethod.POST, new ExactRoute(resourceName), action);
     }
 
     private RequestHandler websocket(String resourceName, WebSocketSessionHandler webSocketSessionHandler) {

@@ -37,14 +37,6 @@ public class WebSocket implements RequestHandler {
         return route;
     }
 
-    public WebSocketSessionHandler getSessionHandler() {
-        return webSocketSessionHandler;
-    }
-
-    public WebSocketSessionFactory getWebSocketSessionFactory() {
-        return webSocketSessionFactory;
-    }
-
     @Override
     public boolean canHandle(Request request) {
         return isWebSocketRequest(request) && route.matches(request.getURI());
