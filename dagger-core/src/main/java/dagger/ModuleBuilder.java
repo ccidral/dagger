@@ -10,6 +10,8 @@ public interface ModuleBuilder {
 
     void post(String route, Action action);
 
+    void delete(String route, Action action);
+
     void websocket(String route, WebSocketSessionHandler handler);
 
 }
