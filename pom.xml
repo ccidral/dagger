@@ -68,7 +68,6 @@
         <module>dagger-server-netty</module>
         <module>dagger-server-netty-dev</module>
         <module>dagger-servlet3</module>
-        <module>dagger-servlet3-websocket-grizzly19</module>
         <module>dagger-view-freemarker</module>
         
         <!-- Example projects -->
