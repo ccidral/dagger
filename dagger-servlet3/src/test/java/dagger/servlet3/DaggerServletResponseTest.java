@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
@@ -68,6 +69,17 @@ public class DaggerServletResponseTest {
     private class MockServletOutputStream extends ServletOutputStream {
         @Override
         public void write(int b) throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isReady() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            throw new UnsupportedOperationException();
         }
     }
 

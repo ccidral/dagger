@@ -5,6 +5,7 @@ import dagger.http.Request;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -122,6 +123,21 @@ public class DaggerServletRequestTest {
     private class MockServletInputStream extends ServletInputStream {
         @Override
         public int read() throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isFinished() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isReady() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setReadListener(ReadListener readListener) {
             throw new UnsupportedOperationException();
         }
     }
