@@ -43,7 +43,7 @@ public class DaggerServletContextListenerTest {
     }
 
     @Test
-    public void test_contextInitialized_creates_the_module_and_store_it_in_the_servlet_context() {
+    public void test_create_the_module_and_store_it_in_the_servlet_context() {
         Module module = mock(Module.class);
         MockModuleFactory.setModuleToBeCreated(module);
 
