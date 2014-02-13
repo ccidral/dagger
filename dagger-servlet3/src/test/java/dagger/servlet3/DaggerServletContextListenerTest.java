@@ -67,16 +67,20 @@ public class DaggerServletContextListenerTest {
         given_that_a_module_is_going_to_be_created();
         given_that_a_servlet_feature_manager_is_declared_as_a_servlet_context_parameter(TestServletFeatureManager.class.getName());
         servletContextListener.contextInitialized(new ServletContextEvent(servletContext));
-        assertTrue("Servlet features are enabled", TestServletFeatureManager.areFeaturesEnabled);
+        assertTrue("Servlet features are enabled", TestServletFeatureManager.hasEnabledFeaturesWith(servletContext));
     }
 
     public static class TestServletFeatureManager implements ServletFeatureManager {
 
-        public static boolean areFeaturesEnabled;
+        private static ServletContext servletContext;
 
         @Override
         public void enableFeatures(ServletContext servletContext) {
-            areFeaturesEnabled = true;
+            TestServletFeatureManager.servletContext = servletContext;
+        }
+
+        public static boolean hasEnabledFeaturesWith(ServletContext servletContext) {
+            return TestServletFeatureManager.servletContext == servletContext;
         }
 
     }
