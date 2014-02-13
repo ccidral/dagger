@@ -1,7 +1,5 @@
 package dagger.servlet3.features;
 
-import dagger.servlet3.TestFeatureA;
-import dagger.servlet3.TestFeatureB;
 import org.junit.Before;
 import org.junit.Test;
 
