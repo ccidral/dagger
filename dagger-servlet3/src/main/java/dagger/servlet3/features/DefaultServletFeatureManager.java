@@ -1,6 +1,5 @@
 package dagger.servlet3.features;
 
-import dagger.servlet3.ServletFeature;
 import dagger.servlet3.util.ObjectFactory;
 
 import javax.servlet.ServletContext;

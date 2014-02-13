@@ -1,5 +1,7 @@
 package dagger.servlet3;
 
+import dagger.servlet3.features.ServletFeature;
+
 public class TestFeatureB implements ServletFeature {
 
     private static boolean isEnabled;

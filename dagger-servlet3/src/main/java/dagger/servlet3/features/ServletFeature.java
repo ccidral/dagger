@@ -1,4 +1,4 @@
-package dagger.servlet3;
+package dagger.servlet3.features;
 
 public interface ServletFeature {
 
