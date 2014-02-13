@@ -11,6 +11,11 @@
         <param-value>dagger.servlet3.sample.SampleModuleFactory</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>dagger.servlet3.features.ServletFeatureManager</param-name>
+        <param-value>dagger.servlet3.features.DefaultServletFeatureManager</param-value>
+    </context-param>
+
     <listener>
         <listener-class>dagger.servlet3.DaggerServletContextListener</listener-class>
     </listener>
