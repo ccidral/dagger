@@ -2,17 +2,20 @@ package dagger.servlet3;
 
 import dagger.servlet3.features.ServletFeature;
 
+import javax.servlet.ServletContext;
+
 public class TestFeatureA implements ServletFeature {
 
-    private static boolean isEnabled;
+    private static ServletContext servletContext;
 
-    public static boolean isEnabled() {
-        return isEnabled;
+    public static boolean isEnabledWith(ServletContext servletContext) {
+        return TestFeatureA.servletContext == servletContext;
     }
 
     @Override
-    public void enable() {
-        TestFeatureA.isEnabled = true;
+    public void enable(ServletContext servletContext) {
+        TestFeatureA.servletContext = servletContext;
     }
+
 
 }

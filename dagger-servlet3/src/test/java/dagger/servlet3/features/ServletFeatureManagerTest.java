@@ -30,7 +30,7 @@ public class ServletFeatureManagerTest {
     public void test_a_servlet_feature_is_enabled_by_declaring_its_class_name_in_a_servlet_context_parameter() {
         given_that_a_list_of_servlet_features_is_declared_as_a_servlet_context_parameter(TestFeatureA.class.getName());
         servletFeatureManager.enableFeatures(servletContext);
-        assertTrue("Feature is enabled", TestFeatureA.isEnabled());
+        assertTrue("Feature is enabled", TestFeatureA.isEnabledWith(servletContext));
     }
 
     @Test
@@ -45,8 +45,8 @@ public class ServletFeatureManagerTest {
 
         servletFeatureManager.enableFeatures(servletContext);
 
-        assertTrue("Feature A is enabled", TestFeatureA.isEnabled());
-        assertTrue("Feature B is enabled", TestFeatureB.isEnabled());
+        assertTrue("Feature A is enabled", TestFeatureA.isEnabledWith(servletContext));
+        assertTrue("Feature B is enabled", TestFeatureB.isEnabledWith(servletContext));
     }
 
     @Test
@@ -61,8 +61,8 @@ public class ServletFeatureManagerTest {
 
         servletFeatureManager.enableFeatures(servletContext);
 
-        assertTrue("Feature A is enabled", TestFeatureA.isEnabled());
-        assertTrue("Feature B is enabled", TestFeatureB.isEnabled());
+        assertTrue("Feature A is enabled", TestFeatureA.isEnabledWith(servletContext));
+        assertTrue("Feature B is enabled", TestFeatureB.isEnabledWith(servletContext));
     }
 
     @Test
@@ -77,8 +77,8 @@ public class ServletFeatureManagerTest {
 
         servletFeatureManager.enableFeatures(servletContext);
 
-        assertTrue("Feature A is enabled", TestFeatureA.isEnabled());
-        assertTrue("Feature B is enabled", TestFeatureB.isEnabled());
+        assertTrue("Feature A is enabled", TestFeatureA.isEnabledWith(servletContext));
+        assertTrue("Feature B is enabled", TestFeatureB.isEnabledWith(servletContext));
     }
 
     @Test
@@ -93,8 +93,8 @@ public class ServletFeatureManagerTest {
 
         servletFeatureManager.enableFeatures(servletContext);
 
-        assertTrue("Feature A is enabled", TestFeatureA.isEnabled());
-        assertTrue("Feature B is enabled", TestFeatureB.isEnabled());
+        assertTrue("Feature A is enabled", TestFeatureA.isEnabledWith(servletContext));
+        assertTrue("Feature B is enabled", TestFeatureB.isEnabledWith(servletContext));
     }
 
 }

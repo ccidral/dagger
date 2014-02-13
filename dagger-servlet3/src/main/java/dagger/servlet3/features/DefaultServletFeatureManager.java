@@ -11,19 +11,19 @@ public class DefaultServletFeatureManager implements ServletFeatureManager {
         String whitespaceSeparatedClassNames = servletContext.getInitParameter(CONFIGURATION_KEY);
         if(whitespaceSeparatedClassNames != null) {
             String[] classNames = whitespaceSeparatedClassNames.split("\\s+");
-            enableFeatures(classNames);
+            enableFeatures(classNames, servletContext);
         }
     }
 
-    private void enableFeatures(String[] classNames) {
+    private void enableFeatures(String[] classNames, ServletContext servletContext) {
         for(String className : classNames)
             if(className.length() > 0)
-                enableFeature(className);
+                enableFeature(className, servletContext);
     }
 
-    private void enableFeature(String className) {
+    private void enableFeature(String className, ServletContext servletContext) {
         ServletFeature feature = ObjectFactory.createInstanceOf(className);
-        feature.enable();
+        feature.enable(servletContext);
     }
 
 }
