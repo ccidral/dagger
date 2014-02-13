@@ -21,11 +21,15 @@ public class DaggerServletContextListener implements ServletContextListener {
         logger.info("Context initialized");
 
         ServletContext servletContext = servletContextEvent.getServletContext();
+
+        createModule(servletContext);
+        enableServletFeatures(servletContext);
+    }
+
+    private void createModule(ServletContext servletContext) {
         String moduleFactoryClassName = servletContext.getInitParameter(ModuleFactory.class.getName());
         Module module = createModule(moduleFactoryClassName);
-        putModuleIntoContext(module, servletContext);
-
-        enableServletFeatures(servletContext);
+        putModuleIntoServletContext(module, servletContext);
     }
 
     private void enableServletFeatures(ServletContext servletContext) {
@@ -36,7 +40,7 @@ public class DaggerServletContextListener implements ServletContextListener {
         }
     }
 
-    private void putModuleIntoContext(Module module, ServletContext servletContext) {
+    private void putModuleIntoServletContext(Module module, ServletContext servletContext) {
         if(module == null)
             throw new NullModuleException("The module factory produced a null module");
 
