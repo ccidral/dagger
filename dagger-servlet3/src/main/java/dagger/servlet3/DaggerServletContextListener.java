@@ -1,8 +1,9 @@
 package dagger.servlet3;
 
-import dagger.servlet3.config.MissingConfigurationException;
 import dagger.Module;
 import dagger.ModuleFactory;
+import dagger.servlet3.config.MissingConfigurationException;
+import dagger.servlet3.features.ServletFeatureManager;
 import dagger.servlet3.util.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,16 @@ public class DaggerServletContextListener implements ServletContextListener {
         String moduleFactoryClassName = servletContext.getInitParameter(ModuleFactory.class.getName());
         Module module = createModule(moduleFactoryClassName);
         putModuleIntoContext(module, servletContext);
+
+        enableServletFeatures(servletContext);
+    }
+
+    private void enableServletFeatures(ServletContext servletContext) {
+        String servletFeatureManagerClassName = servletContext.getInitParameter(ServletFeatureManager.class.getName());
+        if(servletFeatureManagerClassName != null) {
+            ServletFeatureManager servletFeatureManager = ObjectFactory.createInstanceOf(servletFeatureManagerClassName);
+            servletFeatureManager.enableFeatures(servletContext);
+        }
     }
 
     private void putModuleIntoContext(Module module, ServletContext servletContext) {

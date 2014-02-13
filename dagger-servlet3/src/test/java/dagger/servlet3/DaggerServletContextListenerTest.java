@@ -1,8 +1,9 @@
 package dagger.servlet3;
 
-import dagger.servlet3.config.MissingConfigurationException;
 import dagger.Module;
 import dagger.ModuleFactory;
+import dagger.servlet3.config.MissingConfigurationException;
+import dagger.servlet3.features.ServletFeatureManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,9 +11,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class DaggerServletContextListenerTest {
 
@@ -27,6 +27,19 @@ public class DaggerServletContextListenerTest {
 
     private void given_that_module_factory_class_configuration_is_set_to(String moduleFactoryClassName) {
         when(servletContext.getInitParameter(ModuleFactory.class.getName())).thenReturn(moduleFactoryClassName);
+    }
+
+    private Module given_that_a_module_is_going_to_be_created() {
+        Module module = mock(Module.class);
+        MockModuleFactory.setModuleToBeCreated(module);
+        given_that_module_factory_class_configuration_is_set_to(MockModuleFactory.class.getName());
+        return module;
+    }
+
+    private void given_that_a_servlet_feature_manager_is_declared_as_a_servlet_context_parameter(String servletFeatureManagerClassName) {
+        when(servletContext.getInitParameter(ServletFeatureManager.class.getName())).thenReturn(
+            servletFeatureManagerClassName
+        );
     }
 
     @Test(expected = MissingConfigurationException.class)
@@ -44,14 +57,28 @@ public class DaggerServletContextListenerTest {
 
     @Test
     public void test_create_the_module_and_store_it_in_the_servlet_context() {
-        Module module = mock(Module.class);
-        MockModuleFactory.setModuleToBeCreated(module);
-
-        given_that_module_factory_class_configuration_is_set_to(MockModuleFactory.class.getName());
-
+        Module module = given_that_a_module_is_going_to_be_created();
         servletContextListener.contextInitialized(new ServletContextEvent(servletContext));
-
         verify(servletContext).setAttribute(Module.class.getName(), module);
+    }
+
+    @Test
+    public void test_enabled_servlet_features_when_a_servlet_feature_manager_is_declared_as_a_servlet_context_parameter() {
+        given_that_a_module_is_going_to_be_created();
+        given_that_a_servlet_feature_manager_is_declared_as_a_servlet_context_parameter(TestServletFeatureManager.class.getName());
+        servletContextListener.contextInitialized(new ServletContextEvent(servletContext));
+        assertTrue("Servlet features are enabled", TestServletFeatureManager.areFeaturesEnabled);
+    }
+
+    public static class TestServletFeatureManager implements ServletFeatureManager {
+
+        public static boolean areFeaturesEnabled;
+
+        @Override
+        public void enableFeatures(ServletContext servletContext) {
+            areFeaturesEnabled = true;
+        }
+
     }
 
 }
