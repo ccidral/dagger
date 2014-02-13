@@ -26,6 +26,11 @@ public class DaggerServletContextListener implements ServletContextListener {
         enableServletFeatures(servletContext);
     }
 
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        logger.info("Context destroyed");
+    }
+
     private void createModule(ServletContext servletContext) {
         String moduleFactoryClassName = servletContext.getInitParameter(ModuleFactory.class.getName());
         Module module = createModule(moduleFactoryClassName);
@@ -53,11 +58,6 @@ public class DaggerServletContextListener implements ServletContextListener {
 
         ModuleFactory moduleFactory = ObjectFactory.createInstanceOf(moduleFactoryClassName);
         return moduleFactory.create();
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        logger.info("Context destroyed");
     }
 
 }
