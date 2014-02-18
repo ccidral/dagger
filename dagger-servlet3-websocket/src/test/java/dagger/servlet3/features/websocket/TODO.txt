@@ -1,0 +1,24 @@
+DONE
+--------------------
+DaggerEndpoint
+WebSocketRequest
+    - method
+    - context path
+    - uri
+    - input stream
+
+
+PENDING
+--------------------
+WebSocketResponse
+    - output stream -> write
+    - output stream -> flush
+ServletUri
+WebSocketFeature
+
+
+NO UNIT TESTS NEEDED
+--------------------
+EndpointRequestFactory
+EndpointResponseFactory
+EndpointConfigurator
