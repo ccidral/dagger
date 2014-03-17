@@ -15,8 +15,8 @@ import static org.mockito.Mockito.*;
 
 public class DaggerEndpointTest {
 
-    private EndpointRequestFactory requestFactory;
-    private EndpointResponseFactory responseFactory;
+    private WebSocketRequestFactory requestFactory;
+    private WebSocketResponseFactory responseFactory;
     private Module module;
     private Endpoint endpoint;
     private MockSession session;
@@ -24,8 +24,8 @@ public class DaggerEndpointTest {
     @Before
     public void setUp() throws Exception {
         module = mock(Module.class);
-        requestFactory = mock(EndpointRequestFactory.class);
-        responseFactory = mock(EndpointResponseFactory.class);
+        requestFactory = mock(WebSocketRequestFactory.class);
+        responseFactory = mock(WebSocketResponseFactory.class);
         endpoint = new DaggerEndpoint(module, requestFactory, responseFactory);
         session = new MockSession();
     }

@@ -14,10 +14,10 @@ import java.io.IOException;
 public class DaggerEndpoint extends Endpoint {
 
     private final Module module;
-    private final EndpointRequestFactory requestFactory;
-    private final EndpointResponseFactory responseFactory;
+    private final WebSocketRequestFactory requestFactory;
+    private final WebSocketResponseFactory responseFactory;
 
-    public DaggerEndpoint(Module module, EndpointRequestFactory requestFactory, EndpointResponseFactory responseFactory) {
+    public DaggerEndpoint(Module module, WebSocketRequestFactory requestFactory, WebSocketResponseFactory responseFactory) {
         this.module = module;
         this.requestFactory = requestFactory;
         this.responseFactory = responseFactory;

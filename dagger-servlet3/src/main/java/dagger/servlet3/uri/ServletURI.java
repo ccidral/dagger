@@ -1,6 +1,6 @@
 package dagger.servlet3.uri;
 
-public interface ServletUri {
+public interface ServletURI {
 
     String getContextPath();
 

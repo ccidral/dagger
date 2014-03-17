@@ -4,7 +4,7 @@ import dagger.http.Request;
 
 import javax.websocket.Session;
 
-public interface EndpointRequestFactory {
+public interface WebSocketRequestFactory {
 
     Request create(String httpMethod, String requestBody, Session session);
 

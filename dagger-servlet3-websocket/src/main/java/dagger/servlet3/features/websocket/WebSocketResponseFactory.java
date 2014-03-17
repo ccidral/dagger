@@ -4,7 +4,7 @@ import dagger.http.Response;
 
 import javax.websocket.Session;
 
-public interface EndpointResponseFactory {
+public interface WebSocketResponseFactory {
 
     Response create(Session session);
 
