@@ -1,8 +1,6 @@
 package dagger.http.cookie.options;
 
-import dagger.http.cookie.CookieOption;
-
-public class HttpOnly implements CookieOption {
+public class HttpOnly extends AbstractCookieOption {
 
     @Override
     public String getValue() {
