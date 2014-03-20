@@ -11,6 +11,10 @@ import org.junit.Test;
 
 import javax.websocket.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
 
 public class DaggerEndpointTest {
@@ -20,6 +24,7 @@ public class DaggerEndpointTest {
     private Module module;
     private Endpoint endpoint;
     private MockSession session;
+    private EndpointConfig endpointConfig;
 
     @Before
     public void setUp() throws Exception {
@@ -28,12 +33,23 @@ public class DaggerEndpointTest {
         responseFactory = mock(WebSocketResponseFactory.class);
         endpoint = new DaggerEndpoint(module, requestFactory, responseFactory);
         session = new MockSession();
+        endpointConfig = mock(EndpointConfig.class);
+    }
+
+    @Test
+    public void test_on_open_copy_request_headers_from_endpoint_config_to_the_session() throws Exception {
+        new Expectations(HttpMethod.WEBSOCKET_OPEN);
+        endpoint.onOpen(session, endpointConfig);
+        assertSame(
+            endpointConfig.getUserProperties().get(DaggerEndpointConfigurator.REQUEST_HEADERS_KEY),
+            session.getUserProperties().get(DaggerEndpointConfigurator.REQUEST_HEADERS_KEY)
+        );
     }
 
     @Test
     public void test_on_open_handles_request_and_executes_reaction() throws Exception {
         Expectations onOpen = new Expectations(HttpMethod.WEBSOCKET_OPEN);
-        endpoint.onOpen(session, null);
+        endpoint.onOpen(session, endpointConfig);
         onOpen.assertReactionIsExecuted();
     }
 
@@ -47,7 +63,7 @@ public class DaggerEndpointTest {
     @Test
     public void test_on_message_handles_request_and_executes_reaction() throws Exception {
         Expectations onOpen = new Expectations(HttpMethod.WEBSOCKET_OPEN);
-        endpoint.onOpen(session, null);
+        endpoint.onOpen(session, endpointConfig);
         onOpen.assertReactionIsExecuted();
 
         Expectations onMessage = new Expectations(HttpMethod.WEBSOCKET_MESSAGE, "Hello world");
@@ -60,7 +76,7 @@ public class DaggerEndpointTest {
         Expectations onOpen = new Expectations(HttpMethod.WEBSOCKET_OPEN)
             .cannotHandleRequest();
 
-        endpoint.onOpen(session, null);
+        endpoint.onOpen(session, endpointConfig);
 
         onOpen.assertRequestIsNotHandled();
         session
@@ -85,6 +101,8 @@ public class DaggerEndpointTest {
             when(module.getHandlerFor(request)).thenReturn(requestHandler);
             when(requestHandler.canHandle(request)).thenReturn(true);
             when(requestHandler.handle(request)).thenReturn(reaction);
+            when(endpointConfig.getUserProperties()).thenReturn(new HashMap<String, Object>());
+            endpointConfig.getUserProperties().put(DaggerEndpointConfigurator.REQUEST_HEADERS_KEY, new Object());
         }
 
         public Expectations cannotHandleRequest() {
@@ -101,6 +119,7 @@ public class DaggerEndpointTest {
             verify(requestHandler, never()).handle(any(Request.class));
             return this;
         }
+
     }
 
 }

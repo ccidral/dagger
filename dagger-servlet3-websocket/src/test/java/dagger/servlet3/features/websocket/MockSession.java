@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 public class MockSession implements Session {
 
     private final List<MessageHandler> messageHandlers = new ArrayList<>();
+    private final Map<String, Object> userProperties = new HashMap<>();
     private boolean isClosed;
 
     public void fireOnMessageEvent(String message) {
@@ -157,7 +158,7 @@ public class MockSession implements Session {
 
     @Override
     public Map<String, Object> getUserProperties() {
-        throw new NotImplementedYet();
+        return userProperties;
     }
 
     @Override

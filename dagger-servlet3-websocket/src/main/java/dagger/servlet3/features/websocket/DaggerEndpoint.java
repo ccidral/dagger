@@ -11,6 +11,8 @@ import dagger.http.Response;
 import javax.websocket.*;
 import java.io.IOException;
 
+import static dagger.servlet3.features.websocket.DaggerEndpointConfigurator.REQUEST_HEADERS_KEY;
+
 public class DaggerEndpoint extends Endpoint {
 
     private final Module module;
@@ -25,7 +27,10 @@ public class DaggerEndpoint extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+        copyRequestHeadersFromEndpointConfigToSession(endpointConfig, session);
+
         boolean handledTheRequest = handleRequest(HttpMethod.WEBSOCKET_OPEN, null, session);
+
         if(handledTheRequest)
             session.addMessageHandler(new TextMessageHandler(session));
         else
@@ -35,6 +40,10 @@ public class DaggerEndpoint extends Endpoint {
     @Override
     public void onClose(Session session, CloseReason closeReason) {
         handleRequest(HttpMethod.WEBSOCKET_CLOSE, null, session);
+    }
+
+    private void copyRequestHeadersFromEndpointConfigToSession(EndpointConfig endpointConfig, Session session) {
+        session.getUserProperties().put(REQUEST_HEADERS_KEY, endpointConfig.getUserProperties().get(REQUEST_HEADERS_KEY));
     }
 
     private boolean handleRequest(String httpMethod, String requestBody, Session session) {
