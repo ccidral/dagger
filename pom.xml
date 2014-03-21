@@ -68,6 +68,7 @@
         <module>dagger-server-netty</module>
         <module>dagger-server-netty-dev</module>
         <module>dagger-servlet3</module>
+        <module>dagger-servlet3-websocket</module>
         <module>dagger-view-freemarker</module>
         
         <!-- Example projects -->
