@@ -2,7 +2,7 @@ package dagger.http.cookie.options;
 
 import dagger.http.cookie.CookieOption;
 
-public class MaxAge implements CookieOption {
+public class MaxAge extends AbstractCookieOption {
 
     private int seconds;
 
