@@ -5,6 +5,7 @@ import dagger.Reaction;
 import dagger.RequestHandler;
 import dagger.http.Request;
 import dagger.http.Response;
+import dagger.lang.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,21 @@ public class DaggerServlet implements Servlet {
 
     private Module module;
     private ServletConfig servletConfig;
+    private final Converter<HttpServletRequest, Request> requestConverter;
+    private final Converter<HttpServletResponse, Response> responseConverter;
     private static final Logger logger = LoggerFactory.getLogger(DaggerServlet.class);
+
+    public DaggerServlet() {
+        this(
+            new ServletRequestConverter(),
+            new ServletResponseConverter()
+        );
+    }
+
+    public DaggerServlet(Converter<HttpServletRequest, Request> requestConverter, Converter<HttpServletResponse, Response> responseConverter) {
+        this.requestConverter = requestConverter;
+        this.responseConverter = responseConverter;
+    }
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -52,8 +67,8 @@ public class DaggerServlet implements Servlet {
 
     @Override
     public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
-        Request daggerRequest = new DaggerServletRequest((HttpServletRequest) servletRequest);
-        Response daggerResponse = new DaggerServletResponse((HttpServletResponse) servletResponse);
+        Request daggerRequest = requestConverter.convert((HttpServletRequest) servletRequest);
+        Response daggerResponse = responseConverter.convert((HttpServletResponse) servletResponse);
         try {
             handleRequest(daggerRequest, daggerResponse);
         } catch (Throwable e) {
