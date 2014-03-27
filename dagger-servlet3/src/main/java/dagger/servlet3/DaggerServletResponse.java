@@ -42,7 +42,7 @@ public class DaggerServletResponse implements Response {
     }
 
     @Override
-    public void setCookie(Cookie cookie) {
+    public void addCookie(Cookie cookie) {
         httpServletResponse.addCookie(new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue()));
     }
 

@@ -14,6 +14,6 @@ public interface Response {
 
     void setHeader(String name, String value);
 
-    void setCookie(Cookie cookie);
+    void addCookie(Cookie cookie);
 
 }

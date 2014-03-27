@@ -18,7 +18,7 @@ public class WithCookies implements Reaction {
     @Override
     public void execute(Request request, Response response) throws Exception {
         for(Cookie cookie : cookies)
-            response.setCookie(cookie);
+            response.addCookie(cookie);
 
         reaction.execute(request, response);
     }

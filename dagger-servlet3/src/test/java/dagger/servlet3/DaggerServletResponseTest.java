@@ -61,7 +61,7 @@ public class DaggerServletResponseTest {
         when(cookie.getName()).thenReturn("Greeting");
         when(cookie.getValue()).thenReturn("Hello");
 
-        response.setCookie(cookie);
+        response.addCookie(cookie);
 
         verify(httpServletResponse).addCookie(new ExpectedCookie("Greeting", "Hello"));
     }

@@ -42,7 +42,7 @@ public class WebSocketResponse implements Response {
     }
 
     @Override
-    public void setCookie(Cookie cookie) {
+    public void addCookie(Cookie cookie) {
         throw new NotImplementedYet();
     }
 

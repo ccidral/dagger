@@ -77,7 +77,7 @@ public class NettyResponseTest {
     public void testSetNewCookie() {
         Cookie cookie = mockCookie("Greeting", "Hello");
 
-        response.setCookie(cookie);
+        response.addCookie(cookie);
 
         List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(1, cookieHeaders.size());
@@ -88,7 +88,7 @@ public class NettyResponseTest {
     public void testSetCookieWithOptions() {
         Cookie cookie = mockCookie("Greeting", "Hello", "Option1", "Option2");
 
-        response.setCookie(cookie);
+        response.addCookie(cookie);
 
         List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(1, cookieHeaders.size());
@@ -100,8 +100,8 @@ public class NettyResponseTest {
         Cookie greeting = mockCookie("Greeting", "Hello");
         Cookie fruit = mockCookie("Fruit", "Apple");
 
-        response.setCookie(greeting);
-        response.setCookie(fruit);
+        response.addCookie(greeting);
+        response.addCookie(fruit);
 
         List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(2, cookieHeaders.size());
@@ -114,8 +114,8 @@ public class NettyResponseTest {
         Cookie hello = mockCookie("Greeting", "Hello");
         Cookie ahoy = mockCookie("Greeting", "Ahoy");
 
-        response.setCookie(hello);
-        response.setCookie(ahoy);
+        response.addCookie(hello);
+        response.addCookie(ahoy);
 
         List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(1, cookieHeaders.size());
@@ -128,9 +128,9 @@ public class NettyResponseTest {
         Cookie hello = mockCookie("Greeting", "Hello");
         Cookie ahoy = mockCookie("Greeting", "Ahoy");
 
-        response.setCookie(hello);
-        response.setCookie(fruit);
-        response.setCookie(ahoy);
+        response.addCookie(hello);
+        response.addCookie(fruit);
+        response.addCookie(ahoy);
 
         List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
         assertEquals(2, cookieHeaders.size());
@@ -141,7 +141,7 @@ public class NettyResponseTest {
     @Test
     public void testCookieNameCannotContainTheEqualsSign() {
         try {
-            response.setCookie(mockCookie("hello=", "world"));
+            response.addCookie(mockCookie("hello=", "world"));
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {}
     }
@@ -149,7 +149,7 @@ public class NettyResponseTest {
     @Test
     public void testCookieValueCannotBeNull() {
         try {
-            response.setCookie(mockCookie("hello", null));
+            response.addCookie(mockCookie("hello", null));
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {}
     }
@@ -157,7 +157,7 @@ public class NettyResponseTest {
     @Test
     public void testCookieValueCannotContainCommas() {
         try {
-            response.setCookie(mockCookie("hello", "wor,ld"));
+            response.addCookie(mockCookie("hello", "wor,ld"));
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {}
     }
@@ -165,7 +165,7 @@ public class NettyResponseTest {
     @Test
     public void testCookieValueCannotContainSemicolons() {
         try {
-            response.setCookie(mockCookie("hello", "wor;ld"));
+            response.addCookie(mockCookie("hello", "wor;ld"));
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {}
     }
@@ -173,7 +173,7 @@ public class NettyResponseTest {
     @Test
     public void testCookieValueCannotContainWhitespaces() {
         try {
-            response.setCookie(mockCookie("hello", "wor ld"));
+            response.addCookie(mockCookie("hello", "wor ld"));
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {}
     }

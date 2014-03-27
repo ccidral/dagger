@@ -45,7 +45,7 @@ public class NettyResponse implements Response {
     }
 
     @Override
-    public void setCookie(Cookie cookie) {
+    public void addCookie(Cookie cookie) {
         validateCookie(cookie);
         String value = getCookieValueWithOptions(cookie);
         List<String> allOtherCookieHeaders = getAllCookiesExcept(cookie.getName());
