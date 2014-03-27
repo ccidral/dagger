@@ -1,6 +1,6 @@
 package dagger.http.cookie;
 
-import java.util.List;
+import java.util.Date;
 
 public interface Cookie {
 
@@ -8,8 +8,26 @@ public interface Cookie {
 
     String getValue();
 
-    List<CookieOption> getOptions();
+    boolean isSecure();
 
-    void addOption(CookieOption option);
+    void setSecure(boolean secure);
+
+    boolean isHttpOnly();
+
+    void setHttpOnly(boolean httpOnly);
+
+    String getPath();
+
+    void setPath(String path);
+
+    Integer getMaxAge();
+
+    void setMaxAge(Integer seconds);
+
+    Date getExpires();
+
+    void setExpires(Date date);
+
+    String print();
 
 }

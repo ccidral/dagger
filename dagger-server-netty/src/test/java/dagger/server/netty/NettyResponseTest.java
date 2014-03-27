@@ -2,13 +2,11 @@ package dagger.server.netty;
 
 import dagger.http.*;
 import dagger.http.cookie.Cookie;
-import dagger.http.cookie.CookieOption;
 import dagger.lang.time.Clock;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -35,18 +33,18 @@ public class NettyResponseTest {
     }
 
     @Test
-    public void testDateHeaderIsCreatedInTheConstructor() {
+    public void test_date_header_is_created_in_the_constructor() {
         String expectedDate = Formats.timestamp().format(CURRENT_TIME);
         assertEquals(expectedDate, mockNettyHttpResponse.headers().get(HttpHeader.DATE));
     }
 
     @Test
-    public void testOutputStreamIsNotNull() throws IOException {
+    public void test_output_stream_is_not_null() throws IOException {
         assertNotNull(response.getOutputStream());
     }
 
     @Test
-    public void testWriteToOutputStream() throws IOException {
+    public void test_write_to_output_stream() throws IOException {
         response.getOutputStream().write("hello world".getBytes());
 
         assertNotNull(mockNettyHttpResponse.data());
@@ -54,7 +52,7 @@ public class NettyResponseTest {
     }
 
     @Test
-    public void testSetStatusCode() {
+    public void test_set_status_code() {
         response.setStatusCode(StatusCode.OK);
 
         assertNotNull(mockNettyHttpResponse.getStatus());
@@ -62,19 +60,19 @@ public class NettyResponseTest {
     }
 
     @Test
-    public void testGetStatusCode() {
+    public void test_get_status_code() {
         response.setStatusCode(StatusCode.NOT_FOUND);
         assertEquals(StatusCode.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void testSetHeader() {
+    public void test_set_header() {
         response.setHeader("Fruit", "apple");
         assertEquals("apple", mockNettyHttpResponse.headers().get("Fruit"));
     }
 
     @Test
-    public void testSetNewCookie() {
+    public void test_set_new_cookie() {
         Cookie cookie = mockCookie("Greeting", "Hello");
 
         response.addCookie(cookie);
@@ -85,18 +83,7 @@ public class NettyResponseTest {
     }
 
     @Test
-    public void testSetCookieWithOptions() {
-        Cookie cookie = mockCookie("Greeting", "Hello", "Option1", "Option2");
-
-        response.addCookie(cookie);
-
-        List<String> cookieHeaders = mockNettyHttpResponse.headers().getAll("Set-Cookie");
-        assertEquals(1, cookieHeaders.size());
-        assertEquals("Greeting=Hello; Option1; Option2", cookieHeaders.get(0));
-    }
-
-    @Test
-    public void testSetTwoDifferentNewCookies() {
+    public void test_set_two_different_new_cookies() {
         Cookie greeting = mockCookie("Greeting", "Hello");
         Cookie fruit = mockCookie("Fruit", "Apple");
 
@@ -110,7 +97,7 @@ public class NettyResponseTest {
     }
 
     @Test
-    public void testSetExistingCookie() {
+    public void test_modify_existing_cookie_by_adding_a_cookie_with_the_same_name() {
         Cookie hello = mockCookie("Greeting", "Hello");
         Cookie ahoy = mockCookie("Greeting", "Ahoy");
 
@@ -123,7 +110,7 @@ public class NettyResponseTest {
     }
 
     @Test
-    public void testSettingExistingCookieDoesNotAffectOtherCookies() {
+    public void test_modifying_existing_cookie_does_not_affect_other_cookies() {
         Cookie fruit = mockCookie("Fruit", "Apple");
         Cookie hello = mockCookie("Greeting", "Hello");
         Cookie ahoy = mockCookie("Greeting", "Ahoy");
@@ -138,65 +125,11 @@ public class NettyResponseTest {
         assertTrue(cookieHeaders.contains("Greeting=Ahoy"));
     }
 
-    @Test
-    public void testCookieNameCannotContainTheEqualsSign() {
-        try {
-            response.addCookie(mockCookie("hello=", "world"));
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {}
-    }
-
-    @Test
-    public void testCookieValueCannotBeNull() {
-        try {
-            response.addCookie(mockCookie("hello", null));
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {}
-    }
-
-    @Test
-    public void testCookieValueCannotContainCommas() {
-        try {
-            response.addCookie(mockCookie("hello", "wor,ld"));
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {}
-    }
-
-    @Test
-    public void testCookieValueCannotContainSemicolons() {
-        try {
-            response.addCookie(mockCookie("hello", "wor;ld"));
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {}
-    }
-
-    @Test
-    public void testCookieValueCannotContainWhitespaces() {
-        try {
-            response.addCookie(mockCookie("hello", "wor ld"));
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {}
-    }
-
-    private Cookie mockCookie(String name, String value, String... options) {
-        Cookie hello = mock(Cookie.class);
-        List<CookieOption> cookieOptions = mockCookieOptions(options);
-
-        when(hello.getName()).thenReturn(name);
-        when(hello.getValue()).thenReturn(value);
-        when(hello.getOptions()).thenReturn(cookieOptions);
-
-        return hello;
-    }
-
-    private List<CookieOption> mockCookieOptions(String[] optionValues) {
-        List<CookieOption> options = new ArrayList<CookieOption>();
-        for(String value : optionValues) {
-            CookieOption option = mock(CookieOption.class);
-            when(option.getValue()).thenReturn(value);
-            options.add(option);
-        }
-        return options;
+    private Cookie mockCookie(String name, String value) {
+        Cookie cookie = mock(Cookie.class);
+        when(cookie.getName()).thenReturn(name);
+        when(cookie.print()).thenReturn(name + "=" + value);
+        return cookie;
     }
 
     private static Date timestamp(int year, int month, int day, int hours, int minutes, int seconds) {
