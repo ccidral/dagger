@@ -4,6 +4,7 @@ import dagger.http.HttpHeader;
 import dagger.http.QueryString;
 import dagger.http.QueryStringImpl;
 import dagger.http.Request;
+import dagger.lang.NotImplementedYet;
 import dagger.servlet3.uri.ServletURI;
 
 import java.io.InputStream;
@@ -32,6 +33,11 @@ public class WebSocketRequest implements Request {
         for(String key : sourceMap.keySet())
             resultMap.put(key.toLowerCase(), sourceMap.get(key));
         return resultMap;
+    }
+
+    @Override
+    public String getRequestURL() {
+        throw new NotImplementedYet();
     }
 
     @Override

@@ -8,6 +8,7 @@ import dagger.handlers.HttpMethodRequestHandler;
 import dagger.http.*;
 import dagger.mime.MimeType;
 import dagger.module.DefaultModule;
+import dagger.reactions.Ok;
 import dagger.routes.ExactRoute;
 import dagger.server.Server;
 import dagger.websocket.DefaultWebSocketSessionFactory;
@@ -137,6 +138,23 @@ public class NettyServerTest {
 
         assertNotNull(response);
         assertEquals(500, response.getStatusLine().getStatusCode());
+    }
+
+    @Test(timeout = 2000)
+    public void test_get_request_url() throws Exception {
+        final StringBuffer requestUrl = new StringBuffer();
+
+        on(get("/hello", new Action() {
+            @Override
+            public Reaction execute(Request request) {
+                requestUrl.append(request.getRequestURL());
+                return new Ok();
+            }
+        }));
+
+        get("/hello");
+
+        assertEquals("http://localhost:8123/hello", requestUrl.toString());
     }
 
     @Test(timeout = 2000)
