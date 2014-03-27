@@ -22,6 +22,11 @@ public class DaggerServletRequest implements Request {
     }
 
     @Override
+    public String getRequestURL() {
+        return httpServletRequest.getRequestURL().toString();
+    }
+
+    @Override
     public String getContextPath() {
         return httpServletRequest.getContextPath();
     }

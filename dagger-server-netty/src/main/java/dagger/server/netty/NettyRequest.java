@@ -12,10 +12,19 @@ import java.util.Map;
 
 public class NettyRequest implements Request {
 
+    private final String host;
+    private final int port;
     private final FullHttpRequest request;
 
-    public NettyRequest(FullHttpRequest request) {
+    public NettyRequest(String host, int port, FullHttpRequest request) {
+        this.host = host;
+        this.port = port;
         this.request = request;
+    }
+
+    @Override
+    public String getRequestURL() {
+        return "http://" + host + (port != 80 ? ":" + port : "") + request.getUri();
     }
 
     @Override

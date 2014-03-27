@@ -24,6 +24,7 @@ public class DaggerServletRequestTest {
     @Before
     public void setUp() throws Exception {
         httpServletRequest = mock(HttpServletRequest.class);
+        httpServletRequest.getRequestURL();
         request = new DaggerServletRequest(httpServletRequest);
     }
 
@@ -52,6 +53,12 @@ public class DaggerServletRequestTest {
         when(httpServletRequest.getContextPath()).thenReturn("/context_path");
         when(httpServletRequest.getRequestURI()).thenReturn("/context_path/foo/bar");
         assertEquals("/foo/bar", request.getURI());
+    }
+
+    @Test
+    public void test_get_request_url() {
+        when(httpServletRequest.getRequestURL()).thenReturn(new StringBuffer("http://foo/bar"));
+        assertEquals("http://foo/bar", request.getRequestURL());
     }
 
     @Test
