@@ -12,6 +12,8 @@ import io.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
 import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
@@ -31,7 +33,7 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
         FullHttpResponse nettyHttpResponse;
 
         try {
-            nettyHttpResponse = processRequest((FullHttpRequest) msg);
+            nettyHttpResponse = processRequest((FullHttpRequest) msg, (InetSocketAddress) context.channel().localAddress());
         } catch (Exception e) {
             logger.error("Error while handling request", e);
             nettyHttpResponse = createErrorResponse();
@@ -45,8 +47,8 @@ public class HttpServerHandler extends ChannelInboundMessageHandlerAdapter<Objec
         return new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
     }
 
-    private FullHttpResponse processRequest(FullHttpRequest msg) throws Exception {
-        Request request = new NettyRequest(msg);
+    private FullHttpResponse processRequest(FullHttpRequest msg, InetSocketAddress localAddress) throws Exception {
+        Request request = new NettyRequest(localAddress.getHostName(), localAddress.getPort(), msg);
         Reaction reaction = handleRequest(request);
         return executeReaction(reaction, request);
     }

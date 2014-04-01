@@ -2,6 +2,7 @@ package dagger.handlers;
 
 import dagger.Reaction;
 import dagger.RequestHandler;
+import dagger.http.HttpHeader;
 import dagger.http.Request;
 import dagger.http.Response;
 import dagger.http.StatusCode;
@@ -10,6 +11,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -26,8 +28,16 @@ public class ResourceNotFoundTest {
     }
 
     @Test
-    public void test_can_handle_any_request() {
-        assertTrue(requestHandler.canHandle(null));
+    public void test_can_handle_regular_request() {
+        Request request = mock(Request.class);
+        assertTrue(requestHandler.canHandle(request));
+    }
+
+    @Test
+    public void test_cannot_handle_requests_containing_Upgrade_header() {
+        Request request = mock(Request.class);
+        when(request.getHeader(HttpHeader.UPGRADE)).thenReturn("foobar");
+        assertFalse(requestHandler.canHandle(request));
     }
 
     @Test

@@ -5,7 +5,6 @@ import dagger.http.HttpHeader;
 import dagger.http.Response;
 import dagger.http.StatusCode;
 import dagger.http.cookie.Cookie;
-import dagger.http.cookie.CookieOption;
 import dagger.lang.time.Clock;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -45,19 +44,10 @@ public class NettyResponse implements Response {
     }
 
     @Override
-    public void setCookie(Cookie cookie) {
-        validateCookie(cookie);
-        String value = getCookieValueWithOptions(cookie);
+    public void addCookie(Cookie cookie) {
         List<String> allOtherCookieHeaders = getAllCookiesExcept(cookie.getName());
-        allOtherCookieHeaders.add(cookie.getName() + "=" + value);
+        allOtherCookieHeaders.add(cookie.print());
         response.headers().set("Set-Cookie", allOtherCookieHeaders);
-    }
-
-    private String getCookieValueWithOptions(Cookie cookie) {
-        String value = cookie.getValue();
-        if(!cookie.getOptions().isEmpty())
-            value = value + printCookieOptions(cookie);
-        return value;
     }
 
     @Override
@@ -68,16 +58,6 @@ public class NettyResponse implements Response {
                 buffer.writeByte(oneByte);
             }
         };
-    }
-
-    private void validateCookie(Cookie cookie) {
-        String name = cookie.getName();
-        String value = cookie.getValue();
-        if(name.contains("=")) throw new IllegalArgumentException("Cookie name cannot contain the equals sign (=)");
-        if(value == null) throw new IllegalArgumentException("Cookie value cannot be null");
-        if(value.contains(",")) throw new IllegalArgumentException("Cookie value cannot contain commas (,)");
-        if(value.contains(";")) throw new IllegalArgumentException("Cookie value cannot contain semicolons (;)");
-        if(value.contains(" ")) throw new IllegalArgumentException("Cookie value cannot contain whitespaces");
     }
 
     private List<String> getAllCookiesExcept(String exceptionCookieName) {
@@ -91,13 +71,6 @@ public class NettyResponse implements Response {
             }
         }
         return allCookieHeaders;
-    }
-
-    private String printCookieOptions(Cookie cookie) {
-        String result = "";
-        for(CookieOption option : cookie.getOptions())
-            result += "; " + option.getValue();
-        return result;
     }
 
 }

@@ -5,19 +5,18 @@ import dagger.http.StatusCode;
 import dagger.http.cookie.Cookie;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class DaggerServletResponseTest {
 
@@ -55,38 +54,83 @@ public class DaggerServletResponseTest {
     }
 
     @Test
-    public void test_set_cookie() {
+    public void test_set_one_cookie() {
+        Cookie daggerCookie = mockCookie("Greeting", "Hello");
+        response.addCookie(daggerCookie);
+        assertEquivalent(daggerCookie, getServletCookie());
+    }
+
+    @Test
+    public void test_add_cookie_with_secure_option() {
+        Cookie daggerCookie = mockCookie("Greeting", "Hello");
+        when(daggerCookie.isSecure()).thenReturn(true);
+        response.addCookie(daggerCookie);
+        assertEquivalent(daggerCookie, getServletCookie());
+    }
+
+    @Test
+    public void test_add_cookie_with_http_only_option() {
+        Cookie daggerCookie = mockCookie("Greeting", "Hello");
+        when(daggerCookie.isHttpOnly()).thenReturn(true);
+        response.addCookie(daggerCookie);
+        assertEquivalent(daggerCookie, getServletCookie());
+    }
+
+    @Test
+    public void test_add_cookie_with_path_option() {
+        Cookie daggerCookie = mockCookie("Greeting", "Hello");
+        when(daggerCookie.getPath()).thenReturn("/foo/bar");
+        response.addCookie(daggerCookie);
+        assertEquivalent(daggerCookie, getServletCookie());
+    }
+
+    @Test
+    public void test_add_cookie_with_max_age_option() {
+        Cookie daggerCookie = mockCookie("Greeting", "Hello");
+        when(daggerCookie.getMaxAge()).thenReturn(837);
+        response.addCookie(daggerCookie);
+        assertEquivalent(daggerCookie, getServletCookie());
+    }
+
+    private void assertEquivalent(Cookie daggerCookie, javax.servlet.http.Cookie servletCookie) {
+        Integer expectedMaxAge = daggerCookie.getMaxAge() == null ? new Integer(-1) : daggerCookie.getMaxAge();
+
+        assertEquals("Cookie name", daggerCookie.getName(), servletCookie.getName());
+        assertEquals("Cookie value", daggerCookie.getValue(), servletCookie.getValue());
+        assertEquals("Is secure?", daggerCookie.isSecure(), servletCookie.getSecure());
+        assertEquals("Path", daggerCookie.getPath(), getServletCookie().getPath());
+        assertEquals("Max age", expectedMaxAge, new Integer(getServletCookie().getMaxAge()));
+    }
+
+    private Cookie mockCookie(String name, String value) {
         Cookie cookie = mock(Cookie.class);
-        when(cookie.getName()).thenReturn("Greeting");
-        when(cookie.getValue()).thenReturn("Hello");
+        when(cookie.getName()).thenReturn(name);
+        when(cookie.getValue()).thenReturn(value);
+        when(cookie.getMaxAge()).thenReturn(null);
+        return cookie;
+    }
 
-        response.setCookie(cookie);
-
-        verify(httpServletResponse).addCookie(new ExpectedCookie("Greeting", "Hello"));
+    private javax.servlet.http.Cookie getServletCookie() {
+        ArgumentCaptor<javax.servlet.http.Cookie> servletCookieArgument = ArgumentCaptor.forClass(javax.servlet.http.Cookie.class);
+        verify(httpServletResponse).addCookie(servletCookieArgument.capture());
+        return servletCookieArgument.getValue();
     }
 
     private class MockServletOutputStream extends ServletOutputStream {
         @Override
         public void write(int b) throws IOException {
-        }
-    }
-
-
-    private class ExpectedCookie extends javax.servlet.http.Cookie {
-
-        public ExpectedCookie(String name, String value) {
-            super(name, value);
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if(!(obj instanceof javax.servlet.http.Cookie))
-                return false;
-            javax.servlet.http.Cookie anotherCookie = (javax.servlet.http.Cookie)obj;
-            return getName().equals(anotherCookie.getName())
-                && getValue().equals(anotherCookie.getValue());
+        public boolean isReady() {
+            throw new UnsupportedOperationException();
         }
 
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            throw new UnsupportedOperationException();
+        }
     }
 
 }

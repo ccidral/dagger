@@ -8,6 +8,7 @@ import dagger.handlers.HttpMethodRequestHandler;
 import dagger.http.*;
 import dagger.mime.MimeType;
 import dagger.module.DefaultModule;
+import dagger.reactions.Ok;
 import dagger.routes.ExactRoute;
 import dagger.server.Server;
 import dagger.websocket.DefaultWebSocketSessionFactory;
@@ -50,7 +51,7 @@ public class NettyServerTest {
     }
 
     @Test(timeout = 2000)
-    public void testSuccessfulGetRequest() throws Exception {
+    public void test_successful_get_request() throws Exception {
         on(get("/hello", new Action() {
             @Override
             public Reaction execute(Request request) {
@@ -77,7 +78,7 @@ public class NettyServerTest {
     }
 
     @Test(timeout = 2000)
-    public void testSuccessfulPostRequestWithBody() throws Exception {
+    public void test_successful_post_request_with_body() throws Exception {
         on(post("/greet", new Action() {
             @Override
             public Reaction execute(Request request) {
@@ -105,7 +106,7 @@ public class NettyServerTest {
     }
 
     @Test(timeout = 2000)
-    public void testExceptionWhileHandlingRequest() throws Exception {
+    public void test_exception_while_handling_request() throws Exception {
         on(get("/hi", new Action() {
             @Override
             public Reaction execute(Request request) throws Exception {
@@ -120,7 +121,7 @@ public class NettyServerTest {
     }
 
     @Test(timeout = 2000)
-    public void testExceptionWhileExecutingReaction() throws Exception {
+    public void test_exception_while_executing_reaction() throws Exception {
         on(get("/hi", new Action() {
             @Override
             public Reaction execute(Request request) throws Exception {
@@ -137,6 +138,23 @@ public class NettyServerTest {
 
         assertNotNull(response);
         assertEquals(500, response.getStatusLine().getStatusCode());
+    }
+
+    @Test(timeout = 2000)
+    public void test_get_request_url() throws Exception {
+        final StringBuffer requestUrl = new StringBuffer();
+
+        on(get("/hello", new Action() {
+            @Override
+            public Reaction execute(Request request) {
+                requestUrl.append(request.getRequestURL());
+                return new Ok();
+            }
+        }));
+
+        get("/hello");
+
+        assertEquals("http://localhost:8123/hello", requestUrl.toString());
     }
 
     @Test(timeout = 2000)
