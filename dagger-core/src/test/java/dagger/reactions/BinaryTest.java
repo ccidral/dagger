@@ -9,9 +9,11 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class BinaryTest {
@@ -67,6 +69,22 @@ public class BinaryTest {
         InputStream inputStream = spy(new ByteArrayInputStream(new byte[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
         Reaction reaction = new Binary(inputStream, "image/png");
         reaction.execute(null, response);
+        verify(inputStream).close();
+    }
+
+    @Test
+    public void test_close_input_stream_even_when_an_exception_is_thrown() throws Throwable {
+        InputStream inputStream = mock(InputStream.class);
+        byte[] anyByteArray = any();
+
+        when(inputStream.read(anyByteArray)).thenThrow(new IOException());
+
+        Reaction reaction = new Binary(inputStream, "image/png");
+        try {
+            reaction.execute(null, response);
+        } catch (Exception e) {
+        }
+
         verify(inputStream).close();
     }
 
