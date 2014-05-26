@@ -21,34 +21,52 @@ public class NettyRequestTest {
 
     @Test
     public void testMethod() {
-        Request request = new NettyRequest(mockHttpRequest(HttpMethod.GET));
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest(HttpMethod.GET));
         assertEquals("GET", request.getMethod());
 
-        request = new NettyRequest(mockHttpRequest(HttpMethod.POST));
+        request = new NettyRequest("somehost", 80, mockHttpRequest(HttpMethod.POST));
         assertEquals("POST", request.getMethod());
     }
 
     @Test
     public void testContextPathIsAlwaysEmptyStringWhichMeansThereIsNoContextPath() {
-        Request request = new NettyRequest(mockHttpRequest("/foo/bar"));
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest("/foo/bar"));
         assertEquals("", request.getContextPath());
     }
 
     @Test
     public void testUri() {
-        Request request = new NettyRequest(mockHttpRequest("/foo/bar"));
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest("/foo/bar"));
         assertEquals("/foo/bar", request.getURI());
     }
 
     @Test
     public void testUriDoesNotIncludeQueryString() {
-        Request request = new NettyRequest(mockHttpRequest("/hello/world?fruit=apple&car=mustang"));
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest("/hello/world?fruit=apple&car=mustang"));
         assertEquals("/hello/world", request.getURI());
     }
 
     @Test
+    public void testRequestUrl() {
+        Request request = new NettyRequest("somehost.com", 8123, mockHttpRequest("/foo/bar"));
+        assertEquals("http://somehost.com:8123/foo/bar", request.getRequestURL());
+    }
+
+    @Test
+    public void testOmitDefaultHttpPortFromRequestUrl() {
+        Request request = new NettyRequest("foobar.com", 80, mockHttpRequest("/hello"));
+        assertEquals("http://foobar.com/hello", request.getRequestURL());
+    }
+
+    @Test
+    public void testIncludeQueryStringInTheRequestUrl() {
+        Request request = new NettyRequest("somewhere.com", 9999, mockHttpRequest("/foo/bar?x=y"));
+        assertEquals("http://somewhere.com:9999/foo/bar?x=y", request.getRequestURL());
+    }
+
+    @Test
     public void testParametersFromQueryString() {
-        Request request = new NettyRequest(mockHttpRequest("/hello/world?fruit=apple&car=mustang"));
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest("/hello/world?fruit=apple&car=mustang"));
         QueryString queryParameters = request.getQueryString();
 
         assertNotNull(queryParameters);
@@ -65,7 +83,7 @@ public class NettyRequestTest {
         FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
         when(mockHttpRequest.headers()).thenReturn(headers);
 
-        Request request = new NettyRequest(mockHttpRequest);
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest);
         assertEquals("Star Wars", request.getHeader("Movie"));
         assertEquals("Black", request.getHeader("Color"));
     }
@@ -76,7 +94,7 @@ public class NettyRequestTest {
         FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
         when(mockHttpRequest.headers()).thenReturn(headers);
 
-        Request request = new NettyRequest(mockHttpRequest);
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest);
         assertNull(request.getCookie("bogus"));
     }
 
@@ -88,7 +106,7 @@ public class NettyRequestTest {
         FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
         when(mockHttpRequest.headers()).thenReturn(headers);
 
-        Request request = new NettyRequest(mockHttpRequest);
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest);
         assertEquals("bar", request.getCookie("foo"));
         assertEquals("world", request.getCookie("hello"));
     }
@@ -101,7 +119,7 @@ public class NettyRequestTest {
         FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
         when(mockHttpRequest.headers()).thenReturn(headers);
 
-        Request request = new NettyRequest(mockHttpRequest);
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest);
         assertNull(request.getCookie("empty-cookie"));
     }
 
@@ -113,7 +131,7 @@ public class NettyRequestTest {
         FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
         when(mockHttpRequest.headers()).thenReturn(headers);
 
-        Request request = new NettyRequest(mockHttpRequest);
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest);
         assertEquals("i_have_the=sign", request.getCookie("foo"));
         assertEquals("i_dont_have_it", request.getCookie("hello"));
     }
@@ -125,7 +143,7 @@ public class NettyRequestTest {
         FullHttpRequest mockHttpRequest = mock(FullHttpRequest.class);
         when(mockHttpRequest.data()).thenReturn(requestContent);
 
-        Request request = new NettyRequest(mockHttpRequest);
+        Request request = new NettyRequest("somehost", 80, mockHttpRequest);
 
         InputStream inputStream = request.getInputStream();
         String bodyString = IOUtils.toString(inputStream);

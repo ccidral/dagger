@@ -42,8 +42,16 @@ public class DaggerServletResponse implements Response {
     }
 
     @Override
-    public void setCookie(Cookie cookie) {
-        httpServletResponse.addCookie(new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue()));
+    public void addCookie(Cookie cookie) {
+        javax.servlet.http.Cookie servletCookie = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+        servletCookie.setSecure(cookie.isSecure());
+        servletCookie.setHttpOnly(cookie.isHttpOnly());
+        servletCookie.setPath(cookie.getPath());
+
+        if(cookie.getMaxAge() != null)
+            servletCookie.setMaxAge(cookie.getMaxAge());
+
+        httpServletResponse.addCookie(servletCookie);
     }
 
 }

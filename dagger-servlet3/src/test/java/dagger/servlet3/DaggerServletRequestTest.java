@@ -5,6 +5,7 @@ import dagger.http.Request;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ public class DaggerServletRequestTest {
     @Before
     public void setUp() throws Exception {
         httpServletRequest = mock(HttpServletRequest.class);
+        httpServletRequest.getRequestURL();
         request = new DaggerServletRequest(httpServletRequest);
     }
 
@@ -51,6 +53,12 @@ public class DaggerServletRequestTest {
         when(httpServletRequest.getContextPath()).thenReturn("/context_path");
         when(httpServletRequest.getRequestURI()).thenReturn("/context_path/foo/bar");
         assertEquals("/foo/bar", request.getURI());
+    }
+
+    @Test
+    public void test_get_request_url() {
+        when(httpServletRequest.getRequestURL()).thenReturn(new StringBuffer("http://foo/bar"));
+        assertEquals("http://foo/bar", request.getRequestURL());
     }
 
     @Test
@@ -122,6 +130,21 @@ public class DaggerServletRequestTest {
     private class MockServletInputStream extends ServletInputStream {
         @Override
         public int read() throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isFinished() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isReady() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setReadListener(ReadListener readListener) {
             throw new UnsupportedOperationException();
         }
     }

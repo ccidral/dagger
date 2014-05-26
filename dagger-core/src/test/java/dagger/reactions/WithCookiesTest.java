@@ -24,8 +24,8 @@ public class WithCookiesTest {
         reactionWithCookies.execute(request, response);
 
         InOrder inOrder = inOrder(response, innerReaction);
-        inOrder.verify(response).setCookie(greeting);
-        inOrder.verify(response).setCookie(fruit);
+        inOrder.verify(response).addCookie(greeting);
+        inOrder.verify(response).addCookie(fruit);
         inOrder.verify(innerReaction).execute(request, response);
     }
 

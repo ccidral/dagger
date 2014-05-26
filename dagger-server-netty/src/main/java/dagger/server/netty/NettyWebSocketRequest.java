@@ -4,6 +4,7 @@ import dagger.http.QueryString;
 import dagger.http.QueryStringImpl;
 import dagger.http.Request;
 import dagger.http.cookie.CookieParser;
+import dagger.lang.NotImplementedYet;
 import io.netty.handler.codec.http.FullHttpRequest;
 
 import java.io.ByteArrayInputStream;
@@ -20,6 +21,11 @@ public class NettyWebSocketRequest implements Request {
         this.message = message;
         this.method = method;
         this.httpRequest = httpRequest;
+    }
+
+    @Override
+    public String getRequestURL() {
+        throw new NotImplementedYet();
     }
 
     @Override
