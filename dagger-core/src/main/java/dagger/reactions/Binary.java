@@ -32,6 +32,7 @@ public class Binary implements Reaction {
         response.setStatusCode(StatusCode.OK);
         response.setHeader(HttpHeader.CONTENT_TYPE, contentType);
         writeBytesTo(response);
+        inputStream.close();
     }
 
     private void writeBytesTo(Response response) throws IOException {

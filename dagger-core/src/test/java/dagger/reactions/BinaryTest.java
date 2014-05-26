@@ -12,9 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class BinaryTest {
 
@@ -62,6 +60,14 @@ public class BinaryTest {
         Reaction reaction = new Binary(theBytes, "image/png");
         reaction.execute(null, response);
         assertArrayEquals(theBytes, bytesWrittenTo(response));
+    }
+
+    @Test
+    public void test_close_input_stream_after_all_bytes_are_read() throws Throwable {
+        InputStream inputStream = spy(new ByteArrayInputStream(new byte[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
+        Reaction reaction = new Binary(inputStream, "image/png");
+        reaction.execute(null, response);
+        verify(inputStream).close();
     }
 
 }
